@@ -1,6 +1,6 @@
 {
-  "name": "EHCB Cardio App",
-  "short_name": "Cardio",
+  "name": "EHCB App",
+  "short_name": "EHCB",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#001F4E",
