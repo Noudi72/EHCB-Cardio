@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Intervalltraining</title>
+  <title>Intervall</title>
   <style>
-    body { background: #001F4E; color: white; font-family: sans-serif; padding: 2rem; }
+    body { background: #001F4E; color: white; font-family: sans-serif; margin: 0; padding: 2rem; }
     h1 { color: #FFD700; text-align: center; margin-top: 100px; }
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; color: black; }
     th, td { padding: 0.5rem; border: 1px solid #ccc; text-align: center; }
-    .active { background: #8B0000; color: white; }
-    .button { background: #8B0000; color: white; padding: 0.8rem 1.5rem; margin: 1rem; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; }
+    .active { background: #C80000; color: white; }
+    .button { background: #C80000; color: white; padding: 0.8rem 1.5rem; margin: 1rem; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; }
     .coach-controls { margin-top: 2rem; text-align: center; }
     input[type='password'] { padding: 0.4rem; margin-right: 0.5rem; }
     #timer-bar {
       position: fixed;
       top: 0;
       width: 100%;
-      background: #8B0000;
+      background: #C80000;
       color: white;
       font-size: 2.5rem;
       padding: 1rem;
@@ -25,178 +25,148 @@
       z-index: 1000;
     }
   </style>
-  <!-- Firebase SDKs -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyD573FQdUDS9NCbOZornq6IkWS18s5_kpM",
-      authDomain: "ehcb-cardio.firebaseapp.com",
-      projectId: "ehcb-cardio",
-      storageBucket: "ehcb-cardio.firebasestorage.app",
-      messagingSenderId: "709040533245",
-      appId: "1:709040533245:web:e7cfecc4a4b5646b689894"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const firestore = getFirestore(app);
-    window.db = firestore;
-  </script>
 </head>
 <body>
   <div id="timer-bar"><span id="timer">0</span> Sekunden</div>
-  <h1>Intervalltraining</h1>
-  <p style="text-align:center;">10× 15 Sek. Sprint / 15 Sek. Pause</p>
+
+  <h1>Intervall</h1>
+  <p style="text-align:center;">4 Sets 6x (30s Sprint / 15s Pause) – mit Aufwärmen & Cooldown</p>
+
   <table id="phaseTable">
-    <thead><tr><th>Phase</th><th>Dauer (s)</th><th>Beschreibung</th><th>RPM</th><th>% HFmax</th><th>Aktion</th></tr></thead>
+    <thead><tr><th>Phase</th><th>Dauer (s)</th><th>Beschreibung</th><th>RPM</th><th>% HFmax</th></tr></thead>
     <tbody id="tbody"></tbody>
   </table>
-  <p id="status">Programm wird geladen ...</p>
+
+  <p id="status">Bereit</p>
   <div style="text-align:center;">
     <button class="button" onclick="startWorkout()">Start</button>
     <button class="button" onclick="stopWorkout()">Pause</button>
     <button class="button" onclick="resetWorkout()">Reset</button>
   </div>
+
   <div class="coach-controls">
     <input type="password" id="pw" placeholder="Coach-Passwort" />
     <button class="button" onclick="enableCoach()">Coach-Modus starten</button>
-    <button class="button" onclick="addPhase()">➕ Phase hinzufügen</button>
   </div>
+
   <div style="text-align:center; margin-top: 2rem;">
     <a href="index.html" class="button">⬅ Zurück zur Startseite</a>
   </div>
-  <script type="module">
-  import { collection, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  let phases = [];
-  let currentIndex = -1;
-  let timer;
-  let countdown = 3;
+<script>
+const phases = [
+  { name: "Aufwärmen", duration: 300, desc: "5 Min locker einfahren", rpm: "70–80", hf: "60–70" },  { name: "Intervall 1", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
+  { name: "Pause 1", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
+  { name: "Intervall 2", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
+  { name: "Pause 2", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
+  { name: "Intervall 3", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
+  { name: "Pause 3", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
+  { name: "Intervall 4", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
+  { name: "Pause 4", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
+  { name: "Intervall 5", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
+  { name: "Pause 5", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
+  { name: "Intervall 6", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
+  { name: "Pause 6", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
+  { name: "Intervall 7", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
+  { name: "Pause 7", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
+  { name: "Intervall 8", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
+  { name: "Pause 8", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
+  { name: "Intervall 9", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
+  { name: "Pause 9", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
+  { name: "Intervall 10", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
+  { name: "Pause 10", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
+  { name: "Cooldown", duration: 600, desc: "10 Min locker ausfahren", rpm: "60–70", hf: "50–60" }
+];
 
-  async function loadPhases() {
-    const docRef = doc(window.db, "programme", "intervall");
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      phases = docSnap.data().phases;
-      renderTable();
-      document.getElementById("status").innerText = "Programm bereit ✅";
+let currentPhase = -1;
+let countdown = 3;
+let timeLeft = 0;
+let timerId = null;
+
+const tbody = document.getElementById("tbody");
+
+phases.forEach((p, i) => {
+  const row = document.createElement("tr");
+  row.id = "phaseRow" + i;
+  row.innerHTML = `
+    <td contenteditable="false">${p.name}</td>
+    <td contenteditable="false">${p.duration}</td>
+    <td contenteditable="false">${p.desc}</td>
+    <td contenteditable="false">${p.rpm}</td>
+    <td contenteditable="false">${p.hf}</td>
+  `;
+  tbody.appendChild(row);
+});
+
+function highlightPhase(index) {
+  phases.forEach((_, i) => {
+    document.getElementById("phaseRow" + i).className = i === index ? "active" : "";
+  });
+}
+
+function startWorkout() {
+  if (timerId) return;
+  if (currentPhase === -1) {
+    currentPhase = 0;
+    timeLeft = countdown;
+    document.getElementById("status").innerText = "Bereit? In 3 Sekunden geht's los...";
+    highlightPhase(currentPhase);
+  }
+  timerId = setInterval(() => {
+    document.getElementById("timer").innerText = timeLeft;
+    if (timeLeft > 0) {
+      timeLeft--;
     } else {
-      document.getElementById("status").innerText = "Kein Programm gefunden.";
-    }
-  }
-
-  async function savePhases() {
-    await setDoc(doc(window.db, "programme", "intervall"), { phases });
-  }
-
-  function renderTable() {
-    const tbody = document.getElementById("tbody");
-    tbody.innerHTML = "";
-    phases.forEach((p, i) => {
-      const row = tbody.insertRow();
-      row.innerHTML = `
-        <td>${p.name}</td>
-        <td>${p.duration}</td>
-        <td>${p.desc}</td>
-        <td>${p.rpm}</td>
-        <td>${p.hf}</td>
-        <td></td>
-      `;
-    });
-  }
-
-  window.enableCoach = () => {
-    const pw = document.getElementById("pw").value;
-    if (pw !== "ehcb2025") {
-      alert("Falsches Passwort.");
-      return;
-    }
-    document.querySelectorAll("tbody tr").forEach((row, i) => {
-      for (let j = 0; j < 5; j++) {
-        const cell = row.children[j];
-        cell.setAttribute("contenteditable", "true");
-        cell.addEventListener("blur", () => {
-          phases[i].name = row.children[0].innerText;
-          phases[i].duration = parseInt(row.children[1].innerText);
-          phases[i].desc = row.children[2].innerText;
-          phases[i].rpm = row.children[3].innerText;
-          phases[i].hf = row.children[4].innerText;
-          savePhases();
-        });
-      }
-      const delBtn = document.createElement("button");
-      delBtn.textContent = "🗑️";
-      delBtn.onclick = () => {
-        phases.splice(i, 1);
-        savePhases();
-        renderTable();
-      };
-      row.children[5].appendChild(delBtn);
-    });
-    alert("Coach-Modus aktiviert.");
-  };
-
-  window.addPhase = () => {
-    phases.push({ name: "Neu", duration: 30, desc: "", rpm: "", hf: "" });
-    savePhases();
-    renderTable();
-  };
-
-  window.startWorkout = () => {
-    if (currentIndex === -1) currentIndex = 0;
-    countdown = 3;
-    countdownStart();
-  };
-
-  function countdownStart() {
-    document.getElementById("timer").innerText = countdown;
-    timer = setInterval(() => {
-      countdown--;
-      document.getElementById("timer").innerText = countdown;
-      if (countdown <= 0) {
-        clearInterval(timer);
-        startPhase();
-      }
-    }, 1000);
-  }
-
-  function startPhase() {
-    if (currentIndex >= phases.length) {
-      document.getElementById("timer").innerText = "Fertig!";
-      return;
-    }
-    const phase = phases[currentIndex];
-    highlightRow(currentIndex);
-    let remaining = phase.duration;
-    document.getElementById("timer").innerText = remaining;
-    timer = setInterval(() => {
-      remaining--;
-      document.getElementById("timer").innerText = remaining;
-      if (remaining <= 0) {
-        clearInterval(timer);
-        currentIndex++;
+      if (countdown > 0) {
+        countdown = 0;
+        const row = document.getElementById("phaseRow" + currentPhase);
+        timeLeft = parseInt(row.children[1].innerText);
+        document.getElementById("status").innerText = "Aktiv: " + row.children[0].innerText;
+      } else {
+        clearInterval(timerId);
+        timerId = null;
+        currentPhase++;
         countdown = 3;
-        countdownStart();
+        if (currentPhase < phases.length) {
+          highlightPhase(currentPhase);
+          timeLeft = countdown;
+          document.getElementById("status").innerText = "Nächste Phase in 3 Sekunden...";
+          startWorkout();
+        } else {
+          document.getElementById("status").innerText = "Training abgeschlossen!";
+          document.getElementById("timer").innerText = "0";
+          highlightPhase(-1);
+        }
       }
-    }, 1000);
+    }
+  }, 1000);
+}
+
+function stopWorkout() {
+  clearInterval(timerId);
+  timerId = null;
+}
+
+function resetWorkout() {
+  stopWorkout();
+  currentPhase = -1;
+  countdown = 3;
+  timeLeft = 0;
+  document.getElementById("status").innerText = "Bereit";
+  document.getElementById("timer").innerText = "0";
+  highlightPhase(-1);
+}
+
+function enableCoach() {
+  const pw = document.getElementById("pw").value;
+  if (pw !== "ehcb2025") {
+    alert("Falsches Passwort.");
+    return;
   }
-
-  function highlightRow(index) {
-    document.querySelectorAll("tbody tr").forEach((row, i) => {
-      row.classList.toggle("active", i === index);
-    });
-  }
-
-  window.stopWorkout = () => clearInterval(timer);
-  window.resetWorkout = () => {
-    clearInterval(timer);
-    currentIndex = -1;
-    document.getElementById("timer").innerText = "0";
-    highlightRow(-1);
-  };
-
-  window.onload = loadPhases;
+  const cells = document.querySelectorAll("td");
+  cells.forEach(cell => cell.setAttribute("contenteditable", "true"));
+  alert("Coach-Modus aktiviert. Du kannst jetzt alle Zellen bearbeiten.");
+}
 </script>
 </body>
 </html>
