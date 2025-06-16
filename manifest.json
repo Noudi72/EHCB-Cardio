@@ -11,5 +11,17 @@
       "sizes": "512x512",
       "type": "image/png"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Kraftausdauer Basis",
+      "url": "kraftausdauer-basis.html",
+      "icons": [
+        {
+          "src": "icon.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
   ]
 }

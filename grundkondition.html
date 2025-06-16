@@ -5,19 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Grundkondition</title>
   <style>
-    body { background: #001F4E; color: white; font-family: sans-serif; margin: 0; padding: 2rem; }
+    body { background: #001F4E; color: white; font-family: sans-serif; padding: 2rem; }
     h1 { color: #FFD700; text-align: center; margin-top: 100px; }
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; color: black; }
     th, td { padding: 0.5rem; border: 1px solid #ccc; text-align: center; }
-    .active { background: #C80000; color: white; }
-    .button { background: #C80000; color: white; padding: 0.8rem 1.5rem; margin: 1rem; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; }
+    .active { background: #8B0000; color: white; }
+    .button { background: #8B0000; color: white; padding: 0.8rem 1.5rem; margin: 1rem; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; }
     .coach-controls { margin-top: 2rem; text-align: center; }
     input[type='password'] { padding: 0.4rem; margin-right: 0.5rem; }
     #timer-bar {
       position: fixed;
       top: 0;
       width: 100%;
-      background: #C80000;
+      background: #8B0000;
       color: white;
       font-size: 2.5rem;
       padding: 1rem;
@@ -30,10 +30,10 @@
   <div id="timer-bar"><span id="timer">0</span> Sekunden</div>
 
   <h1>Grundkondition</h1>
-  <p style="text-align:center;">40 Min Grundlagentraining – mit Aufwärmen, Wechsel & Cooldown</p>
+  <p style="text-align:center;">Basisprogramm für Ausdaueraufbau</p>
 
   <table id="phaseTable">
-    <thead><tr><th>Phase</th><th>Dauer (s)</th><th>Beschreibung</th><th>RPM</th><th>% HFmax</th></tr></thead>
+    <thead><tr><th>Phase</th><th>Dauer (s)</th><th>Beschreibung</th><th>RPM</th><th>% HFmax</th><th>Aktion</th></tr></thead>
     <tbody id="tbody"></tbody>
   </table>
 
@@ -47,6 +47,7 @@
   <div class="coach-controls">
     <input type="password" id="pw" placeholder="Coach-Passwort" />
     <button class="button" onclick="enableCoach()">Coach-Modus starten</button>
+    <button class="button" onclick="addPhase()">➕ Phase hinzufügen</button>
   </div>
 
   <div style="text-align:center; margin-top: 2rem;">
@@ -55,10 +56,18 @@
 
 <script>
 const phases = [
-  { name: "Warm-Up", duration: 600, desc: "10 Min locker einfahren", rpm: "70–80", hf: "60–70" },  { name: "Hauptteil", duration: 1500, desc: "15 Min Wechsel stehend/sitzend", rpm: "80–90", hf: "70–80" },
-  { name: "Sitzen", duration: 900, desc: "15 Min gleichmäßig sitzen", rpm: "80", hf: "65–75" },
-  { name: "Cooldown", duration: 600, desc: "10 Min locker ausfahren", rpm: "60", hf: "50–60" }
+  { name: "Warm-Up", duration: 600, desc: "10 Min locker", rpm: "80–90", hf: "60–65" },
+  { name: "Hauptteil", duration: 2400, desc: "40 Min konstant", rpm: "70–80", hf: "70–80" },
+  { name: "Wechsel (stehend/sitzend)", duration: 900, desc: "15 Min abwechselnd", rpm: "70–80", hf: "75–85" },
+  { name: "Sitzend", duration: 900, desc: "15 Min konstant sitzend", rpm: "75–85", hf: "75–85" },
+  { name: "Cooldown", duration: 600, desc: "10 Min locker", rpm: "75–85", hf: "60–65" }
 ];
+
+const saved = JSON.parse(localStorage.getItem("grundkondition"));
+if (saved) {
+  phases.length = 0;
+  saved.forEach(p => phases.push(p));
+}
 
 let currentPhase = -1;
 let countdown = 3;
@@ -76,6 +85,7 @@ phases.forEach((p, i) => {
     <td contenteditable="false">${p.desc}</td>
     <td contenteditable="false">${p.rpm}</td>
     <td contenteditable="false">${p.hf}</td>
+    <td></td>
   `;
   tbody.appendChild(row);
 });
@@ -145,9 +155,42 @@ function enableCoach() {
     alert("Falsches Passwort.");
     return;
   }
-  const cells = document.querySelectorAll("td");
-  cells.forEach(cell => cell.setAttribute("contenteditable", "true"));
+
+  document.querySelectorAll("tbody tr").forEach((row, i) => {
+    for (let j = 0; j < 5; j++) {
+      const cell = row.children[j];
+      cell.setAttribute("contenteditable", "true");
+      cell.addEventListener("blur", () => {
+        phases[i].name = row.children[0].innerText;
+        phases[i].duration = parseInt(row.children[1].innerText);
+        phases[i].desc = row.children[2].innerText;
+        phases[i].rpm = row.children[3].innerText;
+        phases[i].hf = row.children[4].innerText;
+        localStorage.setItem("grundkondition", JSON.stringify(phases));
+      });
+    }
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "🗑️";
+    deleteBtn.onclick = () => deletePhase(i);
+    row.children[5].appendChild(deleteBtn);
+  });
+
   alert("Coach-Modus aktiviert. Du kannst jetzt alle Zellen bearbeiten.");
+}
+
+function addPhase() {
+  const newPhase = { name: "Neue Phase", duration: 30, desc: "Beschreibung", rpm: "RPM", hf: "HF" };
+  phases.push(newPhase);
+  localStorage.setItem("grundkondition", JSON.stringify(phases));
+  location.reload();
+}
+
+function deletePhase(i) {
+  if (!confirm("Diese Phase wirklich löschen?")) return;
+  phases.splice(i, 1);
+  localStorage.setItem("grundkondition", JSON.stringify(phases));
+  location.reload();
 }
 </script>
 </body>

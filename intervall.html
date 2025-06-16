@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Intervall</title>
   <style>
-    body { background: #001F4E; color: white; font-family: sans-serif; margin: 0; padding: 2rem; }
+    body { background: #001F4E; color: white; font-family: sans-serif; padding: 2rem; }
     h1 { color: #FFD700; text-align: center; margin-top: 100px; }
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; color: black; }
     th, td { padding: 0.5rem; border: 1px solid #ccc; text-align: center; }
@@ -30,10 +30,10 @@
   <div id="timer-bar"><span id="timer">0</span> Sekunden</div>
 
   <h1>Intervall</h1>
-  <p style="text-align:center;">10× (15s Sprint / 15s Pause) – mit Aufwärmen & Cooldown</p>
+  <p style="text-align:center;">4 Sets à 6 × 30 Sek. Sprint / 15 Sek. Pause</p>
 
   <table id="phaseTable">
-    <thead><tr><th>Phase</th><th>Dauer (s)</th><th>Beschreibung</th><th>RPM</th><th>% HFmax</th></tr></thead>
+    <thead><tr><th>Phase</th><th>Dauer (s)</th><th>Beschreibung</th><th>RPM</th><th>% HFmax</th><th>Aktion</th></tr></thead>
     <tbody id="tbody"></tbody>
   </table>
 
@@ -47,6 +47,7 @@
   <div class="coach-controls">
     <input type="password" id="pw" placeholder="Coach-Passwort" />
     <button class="button" onclick="enableCoach()">Coach-Modus starten</button>
+    <button class="button" onclick="addPhase()">➕ Phase hinzufügen</button>
   </div>
 
   <div style="text-align:center; margin-top: 2rem;">
@@ -55,28 +56,21 @@
 
 <script>
 const phases = [
-  { name: "Aufwärmen", duration: 300, desc: "5 Min locker einfahren", rpm: "70–80", hf: "60–70" },  { name: "Intervall 1", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
-  { name: "Pause 1", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
-  { name: "Intervall 2", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
-  { name: "Pause 2", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
-  { name: "Intervall 3", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
-  { name: "Pause 3", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
-  { name: "Intervall 4", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
-  { name: "Pause 4", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
-  { name: "Intervall 5", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
-  { name: "Pause 5", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
-  { name: "Intervall 6", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
-  { name: "Pause 6", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
-  { name: "Intervall 7", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
-  { name: "Pause 7", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
-  { name: "Intervall 8", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
-  { name: "Pause 8", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
-  { name: "Intervall 9", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
-  { name: "Pause 9", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
-  { name: "Intervall 10", duration: 15, desc: "Sprint sehr hart", rpm: "100–110", hf: "85–100" },
-  { name: "Pause 10", duration: 15, desc: "Erholung", rpm: "60–70", hf: "50–60" },
-  { name: "Cooldown", duration: 600, desc: "10 Min locker ausfahren", rpm: "60–70", hf: "50–60" }
+  { name: "Aufwärmen", duration: 300, desc: "5 Min. Leichter Widerstand steigernd", rpm: "70-80", hf: "50-60" },
+  ...Array.from({ length: 3 }, (_, set) =>
+    Array.from({ length: 8 }, (_, i) => ([
+      { name: `Intervall ${set * 8 + i + 1}`, duration: 15, desc: "15 Sek. sehr hart", rpm: "100-110", hf: "85-100" },
+      { name: `Pause ${set * 8 + i + 1}`, duration: 15, desc: "15 Sek. sehr locker", rpm: "60-70", hf: "50-60" }
+    ])).flat()
+  ).flat(),
+  { name: "Cool-Down", duration: 600, desc: "10 Min. Locker fahren, niedriger Widerstand", rpm: "60", hf: "40-50" }
 ];
+
+const saved = JSON.parse(localStorage.getItem("intervall"));
+if (saved) {
+  phases.length = 0;
+  saved.forEach(p => phases.push(p));
+}
 
 let currentPhase = -1;
 let countdown = 3;
@@ -94,6 +88,7 @@ phases.forEach((p, i) => {
     <td contenteditable="false">${p.desc}</td>
     <td contenteditable="false">${p.rpm}</td>
     <td contenteditable="false">${p.hf}</td>
+    <td></td>
   `;
   tbody.appendChild(row);
 });
@@ -163,9 +158,42 @@ function enableCoach() {
     alert("Falsches Passwort.");
     return;
   }
-  const cells = document.querySelectorAll("td");
-  cells.forEach(cell => cell.setAttribute("contenteditable", "true"));
+
+  document.querySelectorAll("tbody tr").forEach((row, i) => {
+    for (let j = 0; j < 5; j++) {
+      const cell = row.children[j];
+      cell.setAttribute("contenteditable", "true");
+      cell.addEventListener("blur", () => {
+        phases[i].name = row.children[0].innerText;
+        phases[i].duration = parseInt(row.children[1].innerText);
+        phases[i].desc = row.children[2].innerText;
+        phases[i].rpm = row.children[3].innerText;
+        phases[i].hf = row.children[4].innerText;
+        localStorage.setItem("intervall", JSON.stringify(phases));
+      });
+    }
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "🗑️";
+    deleteBtn.onclick = () => deletePhase(i);
+    row.children[5].appendChild(deleteBtn);
+  });
+
   alert("Coach-Modus aktiviert. Du kannst jetzt alle Zellen bearbeiten.");
+}
+
+function addPhase() {
+  const newPhase = { name: "Neue Phase", duration: 30, desc: "Beschreibung", rpm: "RPM", hf: "HF" };
+  phases.push(newPhase);
+  localStorage.setItem("intervall", JSON.stringify(phases));
+  location.reload();
+}
+
+function deletePhase(i) {
+  if (!confirm("Diese Phase wirklich löschen?")) return;
+  phases.splice(i, 1);
+  localStorage.setItem("intervall", JSON.stringify(phases));
+  location.reload();
 }
 </script>
 </body>

@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HIIT</title>
+  <title>Kraftausdauer Basis</title>
   <style>
     body { background: #001F4E; color: white; font-family: sans-serif; padding: 2rem; }
     h1 { color: #FFD700; text-align: center; margin-top: 100px; }
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; color: black; }
     th, td { padding: 0.5rem; border: 1px solid #ccc; text-align: center; }
-    .active { background: #C80000; color: white; }
-    .button { background: #C80000; color: white; padding: 0.8rem 1.5rem; margin: 1rem; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; }
+    .active { background: #8B0000; color: white; }
+    .button { background: #8B0000; color: white; padding: 0.8rem 1.5rem; margin: 1rem; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; }
     .coach-controls { margin-top: 2rem; text-align: center; }
     input[type='password'] { padding: 0.4rem; margin-right: 0.5rem; }
     #timer-bar {
       position: fixed;
       top: 0;
       width: 100%;
-      background: #C80000;
+      background: #8B0000;
       color: white;
       font-size: 2.5rem;
       padding: 1rem;
@@ -29,8 +29,8 @@
 <body>
   <div id="timer-bar"><span id="timer">0</span> Sekunden</div>
 
-  <h1>HIIT</h1>
-  <p style="text-align:center;">10 × 45 Sek. hochintensiv / 60 Sek. Pause</p>
+  <h1>Kraftausdauer Basis</h1>
+  <p style="text-align:center;">Grundprogramm mit Fokus auf Druck und Belastungsdauer</p>
 
   <table id="phaseTable">
     <thead><tr><th>Phase</th><th>Dauer (s)</th><th>Beschreibung</th><th>RPM</th><th>% HFmax</th><th>Aktion</th></tr></thead>
@@ -56,21 +56,16 @@
 
 <script>
 const phases = [
-  { name: "Warm-Up", duration: 600, desc: "10 Min locker", rpm: "70–80", hf: "60–70" },
-  { name: "Intensiv 1", duration: 45, desc: "hohe Intensität", rpm: "100", hf: "90–100" },
-  { name: "Pause 1", duration: 60, desc: "Erholung", rpm: "60–70", hf: "60–70" },
-  { name: "Intensiv 2", duration: 45, desc: "hohe Intensität", rpm: "100", hf: "90–100" },
-  { name: "Pause 2", duration: 60, desc: "Erholung", rpm: "60–70", hf: "60–70" },
-  { name: "Intensiv 3", duration: 45, desc: "hohe Intensität", rpm: "100", hf: "90–100" },
-  { name: "Pause 3", duration: 60, desc: "Erholung", rpm: "60–70", hf: "60–70" },
-  { name: "Intensiv 4", duration: 45, desc: "hohe Intensität", rpm: "100", hf: "90–100" },
-  { name: "Pause 4", duration: 60, desc: "Erholung", rpm: "60–70", hf: "60–70" },
-  { name: "Intensiv 5", duration: 45, desc: "hohe Intensität", rpm: "100", hf: "90–100" },
-  { name: "Pause 5", duration: 60, desc: "Erholung", rpm: "60–70", hf: "60–70" },
-  { name: "Cooldown", duration: 600, desc: "Locker ausfahren", rpm: "60–70", hf: "50–60" }
+  { name: "Warm-Up", duration: 300, desc: "5 Min locker", rpm: "80–90", hf: "60–65" },
+  { name: "Kraftblock 1", duration: 300, desc: "Sitzend, hoher Widerstand", rpm: "60–70", hf: "75–85" },
+  { name: "Pause", duration: 60, desc: "Locker", rpm: "70–80", hf: "60–65" },
+  { name: "Kraftblock 2", duration: 300, desc: "Stehend, konstanter Druck", rpm: "60–70", hf: "75–85" },
+  { name: "Pause", duration: 60, desc: "Locker", rpm: "70–80", hf: "60–65" },
+  { name: "Kraftblock 3", duration: 300, desc: "Sitzend, lange Belastung", rpm: "65–75", hf: "80–90" },
+  { name: "Cooldown", duration: 300, desc: "Locker ausfahren", rpm: "80–90", hf: "60–65" }
 ];
 
-const saved = JSON.parse(localStorage.getItem("hiit"));
+const saved = JSON.parse(localStorage.getItem("kraftausdauer_basis"));
 if (saved) {
   phases.length = 0;
   saved.forEach(p => phases.push(p));
@@ -173,7 +168,7 @@ function enableCoach() {
         phases[i].desc = row.children[2].innerText;
         phases[i].rpm = row.children[3].innerText;
         phases[i].hf = row.children[4].innerText;
-        localStorage.setItem("hiit", JSON.stringify(phases));
+        localStorage.setItem("kraftausdauer_basis", JSON.stringify(phases));
       });
     }
 
@@ -189,14 +184,14 @@ function enableCoach() {
 function addPhase() {
   const newPhase = { name: "Neue Phase", duration: 30, desc: "Beschreibung", rpm: "RPM", hf: "HF" };
   phases.push(newPhase);
-  localStorage.setItem("hiit", JSON.stringify(phases));
+  localStorage.setItem("kraftausdauer_basis", JSON.stringify(phases));
   location.reload();
 }
 
 function deletePhase(i) {
   if (!confirm("Diese Phase wirklich löschen?")) return;
   phases.splice(i, 1);
-  localStorage.setItem("hiit", JSON.stringify(phases));
+  localStorage.setItem("kraftausdauer_basis", JSON.stringify(phases));
   location.reload();
 }
 </script>

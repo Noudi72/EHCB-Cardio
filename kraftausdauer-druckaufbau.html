@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kraftausdauer & Druck</title>
+  <title>Kraftausdauer & Druckaufbau</title>
   <style>
-    body { background: #001F4E; color: white; font-family: sans-serif; margin: 0; padding: 2rem; }
+    body { background: #001F4E; color: white; font-family: sans-serif; padding: 2rem; }
     h1 { color: #FFD700; text-align: center; margin-top: 100px; }
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; color: black; }
     th, td { padding: 0.5rem; border: 1px solid #ccc; text-align: center; }
-    .active { background: #C80000; color: white; }
-    .button { background: #C80000; color: white; padding: 0.8rem 1.5rem; margin: 1rem; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; }
+    .active { background: #B22222; color: white; }
+    .button { background: #B22222; color: white; padding: 0.8rem 1.5rem; margin: 1rem; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; }
     .coach-controls { margin-top: 2rem; text-align: center; }
     input[type='password'] { padding: 0.4rem; margin-right: 0.5rem; }
     #timer-bar {
       position: fixed;
       top: 0;
       width: 100%;
-      background: #C80000;
+      background: #B22222;
       color: white;
       font-size: 2.5rem;
       padding: 1rem;
@@ -30,10 +30,10 @@
   <div id="timer-bar"><span id="timer">0</span> Sekunden</div>
 
   <h1>Kraftausdauer & Druckaufbau</h1>
-  <p style="text-align:center;">45 Min. Programm mit steigender Intensität – inkl. Warm-Up & Cooldown</p>
+  <p style="text-align:center;">4 × 5-Min-Blöcke mit wechselnden Trittfrequenzen & Widerständen</p>
 
   <table id="phaseTable">
-    <thead><tr><th>Phase</th><th>Dauer (s)</th><th>Beschreibung</th><th>RPM</th><th>% HFmax</th></tr></thead>
+    <thead><tr><th>Phase</th><th>Dauer (s)</th><th>Beschreibung</th><th>RPM</th><th>% HFmax</th><th>Aktion</th></tr></thead>
     <tbody id="tbody"></tbody>
   </table>
 
@@ -47,6 +47,7 @@
   <div class="coach-controls">
     <input type="password" id="pw" placeholder="Coach-Passwort" />
     <button class="button" onclick="enableCoach()">Coach-Modus starten</button>
+    <button class="button" onclick="addPhase()">➕ Phase hinzufügen</button>
   </div>
 
   <div style="text-align:center; margin-top: 2rem;">
@@ -54,24 +55,27 @@
   </div>
 
 <script>
-let phases = [
-  { name: "Warm-Up", duration: 600, desc: "10 Min locker einfahren", rpm: "70–80", hf: "60–70" },
-  { name: "Block 1", duration: 300, desc: "5 Min moderat", rpm: "80–90", hf: "70–75" },
-  { name: "Block 2", duration: 300, desc: "5 Min erhöht", rpm: "80–85", hf: "75–80" },
-  { name: "Block 3", duration: 300, desc: "5 Min Druck", rpm: "80–85", hf: "80–85" },
-  { name: "Block 4", duration: 300, desc: "5 Min hoher Druck", rpm: "80", hf: "85–90" },
-  { name: "Block 5", duration: 300, desc: "5 Min sehr hoher Druck", rpm: "80", hf: "90–95" },
-  { name: "Cooldown", duration: 600, desc: "10 Min locker ausfahren", rpm: "60–70", hf: "60–65" }
-];let currentPhase = -1;
+const phases = [
+  { name: "Warm-Up", duration: 300, desc: "5 Min locker", rpm: "80–90", hf: "60–65" },
+  { name: "Block 1", duration: 300, desc: "Druck & Frequenz 1", rpm: "75–80", hf: "70–75" },
+  { name: "Block 2", duration: 300, desc: "Druck & Frequenz 2", rpm: "80–85", hf: "75–80" },
+  { name: "Block 3", duration: 300, desc: "Druck & Frequenz 3", rpm: "85–90", hf: "80–85" },
+  { name: "Block 4", duration: 300, desc: "Druck & Frequenz 4", rpm: "90–95", hf: "85–90" },
+  { name: "Cooldown", duration: 300, desc: "5 Min locker ausfahren", rpm: "80–90", hf: "60–65" }
+];
+
+const saved = JSON.parse(localStorage.getItem("kraftausdauer_druckaufbau"));
+if (saved) {
+  phases.length = 0;
+  saved.forEach(p => phases.push(p));
+}
+
+let currentPhase = -1;
 let countdown = 3;
 let timeLeft = 0;
 let timerId = null;
 
 const tbody = document.getElementById("tbody");
-
-// Lade aus localStorage (falls vorhanden)
-const saved = localStorage.getItem("kraftausdauer_druckaufbau");
-if (saved) phases = JSON.parse(saved);
 
 phases.forEach((p, i) => {
   const row = document.createElement("tr");
@@ -82,6 +86,7 @@ phases.forEach((p, i) => {
     <td contenteditable="false">${p.desc}</td>
     <td contenteditable="false">${p.rpm}</td>
     <td contenteditable="false">${p.hf}</td>
+    <td></td>
   `;
   tbody.appendChild(row);
 });
@@ -151,27 +156,42 @@ function enableCoach() {
     alert("Falsches Passwort.");
     return;
   }
-  const cells = document.querySelectorAll("td");
-  cells.forEach(cell => cell.setAttribute("contenteditable", "true"));
+
+  document.querySelectorAll("tbody tr").forEach((row, i) => {
+    for (let j = 0; j < 5; j++) {
+      const cell = row.children[j];
+      cell.setAttribute("contenteditable", "true");
+      cell.addEventListener("blur", () => {
+        phases[i].name = row.children[0].innerText;
+        phases[i].duration = parseInt(row.children[1].innerText);
+        phases[i].desc = row.children[2].innerText;
+        phases[i].rpm = row.children[3].innerText;
+        phases[i].hf = row.children[4].innerText;
+        localStorage.setItem("kraftausdauer_druckaufbau", JSON.stringify(phases));
+      });
+    }
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "🗑️";
+    deleteBtn.onclick = () => deletePhase(i);
+    row.children[5].appendChild(deleteBtn);
+  });
 
   alert("Coach-Modus aktiviert. Du kannst jetzt alle Zellen bearbeiten.");
+}
 
-  document.querySelectorAll("td").forEach(cell => {
-    cell.addEventListener("input", () => {
-      const updated = [];
-      document.querySelectorAll("tbody tr").forEach(row => {
-        const tds = row.querySelectorAll("td");
-        updated.push({
-          name: tds[0].innerText,
-          duration: parseInt(tds[1].innerText),
-          desc: tds[2].innerText,
-          rpm: tds[3].innerText,
-          hf: tds[4].innerText
-        });
-      });
-      localStorage.setItem("kraftausdauer_druckaufbau", JSON.stringify(updated));
-    });
-  });
+function addPhase() {
+  const newPhase = { name: "Neue Phase", duration: 30, desc: "Beschreibung", rpm: "RPM", hf: "HF" };
+  phases.push(newPhase);
+  localStorage.setItem("kraftausdauer_druckaufbau", JSON.stringify(phases));
+  location.reload();
+}
+
+function deletePhase(i) {
+  if (!confirm("Diese Phase wirklich löschen?")) return;
+  phases.splice(i, 1);
+  localStorage.setItem("kraftausdauer_druckaufbau", JSON.stringify(phases));
+  location.reload();
 }
 </script>
 </body>
