@@ -29,30 +29,10 @@
     let timeLeft = 0;
     let timerId = null;
 
-    const tbody = document.getElementById("tbody");
-
     async function loadPhases() {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        // Automatisch generierte Struktur mit 4 Sets à 6x (30s hart / 15s Pause), 120s Set-Pause
-        phases = [];
-
-        // Warm-up
-        phases.push({ name: "Aufwärmen", duration: 300, desc: "5 Min. locker, steigernd", rpm: "70–80", hf: "50–60" });
-
-        for (let set = 1; set <= 4; set++) {
-          for (let rep = 1; rep <= 6; rep++) {
-            phases.push({ name: `Sprint ${rep} (Set ${set})`, duration: 30, desc: "Sehr hart", rpm: "100–110", hf: "85–100" });
-            phases.push({ name: `Pause ${rep} (Set ${set})`, duration: 15, desc: "Sehr locker", rpm: "60–70", hf: "50–60" });
-          }
-          if (set < 4) {
-            phases.push({ name: `Setpause ${set}`, duration: 120, desc: "Pause zwischen Sets", rpm: "60", hf: "50" });
-          }
-        }
-
-        // Cool-down
-        phases.push({ name: "Cooldown", duration: 600, desc: "10 Min. locker", rpm: "60", hf: "40–50" });
-
+        phases = docSnap.data().phasen;
         renderTable();
       } else {
         document.getElementById("status").innerText = "Keine Daten gefunden.";
@@ -60,6 +40,7 @@
     }
 
     function renderTable() {
+      const tbody = document.getElementById("tbody");
       tbody.innerHTML = "";
       phases.forEach((p, i) => {
         const row = document.createElement("tr");
@@ -142,6 +123,7 @@
         alert("Falsches Passwort.");
         return;
       }
+      const tbody = document.getElementById("tbody");
       tbody.querySelectorAll("tr").forEach((row, i) => {
         for (let j = 0; j < 5; j++) {
           const cell = row.children[j];
@@ -188,7 +170,7 @@
 
     async function savePhases() {
       await setDoc(docRef, { phasen: phases });
-      console.log("Daten gespeichert");
+      console.log("Phasen gespeichert");
     }
 
     window.addEventListener("DOMContentLoaded", loadPhases);
