@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kraftausdauer & Druckaufbau – EHCB Cardio</title>
+  <title>Explosivkraft & Antritt – EHCB Cardio</title>
   <link rel="manifest" href="manifest.json">
   <style>
     body { font-family: Arial, sans-serif; background: #fff7f0; padding: 20px; }
@@ -36,7 +36,7 @@
   </script>
 </head>
 <body>
-  <h1>Kraftausdauer & Druckaufbau</h1>
+  <h1>Explosivkraft & Antritt</h1>
   <div id="timer">00:00</div>
   <button id="startBtn">Start</button>
   <button id="coachBtn">Coach-Modus starten</button>
@@ -60,7 +60,7 @@
     let phases = [];
 
     async function loadData() {
-      const docRef = doc(window.db, "programme", "kraftausdauer_druckaufbau");
+      const docRef = doc(window.db, "programme", "explosiv_antritt");
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         phases = docSnap.data().phases;
@@ -86,7 +86,6 @@
     }
 
     function startTimer(phases) {
-      let totalTime = 0;
       const timerDiv = document.getElementById("timer");
 
       function runPhase(index) {
@@ -162,7 +161,7 @@
           rpm: row.cells[3].innerText,
           hf: row.cells[4].innerText,
         }));
-        await setDoc(doc(window.db, "programme", "kraftausdauer_druckaufbau"), { phases: newPhases });
+        await setDoc(doc(window.db, "programme", "explosiv_antritt"), { phases: newPhases });
         alert("Änderungen gespeichert!");
       };
     }

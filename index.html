@@ -1,61 +1,60 @@
+
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EHCB Cardio</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icon.png" type="image/png" />
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-  <meta name="theme-color" content="#C80000" />
+  <title>EHCB Cardio Programme</title>
+  <link rel="shortcut icon" href="favicon.ico" />
   <style>
     body {
-      margin: 0;
-      font-family: sans-serif;
-      background: #001F4E;
-      color: white;
+      font-family: Arial, sans-serif;
+      background: #fff7f0;
+      color: #333;
       text-align: center;
-      padding: 2rem;
+      padding: 30px;
     }
-    img.logo {
-      width: 120px;
-      height: 120px;
-      margin: 0 auto 2rem;
-      border-radius: 50%;
-      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    h1 {
+      color: #cc0000;
+      margin-bottom: 40px;
     }
-    .button {
+    .logo {
+      width: 100px;
+      margin-bottom: 20px;
+    }
+    .program-list a {
       display: block;
-      width: 90%;
-      max-width: 400px;
-      margin: 1rem auto;
-      padding: 1.2rem;
-      font-size: 1.1rem;
-      background: #C80000;
-      color: white;
-      border: none;
-      border-radius: 12px;
+      margin: 12px;
+      font-size: 1.2em;
+      color: #cc0000;
       text-decoration: none;
+      border: 1px solid #cc0000;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background 0.3s;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
     }
-    .button:hover {
-      background: #a00000;
+    .program-list a:hover {
+      background: #ffe6e6;
     }
   </style>
 </head>
 <body>
-
-  <img src="icon.png" alt="App Icon" class="logo" />
-
-  <a href="intervall.html" class="button">🔁 Intervall</a>
-  <a href="hiit.html" class="button">🔥 HIIT</a>
-  <a href="vo2max.html" class="button">💨 VO₂max</a>
-  <a href="regeneration.html" class="button">🧘 Regeneration</a>
-  <a href="grundkondition.html" class="button">🚴 Grundkondition</a>
-  <a href="kraftausdauer-druckaufbau.html" class="button">🏋️ Kraftausdauer & Druck</a>
-  <a href="explosivkraft-antritt.html" class="button">⚡ Explosivkraft & Antritt</a>
-  <a href="anaerob-sprints.html" class="button">🏁 Anaerob & Wiederholungssprints</a>
-
-  <a href="kraftausdauer-basis.html" class="button">💪 Kraftausdauer Basis</a>
-
+  <img src="icon-cardio.png" alt="App Icon" class="logo" />
+  <h1>EHCB Cardio Programme</h1>
+  <div class="program-list">
+    <a href="hiit.html">HIIT</a>
+    <a href="intervall.html">Intervall</a>
+    <a href="vo2max.html">VO₂max</a>
+    <a href="regeneration.html">Regeneration</a>
+    <a href="grundkondition.html">Grundkondition</a>
+    <a href="kraftausdauer-basis.html">Kraftausdauer Basis</a>
+    <a href="kraftausdauer-druckaufbau.html">Kraftausdauer & Druckaufbau</a>
+    <a href="explosiv-antritt.html">Explosivkraft & Antritt</a>
+    <a href="anaerob-sprints.html">Anaerob & Wiederholungssprints</a>
+  </div>
 </body>
 </html>

@@ -1,198 +1,174 @@
+
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Anaerob & Wiederholungssprints</title>
+  <title>Anaerob & Wiederholungssprints – EHCB Cardio</title>
+  <link rel="manifest" href="manifest.json">
   <style>
-    body { background: #001F4E; color: white; font-family: sans-serif; padding: 2rem; }
-    h1 { color: #FFD700; text-align: center; margin-top: 100px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; color: black; }
-    th, td { padding: 0.5rem; border: 1px solid #ccc; text-align: center; }
-    .active { background: #B22222; color: white; }
-    .button { background: #B22222; color: white; padding: 0.8rem 1.5rem; margin: 1rem; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; }
-    .coach-controls { margin-top: 2rem; text-align: center; }
-    input[type='password'] { padding: 0.4rem; margin-right: 0.5rem; }
-    #timer-bar {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      background: #B22222;
-      color: white;
-      font-size: 2.5rem;
-      padding: 1rem;
-      text-align: center;
-      z-index: 1000;
-    }
+    body { font-family: Arial, sans-serif; background: #fff7f0; padding: 20px; }
+    h1 { color: #cc3300; text-align: center; }
+    #timer { font-size: 3em; text-align: center; margin: 20px 0; position: fixed; top: 10px; right: 20px; background: #fff; padding: 10px; border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 80px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #cc3300; color: white; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    #startBtn, #coachBtn { margin: 10px; padding: 10px 20px; font-size: 1em; }
   </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD573FQdUDS9NCbOZornq6IkWS18s5_kpM",
+      authDomain: "ehcb-cardio.firebaseapp.com",
+      projectId: "ehcb-cardio",
+      storageBucket: "ehcb-cardio.appspot.com",
+      messagingSenderId: "709040533245",
+      appId: "1:709040533245:web:e7cfecc4a4b5646b689894"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.db = db;
+  </script>
 </head>
 <body>
-  <div id="timer-bar"><span id="timer">0</span> Sekunden</div>
-
   <h1>Anaerob & Wiederholungssprints</h1>
-  <p style="text-align:center;">Sprint-Wiederholungen mit hoher Intensität</p>
-
-  <table id="phaseTable">
-    <thead><tr><th>Phase</th><th>Dauer (s)</th><th>Beschreibung</th><th>RPM</th><th>% HFmax</th><th>Aktion</th></tr></thead>
-    <tbody id="tbody"></tbody>
+  <div id="timer">00:00</div>
+  <button id="startBtn">Start</button>
+  <button id="coachBtn">Coach-Modus starten</button>
+  <table>
+    <thead>
+      <tr>
+        <th>Phase</th>
+        <th>Dauer (s)</th>
+        <th>Beschreibung</th>
+        <th>RPM</th>
+        <th>HF%</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
   </table>
 
-  <p id="status">Bereit</p>
-  <div style="text-align:center;">
-    <button class="button" onclick="startWorkout()">Start</button>
-    <button class="button" onclick="stopWorkout()">Pause</button>
-    <button class="button" onclick="resetWorkout()">Reset</button>
-  </div>
+  <script type="module">
+    const tableBody = document.getElementById("tableBody");
+    let phases = [];
 
-  <div class="coach-controls">
-    <input type="password" id="pw" placeholder="Coach-Passwort" />
-    <button class="button" onclick="enableCoach()">Coach-Modus starten</button>
-    <button class="button" onclick="addPhase()">➕ Phase hinzufügen</button>
-  </div>
-
-  <div style="text-align:center; margin-top: 2rem;">
-    <a href="index.html" class="button">⬅ Zurück zur Startseite</a>
-  </div>
-
-<script>
-const phases = [
-  { name: "Warm-Up", duration: 300, desc: "5 Min locker", rpm: "80–90", hf: "60–65" },
-  ...Array.from({ length: 10 }, (_, i) => [
-    { name: `Sprint ${i + 1}`, duration: 30, desc: "Sprint", rpm: "100–110", hf: "90–100" },
-    { name: `Pause ${i + 1}`, duration: 30, desc: "Locker", rpm: "60–70", hf: "60" }
-  ]).flat(),
-  { name: "Cooldown", duration: 300, desc: "5 Min locker ausfahren", rpm: "80–90", hf: "60–65" }
-];
-
-const saved = JSON.parse(localStorage.getItem("anaerob_sprints"));
-if (saved) {
-  phases.length = 0;
-  saved.forEach(p => phases.push(p));
-}
-
-let currentPhase = -1;
-let countdown = 3;
-let timeLeft = 0;
-let timerId = null;
-
-const tbody = document.getElementById("tbody");
-
-phases.forEach((p, i) => {
-  const row = document.createElement("tr");
-  row.id = "phaseRow" + i;
-  row.innerHTML = `
-    <td contenteditable="false">${p.name}</td>
-    <td contenteditable="false">${p.duration}</td>
-    <td contenteditable="false">${p.desc}</td>
-    <td contenteditable="false">${p.rpm}</td>
-    <td contenteditable="false">${p.hf}</td>
-    <td></td>
-  `;
-  tbody.appendChild(row);
-});
-
-function highlightPhase(index) {
-  phases.forEach((_, i) => {
-    document.getElementById("phaseRow" + i).className = i === index ? "active" : "";
-  });
-}
-
-function startWorkout() {
-  if (timerId) return;
-  if (currentPhase === -1) {
-    currentPhase = 0;
-    timeLeft = countdown;
-    document.getElementById("status").innerText = "Bereit? In 3 Sekunden geht's los...";
-    highlightPhase(currentPhase);
-  }
-  timerId = setInterval(() => {
-    document.getElementById("timer").innerText = timeLeft;
-    if (timeLeft > 0) {
-      timeLeft--;
-    } else {
-      if (countdown > 0) {
-        countdown = 0;
-        const row = document.getElementById("phaseRow" + currentPhase);
-        timeLeft = parseInt(row.children[1].innerText);
-        document.getElementById("status").innerText = "Aktiv: " + row.children[0].innerText;
+    async function loadData() {
+      const docRef = doc(window.db, "programme", "anaerob_sprints");
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        phases = docSnap.data().phases;
+        renderTable();
       } else {
-        clearInterval(timerId);
-        timerId = null;
-        currentPhase++;
-        countdown = 3;
-        if (currentPhase < phases.length) {
-          highlightPhase(currentPhase);
-          timeLeft = countdown;
-          document.getElementById("status").innerText = "Nächste Phase in 3 Sekunden...";
-          startWorkout();
-        } else {
-          document.getElementById("status").innerText = "Training abgeschlossen!";
-          document.getElementById("timer").innerText = "0";
-          highlightPhase(-1);
-        }
+        alert("Keine Daten gefunden.");
       }
     }
-  }, 1000);
-}
 
-function stopWorkout() {
-  clearInterval(timerId);
-  timerId = null;
-}
-
-function resetWorkout() {
-  stopWorkout();
-  currentPhase = -1;
-  countdown = 3;
-  timeLeft = 0;
-  document.getElementById("status").innerText = "Bereit";
-  document.getElementById("timer").innerText = "0";
-  highlightPhase(-1);
-}
-
-function enableCoach() {
-  const pw = document.getElementById("pw").value;
-  if (pw !== "ehcb2025") {
-    alert("Falsches Passwort.");
-    return;
-  }
-
-  document.querySelectorAll("tbody tr").forEach((row, i) => {
-    for (let j = 0; j < 5; j++) {
-      const cell = row.children[j];
-      cell.setAttribute("contenteditable", "true");
-      cell.addEventListener("blur", () => {
-        phases[i].name = row.children[0].innerText;
-        phases[i].duration = parseInt(row.children[1].innerText);
-        phases[i].desc = row.children[2].innerText;
-        phases[i].rpm = row.children[3].innerText;
-        phases[i].hf = row.children[4].innerText;
-        localStorage.setItem("anaerob_sprints", JSON.stringify(phases));
+    function renderTable() {
+      tableBody.innerHTML = "";
+      phases.forEach((p, i) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${p.name}</td>
+          <td>${p.duration}</td>
+          <td>${p.desc}</td>
+          <td>${p.rpm}</td>
+          <td>${p.hf}</td>
+          <td></td>`;
+        tableBody.appendChild(row);
       });
     }
 
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "🗑️";
-    deleteBtn.onclick = () => deletePhase(i);
-    row.children[5].appendChild(deleteBtn);
-  });
+    function startTimer(phases) {
+      const timerDiv = document.getElementById("timer");
 
-  alert("Coach-Modus aktiviert. Du kannst jetzt alle Zellen bearbeiten.");
-}
+      function runPhase(index) {
+        if (index >= phases.length) {
+          timerDiv.innerText = "Fertig!";
+          return;
+        }
+        const p = phases[index];
+        let t = p.duration;
+        timerDiv.innerText = t + "s";
+        const interval = setInterval(() => {
+          t--;
+          timerDiv.innerText = t + "s";
+          if (t <= 0) {
+            clearInterval(interval);
+            runPhase(index + 1);
+          }
+        }, 1000);
+      }
 
-function addPhase() {
-  const newPhase = { name: "Neue Phase", duration: 30, desc: "Beschreibung", rpm: "RPM", hf: "HF" };
-  phases.push(newPhase);
-  localStorage.setItem("anaerob_sprints", JSON.stringify(phases));
-  location.reload();
-}
+      runPhase(0);
+    }
 
-function deletePhase(i) {
-  if (!confirm("Diese Phase wirklich löschen?")) return;
-  phases.splice(i, 1);
-  localStorage.setItem("anaerob_sprints", JSON.stringify(phases));
-  location.reload();
-}
-</script>
+    function enableCoach() {
+      const pw = prompt("Coach Passwort:");
+      if (pw !== "ehcb2025") return alert("Falsches Passwort.");
+      tableBody.innerHTML = "";
+      phases.forEach((p, i) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td contenteditable="true">${p.name}</td>
+          <td contenteditable="true">${p.duration}</td>
+          <td contenteditable="true">${p.desc}</td>
+          <td contenteditable="true">${p.rpm}</td>
+          <td contenteditable="true">${p.hf}</td>
+          <td><button onclick="deleteRow(${i})">🗑️</button></td>`;
+        tableBody.appendChild(row);
+      });
+
+      const addBtn = document.createElement("button");
+      addBtn.textContent = "➕ Phase hinzufügen";
+      addBtn.onclick = () => {
+        phases.push({ name: "Neu", duration: 60, desc: "Beschreibung", rpm: "", hf: "" });
+        renderEditable();
+      };
+      document.body.appendChild(addBtn);
+
+      function renderEditable() {
+        tableBody.innerHTML = "";
+        phases.forEach((p, i) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td contenteditable="true">${p.name}</td>
+            <td contenteditable="true">${p.duration}</td>
+            <td contenteditable="true">${p.desc}</td>
+            <td contenteditable="true">${p.rpm}</td>
+            <td contenteditable="true">${p.hf}</td>
+            <td><button onclick="deleteRow(${i})">🗑️</button></td>`;
+          tableBody.appendChild(row);
+        });
+      }
+
+      window.deleteRow = (index) => {
+        phases.splice(index, 1);
+        renderEditable();
+      };
+
+      window.onbeforeunload = async () => {
+        const newPhases = Array.from(tableBody.rows).map(row => ({
+          name: row.cells[0].innerText,
+          duration: parseInt(row.cells[1].innerText),
+          desc: row.cells[2].innerText,
+          rpm: row.cells[3].innerText,
+          hf: row.cells[4].innerText,
+        }));
+        await setDoc(doc(window.db, "programme", "anaerob_sprints"), { phases: newPhases });
+        alert("Änderungen gespeichert!");
+      };
+    }
+
+    document.getElementById("startBtn").onclick = () => startTimer(phases);
+    document.getElementById("coachBtn").onclick = enableCoach;
+
+    loadData();
+  </script>
 </body>
 </html>
