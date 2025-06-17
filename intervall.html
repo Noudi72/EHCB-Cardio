@@ -109,7 +109,7 @@
           } else if (phase.name.toLowerCase().includes("rest")) {
             document.body.className = "rest";
           } else if (phase.name.toLowerCase().includes("prepare")) {
-            document.body.style.background = "#FFD700";
+            document.body.style.background = "#1e1e1e";
             document.body.className = "";
           } else {
             document.body.className = "setpause";
@@ -272,22 +272,38 @@ p {
 @media screen and (max-width: 480px) {
   body {
     padding: 10px;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
   }
   .tile {
-    font-size: 2.5rem;
-    padding: 2rem;
+    font-size: 3rem;
+    padding: 2.5rem;
   }
   .tile span {
-    font-size: 3rem;
+    font-size: 3.2rem;
   }
   .tile.small {
     width: 46%;
-    font-size: 1.5rem;
+    font-size: 2rem;
+    padding: 1.5rem;
   }
   .button {
-    font-size: 1.4rem;
-    padding: 1rem 2rem;
+    font-size: 1.6rem;
+    padding: 1.2rem 2rem;
+  }
+
+  #settingsOverlay label {
+    font-size: 1.8rem;
+  }
+  #settingsOverlay input {
+    font-size: 2.2rem;
+    padding: 1rem;
+  }
+  #settingsOverlay h2 {
+    font-size: 2.2rem;
+  }
+  #settingsOverlay button {
+    font-size: 1.6rem;
+    padding: 1rem 2.5rem;
   }
 }
   </style>
