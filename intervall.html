@@ -7,16 +7,16 @@
   <div id="tabata-timer">
     <div id="tiles" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
       <div id="prepare" class="tile" style="background: #FFD700;">
-        <input type="text" id="prepareLabel" value="PREPARE" style="font-size:1.2rem; font-weight:bold; text-align:center; border:none; background:transparent; color:#000;"><br>
-        <input type="number" id="prepareDuration" value="3" style="font-size:2.5rem; text-align:center; width:80px;">
+        <div style="font-weight:bold; font-size:1.2rem; text-align:center; color:#000;">PREPARE</div>
+        <div id="prepareDuration" style="font-size:2.5rem; text-align:center; width:80px; margin: 0 auto;">3</div>
       </div>
       <div id="work" class="tile" style="background: #00b050;">
-        <input type="text" id="workLabel" value="WORK" style="font-size:1.2rem; font-weight:bold; text-align:center; border:none; background:transparent; color:white;"><br>
-        <input type="number" id="workDuration" value="45" style="font-size:2.5rem; text-align:center; width:80px;">
+        <div style="font-weight:bold; font-size:1.2rem; text-align:center; color:white;">WORK</div>
+        <div id="workDuration" style="font-size:2.5rem; text-align:center; width:80px; margin: 0 auto;">45</div>
       </div>
       <div id="rest" class="tile" style="background: #c00000;">
-        <input type="text" id="restLabel" value="REST" style="font-size:1.2rem; font-weight:bold; text-align:center; border:none; background:transparent; color:white;"><br>
-        <input type="number" id="restDuration" value="15" style="font-size:2.5rem; text-align:center; width:80px;">
+        <div style="font-weight:bold; font-size:1.2rem; text-align:center; color:white;">REST</div>
+        <div id="restDuration" style="font-size:2.5rem; text-align:center; width:80px; margin: 0 auto;">15</div>
       </div>
     </div>
     <div id="bottomTiles" style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
@@ -49,14 +49,6 @@
 
   <script>
   let tabataPhases = [];
-  for (let s = 0; s < 4; s++) {
-    for (let i = 0; i < 6; i++) {
-      tabataPhases.push({ name: "Work", duration: 30 });
-      tabataPhases.push({ name: "Rest", duration: 15 });
-    }
-    if (s < 3) tabataPhases.push({ name: "Set Pause", duration: 120 });
-  }
-
   let current = -1;
   let countdown = 5;
   let time = 0;
@@ -68,20 +60,21 @@
     timer.style.display = "block";
     document.body.style.background = "#1e1e1e";
 
-    // Read editable fields for phase labels and durations
-    const prepareLabel = document.getElementById("prepareLabel") ? document.getElementById("prepareLabel").value : "PREPARE";
-    const prepareTime = parseInt(document.getElementById("prepareDuration") ? document.getElementById("prepareDuration").value : "3");
-    const workLabel = document.getElementById("workLabel") ? document.getElementById("workLabel").value : "WORK";
-    const workTime = parseInt(document.getElementById("workDuration") ? document.getElementById("workDuration").value : "45");
-    const restLabel = document.getElementById("restLabel") ? document.getElementById("restLabel").value : "REST";
-    const restTime = parseInt(document.getElementById("restDuration") ? document.getElementById("restDuration").value : "15");
+    // Labels for phases
+    const prepareLabel = "PREPARE";
+    const workLabel = "WORK";
+    const restLabel = "REST";
+
+    // Read durations from div.innerText
+    const prepareTime = parseInt(document.getElementById("prepareDuration").innerText);
+    const workTime = parseInt(document.getElementById("workDuration").innerText);
+    const restTime = parseInt(document.getElementById("restDuration").innerText);
 
     const cycles = parseInt(document.getElementById("cycleCountInput").value);
     const tabatas = parseInt(document.getElementById("tabataCountInput").value);
 
-    // Example: build tabataPhases using these values (optional, adjust as needed)
+    // Build tabataPhases array
     tabataPhases = [];
-    // Add prepare phase if duration > 0
     if (prepareTime > 0) {
       tabataPhases.push({ name: prepareLabel, duration: prepareTime });
     }
@@ -92,7 +85,7 @@
       }
       if (s < tabatas - 1) tabataPhases.push({ name: "Set Pause", duration: 120 });
     }
-    console.log(tabataPhases);
+
     current = -1;
     countdown = 5;
     time = 0;
@@ -105,6 +98,7 @@
           current++;
           if (current >= tabataPhases.length) {
             clearInterval(tabataInterval);
+            tabataInterval = null;
             return;
           }
           const phase = tabataPhases[current];
@@ -121,9 +115,22 @@
           }
 
           time = phase.duration;
+
+          // Update durations display for active phase
+          document.getElementById("prepareDuration").innerText = (phase.name === prepareLabel) ? time : document.getElementById("prepareDuration").innerText;
+          document.getElementById("workDuration").innerText = (phase.name === workLabel) ? time : document.getElementById("workDuration").innerText;
+          document.getElementById("restDuration").innerText = (phase.name === restLabel) ? time : document.getElementById("restDuration").innerText;
         }
 
         time--;
+
+        // Update durations display dynamically during countdown
+        if(current >= 0 && current < tabataPhases.length) {
+          const label = tabataPhases[current].name;
+          if (label === prepareLabel) document.getElementById("prepareDuration").innerText = time;
+          else if (label === workLabel) document.getElementById("workDuration").innerText = time;
+          else if (label === restLabel) document.getElementById("restDuration").innerText = time;
+        }
       }
     }, 1000);
   }
@@ -135,9 +142,9 @@
     document.getElementById("settingsOverlay").style.display = "none";
   }
   function applySettings() {
-    document.getElementById("prepareDuration").value = document.getElementById("setPrepare").value;
-    document.getElementById("workDuration").value = document.getElementById("setWork").value;
-    document.getElementById("restDuration").value = document.getElementById("setRest").value;
+    document.getElementById("prepareDuration").innerText = document.getElementById("setPrepare").value;
+    document.getElementById("workDuration").innerText = document.getElementById("setWork").value;
+    document.getElementById("restDuration").innerText = document.getElementById("setRest").value;
     document.getElementById("cycleCountInput").value = document.getElementById("setCycles").value;
     document.getElementById("tabataCountInput").value = document.getElementById("setTabatas").value;
     document.getElementById("settingsOverlay").style.display = "none";
