@@ -1,20 +1,8 @@
 <body style="background: #1e1e1e; color: white; font-family: sans-serif; text-align: center; padding: 20px; margin: 0;">
   <h1 style="color: #FFD700; margin-top: 100px;">Intervall Tabata</h1>
   <div class="tile small" style="background: #2b2b2b; color: #ddd; margin: 1rem auto; max-width: 300px;">
-    <div style="font-size: 1rem;">4 Sets – 6× 30s Work / 15s Rest</div>
-    <div style="font-size: 0.9rem;">(Warm-Up &amp; Cooldown by your own)</div>
-  </div>
-  <div style="margin-top: 2rem;">
-    <button class="button" onclick="toggleEdit()">🛠️ Bearbeiten</button>
-    <div id="editor" style="display:none; margin-top: 1rem;">
-      <textarea id="editArea" style="width:100%; height:200px;">[
-  { "name": "Work", "duration": 30 },
-  { "name": "Rest", "duration": 15 },
-  { "name": "Work", "duration": 30 },
-  { "name": "Rest", "duration": 15 }
-]</textarea><br>
-      <button class="button" onclick="applyPhases()">✔ Übernehmen</button>
-    </div>
+    <input id="headlineLine1" value="4 Sets – 6× 30s Work / 15s Rest" style="font-size: 1rem; background: transparent; border: none; text-align: center; color: #ddd; width: 100%;">
+    <input id="headlineLine2" value="(Warm-Up & Cooldown by your own)" style="font-size: 0.9rem; background: transparent; border: none; text-align: center; color: #aaa; width: 100%;">
   </div>
   <div id="tabata-timer">
     <div id="tiles" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
@@ -65,7 +53,7 @@
   let tabataInterval = null;
 
   function startTabata() {
-    document.querySelector("button").style.display = "none";
+    document.querySelector("button[onclick='startTabata()']").style.display = "none";
     const timer = document.getElementById("tabata-timer");
     timer.style.display = "block";
     document.body.style.background = "#1e1e1e";
@@ -128,33 +116,6 @@
       }
     }, 1000);
   }
-  function toggleEdit() {
-    const editor = document.getElementById("editor");
-    editor.style.display = editor.style.display === "none" ? "block" : "none";
-    document.getElementById("editArea").value = JSON.stringify(tabataPhases, null, 2);
-  }
-
-  function applyPhases() {
-    try {
-      const json = JSON.parse(document.getElementById("editArea").value);
-      if (!Array.isArray(json)) throw "Invalid format";
-      clearInterval(tabataInterval);
-      tabataPhases = json;
-      current = -1;
-      countdown = 5;
-      time = 0;
-      document.getElementById("tabata-timer").style.display = "none";
-      document.querySelector("button").style.display = "inline-block";
-      alert("Phasen übernommen. Du kannst jetzt neu starten.");
-    } catch (e) {
-      alert("Fehler im JSON-Format.");
-    }
-  }
-
-  window.addEventListener("DOMContentLoaded", () => {
-    // Optionally: don't auto-start, or start as before
-    // startTabata();
-  });
   </script>
   <style>
 body {
