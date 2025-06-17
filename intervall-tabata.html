@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intervall Tabata</title>
+  <style>
+    body {
+      background: black;
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    #phaseType {
+      font-size: 2.5rem;
+      font-weight: bold;
+      padding: 1rem;
+      margin-top: 2rem;
+      border-radius: 15px;
+    }
+    #timerDisplay {
+      font-size: 4rem;
+      margin: 1rem 0;
+    }
+    #info {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+    button {
+      font-size: 1.5rem;
+      padding: 0.8rem 2rem;
+      margin: 0.5rem;
+      border: none;
+      border-radius: 8px;
+      background: #888;
+      color: white;
+    }
+  </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD573FQdUDS9NCbOZornq6IkWS18s5_kpM",
+      authDomain: "ehcb-cardio.firebaseapp.com",
+      projectId: "ehcb-cardio",
+      storageBucket: "ehcb-cardio.appspot.com",
+      messagingSenderId: "709040533245",
+      appId: "1:709040533245:web:e7cfecc4a4b5646b689894"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const docRef = doc(db, "programme", "intervall");
+
+    let phases = [];
+    let currentIndex = 0;
+    let timeLeft = 0;
+    let timer = null;
+
+    async function loadPhases() {
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        phases = snap.data().phasen;
+        showPhase(0);
+      } else {
+        document.getElementById("phaseType").textContent = "Keine Daten";
+      }
+    }
+
+    function showPhase(i) {
+      if (i >= phases.length) {
+        stopTimer();
+        document.getElementById("phaseType").textContent = "Fertig 🎉";
+        document.getElementById("timerDisplay").textContent = "00:00";
+        document.getElementById("info").textContent = "";
+        return;
+      }
+
+      currentIndex = i;
+      const p = phases[i];
+      timeLeft = p.duration;
+
+      // Farbe & Bezeichnung je nach Phase
+      const phaseName = p.name.toLowerCase();
+      const phaseType = document.getElementById("phaseType");
+
+      if (phaseName.includes("warm") || phaseName.includes("aufwärmen") || phaseName.includes("prepare")) {
+        phaseType.style.background = "#ffaa00"; // Gelb
+        phaseType.textContent = "PREPARE";
+      } else if (phaseName.includes("sprint") || phaseName.includes("intervall") || phaseName.includes("work")) {
+        phaseType.style.background = "#00cc00"; // Grün
+        phaseType.textContent = "WORK";
+      } else if (phaseName.includes("pause") || phaseName.includes("rest")) {
+        phaseType.style.background = "#cc0000"; // Rot
+        phaseType.textContent = "REST";
+      } else {
+        phaseType.style.background = "#555";
+        phaseType.textContent = p.name;
+      }
+
+      document.getElementById("info").textContent = `📌 ${p.name} | RPM: ${p.rpm} | HFmax: ${p.hf}`;
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      const min = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+      const sec = String(timeLeft % 60).padStart(2, "0");
+      document.getElementById("timerDisplay").textContent = `${min}:${sec}`;
+    }
+
+    function tick() {
+      if (timeLeft > 0) {
+        timeLeft--;
+        updateDisplay();
+      } else {
+        currentIndex++;
+        showPhase(currentIndex);
+      }
+    }
+
+    function startTimer() {
+      if (!timer) {
+        timer = setInterval(tick, 1000);
+      }
+    }
+
+    function stopTimer() {
+      clearInterval(timer);
+      timer = null;
+    }
+
+    function resetTimer() {
+      stopTimer();
+      currentIndex = 0;
+      showPhase(0);
+    }
+
+    window.addEventListener("DOMContentLoaded", loadPhases);
+    window.startTimer = startTimer;
+    window.stopTimer = stopTimer;
+    window.resetTimer = resetTimer;
+  </script>
+</head>
+<body>
+  <div id="phaseType">PREPARE</div>
+  <div id="timerDisplay">00:00</div>
+  <div id="info"></div>
+
+  <button onclick="startTimer()">▶ Start</button>
+  <button onclick="stopTimer()">⏸ Pause</button>
+  <button onclick="resetTimer()">🔄 Reset</button>
+</body>
+</html>
