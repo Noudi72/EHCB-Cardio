@@ -1,4 +1,4 @@
-<body style="background: #f4e6d8; color: #222; font-family: sans-serif; text-align: center; padding: 20px; margin: 0;">
+<body style="background: #1e1e1e; color: white; font-family: sans-serif; text-align: center; padding: 20px; margin: 0;">
   <h1 style="color: #FFD700; margin-top: 100px;">Intervall Tabata</h1>
   <p style="font-size: 1.2rem;">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up & Cooldown by your own)</p>
   <div style="margin-top: 2rem;">
@@ -15,9 +15,18 @@
   </div>
   <div id="tabata-timer">
     <div id="tiles" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
-      <div id="prepare" class="tile" style="background: #FFD700;">PREPARE<br><span id="prepareTime">00:00</span></div>
-      <div id="work" class="tile" style="background: #00b050;">WORK<br><span id="workTime">00:00</span></div>
-      <div id="rest" class="tile" style="background: #c00000;">REST<br><span id="restTime">00:00</span></div>
+      <div id="prepare" class="tile" style="background: #FFD700;">
+        <input type="text" id="prepareLabel" value="PREPARE" style="font-size:1.2rem; font-weight:bold; text-align:center; border:none; background:transparent; color:#000;"><br>
+        <input type="number" id="prepareDuration" value="3" style="font-size:2.5rem; text-align:center; width:80px;">
+      </div>
+      <div id="work" class="tile" style="background: #00b050;">
+        <input type="text" id="workLabel" value="WORK" style="font-size:1.2rem; font-weight:bold; text-align:center; border:none; background:transparent; color:white;"><br>
+        <input type="number" id="workDuration" value="45" style="font-size:2.5rem; text-align:center; width:80px;">
+      </div>
+      <div id="rest" class="tile" style="background: #c00000;">
+        <input type="text" id="restLabel" value="REST" style="font-size:1.2rem; font-weight:bold; text-align:center; border:none; background:transparent; color:white;"><br>
+        <input type="number" id="restDuration" value="15" style="font-size:2.5rem; text-align:center; width:80px;">
+      </div>
     </div>
     <div id="bottomTiles" style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
       <div class="tile small" style="background: #eee; color: #000;">
@@ -56,7 +65,32 @@
     document.querySelector("button").style.display = "none";
     const timer = document.getElementById("tabata-timer");
     timer.style.display = "block";
-    document.body.style.background = "#fff4ec";
+    document.body.style.background = "#1e1e1e";
+
+    // Read editable fields for phase labels and durations
+    const prepareLabel = document.getElementById("prepareLabel") ? document.getElementById("prepareLabel").value : "PREPARE";
+    const prepareTime = parseInt(document.getElementById("prepareDuration") ? document.getElementById("prepareDuration").value : "3");
+    const workLabel = document.getElementById("workLabel") ? document.getElementById("workLabel").value : "WORK";
+    const workTime = parseInt(document.getElementById("workDuration") ? document.getElementById("workDuration").value : "45");
+    const restLabel = document.getElementById("restLabel") ? document.getElementById("restLabel").value : "REST";
+    const restTime = parseInt(document.getElementById("restDuration") ? document.getElementById("restDuration").value : "15");
+
+    // Example: build tabataPhases using these values (optional, adjust as needed)
+    tabataPhases = [];
+    // Add prepare phase if duration > 0
+    if (prepareTime > 0) {
+      tabataPhases.push({ name: prepareLabel, duration: prepareTime });
+    }
+    for (let s = 0; s < 4; s++) {
+      for (let i = 0; i < 6; i++) {
+        tabataPhases.push({ name: workLabel, duration: workTime });
+        tabataPhases.push({ name: restLabel, duration: restTime });
+      }
+      if (s < 3) tabataPhases.push({ name: "Set Pause", duration: 120 });
+    }
+    current = -1;
+    countdown = 5;
+    time = 0;
 
     tabataInterval = setInterval(() => {
       if (countdown > 0) {
@@ -70,10 +104,13 @@
           }
           const phase = tabataPhases[current];
 
-          if (phase.name === "Work") {
+          if (phase.name.toLowerCase().includes("work")) {
             document.body.className = "work";
-          } else if (phase.name === "Rest") {
+          } else if (phase.name.toLowerCase().includes("rest")) {
             document.body.className = "rest";
+          } else if (phase.name.toLowerCase().includes("prepare")) {
+            document.body.style.background = "#FFD700";
+            document.body.className = "";
           } else {
             document.body.className = "setpause";
           }
@@ -109,13 +146,14 @@
   }
 
   window.addEventListener("DOMContentLoaded", () => {
-    startTabata();
+    // Optionally: don't auto-start, or start as before
+    // startTabata();
   });
   </script>
   <style>
 body {
-  background: #fff4ec;
-  color: #222;
+  background: #1e1e1e;
+  color: white;
   font-family: sans-serif;
   text-align: center;
   padding: 20px;
