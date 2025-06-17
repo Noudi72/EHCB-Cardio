@@ -1,4 +1,4 @@
-<body style="background: #001F4E; color: white; font-family: sans-serif; margin: 0; padding: 2rem; text-align: center;">
+<body style="background: #fff4ec; color: #222; font-family: sans-serif; text-align: center; padding: 20px; margin: 0;">
   <h1 style="color: #FFD700; margin-top: 100px;">Intervall Tabata</h1>
   <p style="font-size: 1.2rem;">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up & Cooldown by your own)</p>
   <div style="margin-top: 2rem;">
@@ -13,7 +13,6 @@
       <button class="button" onclick="applyPhases()">✔ Übernehmen</button>
     </div>
   </div>
-  <button class="button" onclick="startTabata()">▶ Start Timer</button>
   <div id="tabata-timer">
     <div id="phase-info">Get Ready...</div>
     <div id="countdown">5</div>
@@ -43,7 +42,7 @@
     timer.style.display = "block";
     document.getElementById("phase-info").innerText = "Get Ready...";
     document.getElementById("countdown").innerText = countdown;
-    document.body.style.background = "#001F4E";
+    document.body.style.background = "#fff4ec";
 
     tabataInterval = setInterval(() => {
       if (countdown > 0) {
@@ -101,8 +100,19 @@
       alert("Fehler im JSON-Format.");
     }
   }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    startTabata();
+  });
   </script>
   <style>
+    body {
+      background: #fff4ec;
+      color: #222;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
     .button {
       background: #C80000;
       color: white;
@@ -132,15 +142,18 @@
     }
 
     .work {
-      background: #008000;
+      background: #00b050;
+      color: white;
     }
 
     .rest {
-      background: #C80000;
+      background: #c00000;
+      color: white;
     }
 
     .setpause {
-      background: #FFA500;
+      background: #f4a300;
+      color: white;
     }
   </style>
 </body>
