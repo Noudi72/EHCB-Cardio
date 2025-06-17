@@ -1,55 +1,106 @@
 <body style="background: #001F4E; color: white; font-family: sans-serif; margin: 0; padding: 2rem; text-align: center;">
   <h1 style="color: #FFD700; margin-top: 100px;">Intervall Tabata</h1>
   <p style="font-size: 1.2rem;">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up & Cooldown by your own)</p>
+  <div style="margin-top: 2rem;">
+    <button class="button" onclick="toggleEdit()">🛠️ Bearbeiten</button>
+    <div id="editor" style="display:none; margin-top: 1rem;">
+      <textarea id="editArea" style="width:100%; height:200px;">[
+  { "name": "Work", "duration": 30 },
+  { "name": "Rest", "duration": 15 },
+  { "name": "Work", "duration": 30 },
+  { "name": "Rest", "duration": 15 }
+]</textarea><br>
+      <button class="button" onclick="applyPhases()">✔ Übernehmen</button>
+    </div>
+  </div>
   <button class="button" onclick="startTabata()">▶ Start Timer</button>
-  <div id="tabata-timer" style="display:none; margin-top: 2rem;">
-    <div id="phase-info" style="font-size: 2rem; margin-bottom: 1rem;">Get Ready...</div>
-    <div id="countdown" style="font-size: 5rem;">5</div>
+  <div id="tabata-timer">
+    <div id="phase-info">Get Ready...</div>
+    <div id="countdown">5</div>
   </div>
   <div style="margin-top: 3rem;">
     <a href="index.html" class="button">⬅ Zurück zur Startseite</a>
   </div>
 
   <script>
-    let tabataPhases = [];
-    for (let s = 0; s < 4; s++) {
-      for (let i = 0; i < 6; i++) {
-        tabataPhases.push({ name: "Work", duration: 30 });
-        tabataPhases.push({ name: "Rest", duration: 15 });
-      }
-      if (s < 3) tabataPhases.push({ name: "Set Pause", duration: 120 });
+  let tabataPhases = [];
+  for (let s = 0; s < 4; s++) {
+    for (let i = 0; i < 6; i++) {
+      tabataPhases.push({ name: "Work", duration: 30 });
+      tabataPhases.push({ name: "Rest", duration: 15 });
     }
-    let current = -1;
-    let countdown = 5;
-    let time = 0;
-    let tabataInterval = null;
+    if (s < 3) tabataPhases.push({ name: "Set Pause", duration: 120 });
+  }
 
-    function startTabata() {
-      document.querySelector("button").style.display = "none";
-      document.getElementById("tabata-timer").style.display = "block";
-      document.getElementById("phase-info").innerText = "Get Ready...";
-      document.getElementById("countdown").innerText = countdown;
-      tabataInterval = setInterval(() => {
-        if (countdown > 0) {
-          document.getElementById("countdown").innerText = countdown;
-          countdown--;
-        } else {
-          if (time === 0) {
-            current++;
-            if (current >= tabataPhases.length) {
-              clearInterval(tabataInterval);
-              document.getElementById("phase-info").innerText = "Done!";
-              document.getElementById("countdown").innerText = "";
-              return;
-            }
-            document.getElementById("phase-info").innerText = tabataPhases[current].name;
-            time = tabataPhases[current].duration;
+  let current = -1;
+  let countdown = 5;
+  let time = 0;
+  let tabataInterval = null;
+
+  function startTabata() {
+    document.querySelector("button").style.display = "none";
+    const timer = document.getElementById("tabata-timer");
+    timer.style.display = "block";
+    document.getElementById("phase-info").innerText = "Get Ready...";
+    document.getElementById("countdown").innerText = countdown;
+    document.body.style.background = "#001F4E";
+
+    tabataInterval = setInterval(() => {
+      if (countdown > 0) {
+        document.getElementById("countdown").innerText = countdown;
+        countdown--;
+      } else {
+        if (time === 0) {
+          current++;
+          if (current >= tabataPhases.length) {
+            clearInterval(tabataInterval);
+            document.getElementById("phase-info").innerText = "Done!";
+            document.getElementById("countdown").innerText = "";
+            return;
           }
-          document.getElementById("countdown").innerText = time;
-          time--;
+          const phase = tabataPhases[current];
+          document.getElementById("phase-info").innerText = phase.name;
+
+          if (phase.name === "Work") {
+            document.body.className = "work";
+          } else if (phase.name === "Rest") {
+            document.body.className = "rest";
+          } else {
+            document.body.className = "setpause";
+          }
+
+          time = phase.duration;
         }
-      }, 1000);
+
+        document.getElementById("countdown").innerText = time;
+        time--;
+      }
+    }, 1000);
+  }
+  function toggleEdit() {
+    const editor = document.getElementById("editor");
+    editor.style.display = editor.style.display === "none" ? "block" : "none";
+    document.getElementById("editArea").value = JSON.stringify(tabataPhases, null, 2);
+  }
+
+  function applyPhases() {
+    try {
+      const json = JSON.parse(document.getElementById("editArea").value);
+      if (!Array.isArray(json)) throw "Invalid format";
+      clearInterval(tabataInterval);
+      tabataPhases = json;
+      current = -1;
+      countdown = 5;
+      time = 0;
+      document.getElementById("tabata-timer").style.display = "none";
+      document.querySelector("button").style.display = "inline-block";
+      document.getElementById("phase-info").innerText = "";
+      document.getElementById("countdown").innerText = "";
+      alert("Phasen übernommen. Du kannst jetzt neu starten.");
+    } catch (e) {
+      alert("Fehler im JSON-Format.");
     }
+  }
   </script>
   <style>
     .button {
@@ -64,6 +115,32 @@
     }
     .button:hover {
       background: #A00000;
+    }
+
+    #tabata-timer {
+      display: none;
+      margin-top: 2rem;
+    }
+
+    #phase-info {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    #countdown {
+      font-size: 5rem;
+    }
+
+    .work {
+      background: #008000;
+    }
+
+    .rest {
+      background: #C80000;
+    }
+
+    .setpause {
+      background: #FFA500;
     }
   </style>
 </body>
