@@ -8,15 +8,15 @@
     <div id="tiles" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
       <div id="prepare" class="tile" style="background: #FFD700;">
         <div style="font-weight:bold; font-size:1.2rem; text-align:center; color:#000;">PREPARE</div>
-        <div id="prepareDuration" style="font-size:2.5rem; text-align:center; width:80px; margin: 0 auto;">3</div>
+        <div id="prepareDuration" data-seconds="3" style="font-size:2.5rem; text-align:center; width:80px; margin: 0 auto;">3</div>
       </div>
       <div id="work" class="tile" style="background: #00b050;">
         <div style="font-weight:bold; font-size:1.2rem; text-align:center; color:white;">WORK</div>
-        <div id="workDuration" style="font-size:2.5rem; text-align:center; width:80px; margin: 0 auto;">45</div>
+        <div id="workDuration" data-seconds="45" style="font-size:2.5rem; text-align:center; width:80px; margin: 0 auto;">45</div>
       </div>
       <div id="rest" class="tile" style="background: #c00000;">
         <div style="font-weight:bold; font-size:1.2rem; text-align:center; color:white;">REST</div>
-        <div id="restDuration" style="font-size:2.5rem; text-align:center; width:80px; margin: 0 auto;">15</div>
+        <div id="restDuration" data-seconds="15" style="font-size:2.5rem; text-align:center; width:80px; margin: 0 auto;">15</div>
       </div>
     </div>
     <div id="bottomTiles" style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
@@ -65,10 +65,10 @@
     const workLabel = "WORK";
     const restLabel = "REST";
 
-    // Read durations from div.innerText
-    const prepareTime = parseInt(document.getElementById("prepareDuration").innerText);
-    const workTime = parseInt(document.getElementById("workDuration").innerText);
-    const restTime = parseInt(document.getElementById("restDuration").innerText);
+    // Read durations from data-seconds attribute or fallback to innerText
+    const prepareTime = parseInt(document.getElementById("prepareDuration").getAttribute("data-seconds") || document.getElementById("prepareDuration").innerText);
+    const workTime = parseInt(document.getElementById("workDuration").getAttribute("data-seconds") || document.getElementById("workDuration").innerText);
+    const restTime = parseInt(document.getElementById("restDuration").getAttribute("data-seconds") || document.getElementById("restDuration").innerText);
 
     const cycles = parseInt(document.getElementById("cycleCountInput").value);
     const tabatas = parseInt(document.getElementById("tabataCountInput").value);
@@ -142,9 +142,18 @@
     document.getElementById("settingsOverlay").style.display = "none";
   }
   function applySettings() {
-    document.getElementById("prepareDuration").innerText = document.getElementById("setPrepare").value;
-    document.getElementById("workDuration").innerText = document.getElementById("setWork").value;
-    document.getElementById("restDuration").innerText = document.getElementById("setRest").value;
+    const p = document.getElementById("setPrepare").value;
+    const w = document.getElementById("setWork").value;
+    const r = document.getElementById("setRest").value;
+
+    document.getElementById("prepareDuration").innerText = p;
+    document.getElementById("workDuration").innerText = w;
+    document.getElementById("restDuration").innerText = r;
+
+    document.getElementById("prepareDuration").setAttribute("data-seconds", p);
+    document.getElementById("workDuration").setAttribute("data-seconds", w);
+    document.getElementById("restDuration").setAttribute("data-seconds", r);
+
     document.getElementById("cycleCountInput").value = document.getElementById("setCycles").value;
     document.getElementById("tabataCountInput").value = document.getElementById("setTabatas").value;
     document.getElementById("settingsOverlay").style.display = "none";
@@ -212,26 +221,40 @@ p {
   font-size: 1rem;
   padding: 0.5rem;
 }
-  .tile {
-    width: 100%;
-    max-width: 100%;
-    padding: 2rem;
-    font-size: 2.5rem;
-  }
 
-  .tile span {
-    font-size: 3rem;
-    display: block;
-    margin-top: 0.5rem;
-  }
+.tile {
+  width: 95%;
+  max-width: 95%;
+  padding: 2rem;
+  font-size: 2.5rem;
+  margin: 0 auto;
+}
 
-  .tile.small {
-    width: 48%;
-    padding: 1rem;
-    font-size: 1.5rem;
-    background: #eee;
-    color: #000;
-  }
+.tile span {
+  font-size: 3rem;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.tile.small {
+  width: 48%;
+  padding: 1rem;
+  font-size: 1.5rem;
+  background: #eee;
+  color: #000;
+}
+
+#settingsOverlay label {
+  display: block;
+  margin: 1rem 0;
+  font-size: 1.2rem;
+}
+#settingsOverlay input {
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  width: 80%;
+  margin-top: 0.3rem;
+}
 
 @media screen and (max-width: 480px) {
   body {
