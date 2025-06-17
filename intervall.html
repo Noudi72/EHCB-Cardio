@@ -1,235 +1,69 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" href="favicon.ico" />
-  <link rel="apple-touch-icon" href="icon-cardio.png" />
-  <link rel="manifest" href="manifest.json" />
-  <title>Intervall</title>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import {
-      getFirestore, doc, getDoc, setDoc
-    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+<body style="background: #001F4E; color: white; font-family: sans-serif; margin: 0; padding: 2rem; text-align: center;">
+  <h1 style="color: #FFD700; margin-top: 100px;">Intervall Tabata</h1>
+  <p style="font-size: 1.2rem;">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up & Cooldown by your own)</p>
+  <button class="button" onclick="startTabata()">▶ Start Timer</button>
+  <div id="tabata-timer" style="display:none; margin-top: 2rem;">
+    <div id="phase-info" style="font-size: 2rem; margin-bottom: 1rem;">Get Ready...</div>
+    <div id="countdown" style="font-size: 5rem;">5</div>
+  </div>
+  <div style="margin-top: 3rem;">
+    <a href="index.html" class="button">⬅ Zurück zur Startseite</a>
+  </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyD573FQdUDS9NCbOZornq6IkWS18s5_kpM",
-      authDomain: "ehcb-cardio.firebaseapp.com",
-      projectId: "ehcb-cardio",
-      storageBucket: "ehcb-cardio.appspot.com",
-      messagingSenderId: "709040533245",
-      appId: "1:709040533245:web:e7cfecc4a4b5646b689894"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const docRef = doc(db, "programme", "intervall");
-
-    let phases = [];
-    let currentPhase = -1;
-    let countdown = 3;
-    let timeLeft = 0;
-    let timerId = null;
-
-    async function loadPhases() {
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        phases = docSnap.data().phasen;
-        renderTable();
-      } else {
-        document.getElementById("status").innerText = "Keine Daten gefunden.";
+  <script>
+    let tabataPhases = [];
+    for (let s = 0; s < 4; s++) {
+      for (let i = 0; i < 6; i++) {
+        tabataPhases.push({ name: "Work", duration: 30 });
+        tabataPhases.push({ name: "Rest", duration: 15 });
       }
+      if (s < 3) tabataPhases.push({ name: "Set Pause", duration: 120 });
     }
+    let current = -1;
+    let countdown = 5;
+    let time = 0;
+    let tabataInterval = null;
 
-    function renderTable() {
-      const tbody = document.getElementById("tbody");
-      tbody.innerHTML = "";
-      phases.forEach((p, i) => {
-        const row = document.createElement("tr");
-        row.id = "phaseRow" + i;
-        row.innerHTML = `
-          <td>${p.name}</td>
-          <td>${p.duration}</td>
-          <td>${p.desc}</td>
-          <td>${p.rpm}</td>
-          <td>${p.hf}</td>
-          <td></td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function highlightPhase(index) {
-      phases.forEach((_, i) => {
-        const row = document.getElementById("phaseRow" + i);
-        if (row) row.className = i === index ? "active" : "";
-      });
-    }
-
-    function startWorkout() {
-      if (timerId) return;
-      if (currentPhase === -1) {
-        currentPhase = 0;
-        timeLeft = countdown;
-        document.getElementById("status").innerText = "Bereit? In 3 Sekunden geht's los...";
-        highlightPhase(currentPhase);
-      }
-      timerId = setInterval(() => {
-        document.getElementById("timer").innerText = timeLeft;
-        if (timeLeft > 0) {
-          timeLeft--;
+    function startTabata() {
+      document.querySelector("button").style.display = "none";
+      document.getElementById("tabata-timer").style.display = "block";
+      document.getElementById("phase-info").innerText = "Get Ready...";
+      document.getElementById("countdown").innerText = countdown;
+      tabataInterval = setInterval(() => {
+        if (countdown > 0) {
+          document.getElementById("countdown").innerText = countdown;
+          countdown--;
         } else {
-          if (countdown > 0) {
-            countdown = 0;
-            const p = phases[currentPhase];
-            timeLeft = p.duration;
-            document.getElementById("status").innerText = "Aktiv: " + p.name;
-          } else {
-            clearInterval(timerId);
-            timerId = null;
-            currentPhase++;
-            countdown = 3;
-            if (currentPhase < phases.length) {
-              highlightPhase(currentPhase);
-              timeLeft = countdown;
-              document.getElementById("status").innerText = "Nächste Phase in 3 Sekunden...";
-              startWorkout();
-            } else {
-              document.getElementById("status").innerText = "Training abgeschlossen!";
-              document.getElementById("timer").innerText = "0";
-              highlightPhase(-1);
+          if (time === 0) {
+            current++;
+            if (current >= tabataPhases.length) {
+              clearInterval(tabataInterval);
+              document.getElementById("phase-info").innerText = "Done!";
+              document.getElementById("countdown").innerText = "";
+              return;
             }
+            document.getElementById("phase-info").innerText = tabataPhases[current].name;
+            time = tabataPhases[current].duration;
           }
+          document.getElementById("countdown").innerText = time;
+          time--;
         }
       }, 1000);
     }
-
-    function stopWorkout() {
-      clearInterval(timerId);
-      timerId = null;
-    }
-
-    function resetWorkout() {
-      stopWorkout();
-      currentPhase = -1;
-      countdown = 3;
-      timeLeft = 0;
-      document.getElementById("status").innerText = "Bereit";
-      document.getElementById("timer").innerText = "0";
-      highlightPhase(-1);
-    }
-
-    function enableCoach() {
-      const pw = document.getElementById("pw").value;
-      if (pw !== "ehcb2025") {
-        alert("Falsches Passwort.");
-        return;
-      }
-      const tbody = document.getElementById("tbody");
-      tbody.querySelectorAll("tr").forEach((row, i) => {
-        for (let j = 0; j < 5; j++) {
-          const cell = row.children[j];
-          cell.setAttribute("contenteditable", "true");
-          cell.addEventListener("blur", () => {
-            phases[i].name = row.children[0].innerText;
-            phases[i].duration = parseInt(row.children[1].innerText);
-            phases[i].desc = row.children[2].innerText;
-            phases[i].rpm = row.children[3].innerText;
-            phases[i].hf = row.children[4].innerText;
-            savePhases();
-          });
-        }
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "🗑️";
-        deleteBtn.onclick = () => deletePhase(i);
-        row.children[5].appendChild(deleteBtn);
-      });
-
-      const addBtn = document.createElement("button");
-      addBtn.textContent = "➕ Phase hinzufügen";
-      addBtn.className = "button";
-      addBtn.onclick = addPhase;
-      document.querySelector(".coach-controls").appendChild(addBtn);
-
-      alert("Coach-Modus aktiviert. Du kannst jetzt alle Zellen bearbeiten.");
-    }
-
-    function addPhase() {
-      phases.push({ name: "Neu", duration: 30, desc: "Beschreibung", rpm: "80", hf: "70" });
-      savePhases();
-      renderTable();
-      enableCoach();
-    }
-
-    function deletePhase(i) {
-      if (confirm("Diese Phase wirklich löschen?")) {
-        phases.splice(i, 1);
-        savePhases();
-        renderTable();
-        enableCoach();
-      }
-    }
-
-    async function savePhases() {
-      await setDoc(docRef, { phasen: phases });
-      console.log("Phasen gespeichert");
-    }
-
-    window.addEventListener("DOMContentLoaded", loadPhases);
-    window.startWorkout = startWorkout;
-    window.stopWorkout = stopWorkout;
-    window.resetWorkout = resetWorkout;
-    window.enableCoach = enableCoach;
   </script>
   <style>
-    body { background: #001F4E; color: white; font-family: sans-serif; margin: 0; padding: 2rem; }
-    h1 { color: #FFD700; text-align: center; margin-top: 100px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; color: black; }
-    th, td { padding: 0.5rem; border: 1px solid #ccc; text-align: center; }
-    .active { background: #C80000; color: white; }
-    .button { background: #C80000; color: white; padding: 0.8rem 1.5rem; margin: 1rem; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; }
-    .coach-controls { margin-top: 2rem; text-align: center; }
-    input[type='password'] { padding: 0.4rem; margin-right: 0.5rem; }
-    #timer-bar {
-      position: fixed;
-      top: 0;
-      width: 100%;
+    .button {
       background: #C80000;
       color: white;
-      font-size: 2.5rem;
-      padding: 1rem;
-      text-align: center;
-      z-index: 1000;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 2rem;
+    }
+    .button:hover {
+      background: #A00000;
     }
   </style>
-</head>
-<body>
-  <div id="timer-bar"><span id="timer">0</span> Sekunden</div>
-  <h1>Intervall</h1>
-  <p style="text-align:center;">4 Sets à 6x (30s sehr hart / 15s Pause) – 120s Setpause – inkl. Aufwärmen & Cooldown</p>
-
-  <table id="phaseTable">
-    <thead><tr><th>Phase</th><th>Dauer (s)</th><th>Beschreibung</th><th>RPM</th><th>% HFmax</th><th></th></tr></thead>
-    <tbody id="tbody"></tbody>
-  </table>
-
-  <p id="status">Bereit</p>
-  <div style="text-align:center;">
-    <button class="button" onclick="startWorkout()">Start</button>
-    <button class="button" onclick="stopWorkout()">Pause</button>
-    <button class="button" onclick="resetWorkout()">Reset</button>
-  </div>
-
-  <div class="coach-controls">
-    <input type="password" id="pw" placeholder="Coach-Passwort" />
-    <button class="button" onclick="enableCoach()">Coach-Modus starten</button>
-  </div>
-<div style="text-align:center; margin-top: 2rem;">
-  <a href="intervall-tabata.html" class="button">▶ Tabata-Ansicht starten</a>
-</div>
-  <div style="text-align:center; margin-top: 2rem;">
-    <a href="index.html" class="button">⬅ Zurück zur Startseite</a>
-  </div>
 </body>
-</html>
