@@ -14,8 +14,11 @@
     </div>
   </div>
   <div id="tabata-timer">
-    <div id="phase-info">Get Ready...</div>
-    <div id="countdown">5</div>
+    <div id="tiles" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+      <div id="prepare" class="tile" style="background: #FFD700;">PREPARE<br><span id="prepareTime">00:00</span></div>
+      <div id="work" class="tile" style="background: #00b050;">WORK<br><span id="workTime">00:00</span></div>
+      <div id="rest" class="tile" style="background: #c00000;">REST<br><span id="restTime">00:00</span></div>
+    </div>
   </div>
   <div style="margin-top: 3rem;">
     <a href="index.html" class="button">⬅ Zurück zur Startseite</a>
@@ -178,5 +181,21 @@ p {
   font-size: 1rem;
   padding: 0.5rem;
 }
+  .tile {
+    width: 90%;
+    max-width: 400px;
+    padding: 1.5rem;
+    border-radius: 15px;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+  }
+
+  .tile span {
+    font-size: 2.5rem;
+    display: block;
+    margin-top: 0.5rem;
+  }
   </style>
 </body>
