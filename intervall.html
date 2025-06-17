@@ -6,31 +6,34 @@
   </div>
   <div id="tabata-timer">
     <div id="tiles" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
-      <div id="prepare" class="tile" style="background: #FFD700;">
-        <input type="text" id="prepareLabel" value="PREPARE" style="font-size:1.2rem; font-weight:bold; text-align:center; border:none; background:transparent; color:#000;"><br>
-        <input type="number" id="prepareDuration" value="3" style="font-size:2.5rem; text-align:center; width:80px;">
+      <div id="prepare" class="tile prepare" style="background: #FFD700;">
+        <div id="prepareLabel">PREPARE</div>
+        <div id="prepareTime">00:00</div>
       </div>
-      <div id="work" class="tile" style="background: #00b050;">
-        <input type="text" id="workLabel" value="WORK" style="font-size:1.2rem; font-weight:bold; text-align:center; border:none; background:transparent; color:white;"><br>
-        <input type="number" id="workDuration" value="45" style="font-size:2.5rem; text-align:center; width:80px;">
+      <div id="work" class="tile work" style="background: #00b050;">
+        <div id="workLabel">WORK</div>
+        <div id="workTime">00:00</div>
       </div>
-      <div id="rest" class="tile" style="background: #c00000;">
-        <input type="text" id="restLabel" value="REST" style="font-size:1.2rem; font-weight:bold; text-align:center; border:none; background:transparent; color:white;"><br>
-        <input type="number" id="restDuration" value="15" style="font-size:2.5rem; text-align:center; width:80px;">
+      <div id="rest" class="tile rest" style="background: #c00000;">
+        <div id="restLabel">REST</div>
+        <div id="restTime">00:00</div>
       </div>
     </div>
     <div id="bottomTiles" style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
       <div class="tile small" style="background: #eee; color: #000;">
-        <input type="number" id="cycleCountInput" value="30" style="font-size: 2rem; text-align: center; width: 80px; border: none; background: transparent; color: #000;">
+        <div id="cycleCountDisplay" style="font-size: 2rem;">30</div>
         <div style="font-size: 1rem;">CYCLES</div>
       </div>
       <div class="tile small" style="background: #eee; color: #000;">
-        <input type="number" id="tabataCountInput" value="1" style="font-size: 2rem; text-align: center; width: 80px; border: none; background: transparent; color: #000;">
+        <div id="tabataCountDisplay" style="font-size: 2rem;">1</div>
         <div style="font-size: 1rem;">TABATAS</div>
       </div>
     </div>
     <div style="margin-top: 2rem;">
       <button class="button" onclick="startTabata()">▶ Start</button>
+    </div>
+    <div style="margin-top: 2rem;">
+      <a href="settings.html" class="button">⚙️ Einstellungen</a>
     </div>
   </div>
   <div style="margin-top: 3rem;">
@@ -59,15 +62,36 @@
     document.body.style.background = "#1e1e1e";
 
     // Read editable fields for phase labels and durations
-    const prepareLabel = document.getElementById("prepareLabel") ? document.getElementById("prepareLabel").value : "PREPARE";
-    const prepareTime = parseInt(document.getElementById("prepareDuration") ? document.getElementById("prepareDuration").value : "3");
-    const workLabel = document.getElementById("workLabel") ? document.getElementById("workLabel").value : "WORK";
-    const workTime = parseInt(document.getElementById("workDuration") ? document.getElementById("workDuration").value : "45");
-    const restLabel = document.getElementById("restLabel") ? document.getElementById("restLabel").value : "REST";
-    const restTime = parseInt(document.getElementById("restDuration") ? document.getElementById("restDuration").value : "15");
+    const prepareLabel = document.getElementById("prepareLabel") ? document.getElementById("prepareLabel").innerText : "PREPARE";
+    const prepareTimeInput = parseInt(document.getElementById("prepareDuration") ? document.getElementById("prepareDuration").value : "3");
+    const prepareTime = isNaN(prepareTimeInput) ? 3 : prepareTimeInput;
+    const workLabel = document.getElementById("workLabel") ? document.getElementById("workLabel").innerText : "WORK";
+    const workTimeInput = parseInt(document.getElementById("workDuration") ? document.getElementById("workDuration").value : "45");
+    const workTime = isNaN(workTimeInput) ? 45 : workTimeInput;
+    const restLabel = document.getElementById("restLabel") ? document.getElementById("restLabel").innerText : "REST";
+    const restTimeInput = parseInt(document.getElementById("restDuration") ? document.getElementById("restDuration").value : "15");
+    const restTime = isNaN(restTimeInput) ? 15 : restTimeInput;
 
-    const cycles = parseInt(document.getElementById("cycleCountInput").value);
-    const tabatas = parseInt(document.getElementById("tabataCountInput").value);
+    const cyclesInput = parseInt(document.getElementById("cycleCountInput") ? document.getElementById("cycleCountInput").value : "30");
+    const cycles = isNaN(cyclesInput) ? 30 : cyclesInput;
+    const tabatasInput = parseInt(document.getElementById("tabataCountInput") ? document.getElementById("tabataCountInput").value : "1");
+    const tabatas = isNaN(tabatasInput) ? 1 : tabatasInput;
+
+    // Update displays for cycles and tabatas
+    const cycleCountDisplay = document.getElementById("cycleCountDisplay");
+    if(cycleCountDisplay) cycleCountDisplay.innerText = cycles.toString();
+    const tabataCountDisplay = document.getElementById("tabataCountDisplay");
+    if(tabataCountDisplay) tabataCountDisplay.innerText = tabatas.toString();
+
+    // Update labels and times in tiles
+    document.getElementById("prepareLabel").innerText = prepareLabel;
+    document.getElementById("prepareTime").innerText = prepareTime.toString().padStart(2, "0");
+
+    document.getElementById("workLabel").innerText = workLabel;
+    document.getElementById("workTime").innerText = workTime.toString().padStart(2, "0");
+
+    document.getElementById("restLabel").innerText = restLabel;
+    document.getElementById("restTime").innerText = restTime.toString().padStart(2, "0");
 
     // Example: build tabataPhases using these values (optional, adjust as needed)
     tabataPhases = [];
@@ -103,8 +127,7 @@
           } else if (phase.name.toLowerCase().includes("rest")) {
             document.body.className = "rest";
           } else if (phase.name.toLowerCase().includes("prepare")) {
-            document.body.style.background = "#FFD700";
-            document.body.className = "";
+            document.body.className = "prepare";
           } else {
             document.body.className = "setpause";
           }
@@ -169,6 +192,11 @@ p {
   color: white;
 }
 
+.prepare {
+  background: #FFD700;
+  color: #000;
+}
+
 .setpause {
   background: #f4a300;
   color: white;
@@ -188,6 +216,15 @@ p {
     font-weight: bold;
     color: #fff;
     text-align: center;
+  }
+
+  .tile div {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  .tile div + div {
+    font-size: 2.5rem;
+    margin-top: 0.5rem;
   }
 
   .tile span {
@@ -213,7 +250,10 @@ p {
     font-size: 1.3rem;
     padding: 1rem;
   }
-  .tile span {
+  .tile div {
+    font-size: 1rem;
+  }
+  .tile div + div {
     font-size: 2rem;
   }
   .tile.small {
