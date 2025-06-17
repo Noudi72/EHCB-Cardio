@@ -1,4 +1,4 @@
-<body style="background: #fff4ec; color: #222; font-family: sans-serif; text-align: center; padding: 20px; margin: 0;">
+<body style="background: #f4e6d8; color: #222; font-family: sans-serif; text-align: center; padding: 20px; margin: 0;">
   <h1 style="color: #FFD700; margin-top: 100px;">Intervall Tabata</h1>
   <p style="font-size: 1.2rem;">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up & Cooldown by your own)</p>
   <div style="margin-top: 2rem;">
@@ -18,6 +18,19 @@
       <div id="prepare" class="tile" style="background: #FFD700;">PREPARE<br><span id="prepareTime">00:00</span></div>
       <div id="work" class="tile" style="background: #00b050;">WORK<br><span id="workTime">00:00</span></div>
       <div id="rest" class="tile" style="background: #c00000;">REST<br><span id="restTime">00:00</span></div>
+    </div>
+    <div id="bottomTiles" style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
+      <div class="tile small" style="background: #eee; color: #000;">
+        <div style="font-size: 2rem;" id="cycleCount">30</div>
+        <div style="font-size: 1rem;">CYCLES</div>
+      </div>
+      <div class="tile small" style="background: #eee; color: #000;">
+        <div style="font-size: 2rem;" id="tabataCount">01</div>
+        <div style="font-size: 1rem;">TABATAS</div>
+      </div>
+    </div>
+    <div style="margin-top: 2rem;">
+      <button class="button" onclick="startTabata()">▶ Start</button>
     </div>
   </div>
   <div style="margin-top: 3rem;">
@@ -43,25 +56,19 @@
     document.querySelector("button").style.display = "none";
     const timer = document.getElementById("tabata-timer");
     timer.style.display = "block";
-    document.getElementById("phase-info").innerText = "Get Ready...";
-    document.getElementById("countdown").innerText = countdown;
     document.body.style.background = "#fff4ec";
 
     tabataInterval = setInterval(() => {
       if (countdown > 0) {
-        document.getElementById("countdown").innerText = countdown;
         countdown--;
       } else {
         if (time === 0) {
           current++;
           if (current >= tabataPhases.length) {
             clearInterval(tabataInterval);
-            document.getElementById("phase-info").innerText = "Done!";
-            document.getElementById("countdown").innerText = "";
             return;
           }
           const phase = tabataPhases[current];
-          document.getElementById("phase-info").innerText = phase.name;
 
           if (phase.name === "Work") {
             document.body.className = "work";
@@ -74,7 +81,6 @@
           time = phase.duration;
         }
 
-        document.getElementById("countdown").innerText = time;
         time--;
       }
     }, 1000);
@@ -96,8 +102,6 @@
       time = 0;
       document.getElementById("tabata-timer").style.display = "none";
       document.querySelector("button").style.display = "inline-block";
-      document.getElementById("phase-info").innerText = "";
-      document.getElementById("countdown").innerText = "";
       alert("Phasen übernommen. Du kannst jetzt neu starten.");
     } catch (e) {
       alert("Fehler im JSON-Format.");
@@ -150,17 +154,6 @@ p {
   margin-top: 2rem;
 }
 
-#phase-info {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-top: 2rem;
-}
-
-#countdown {
-  font-size: 6rem;
-  margin-top: 1rem;
-}
-
 .work {
   background: #00b050;
   color: white;
@@ -196,6 +189,14 @@ p {
     font-size: 2.5rem;
     display: block;
     margin-top: 0.5rem;
+  }
+
+  .tile.small {
+    width: 140px;
+    padding: 1rem;
+    font-size: 1.2rem;
+    background: #eee;
+    color: #000;
   }
   </style>
 </body>
