@@ -346,11 +346,14 @@ function playBeep() {
       showPhase(phase.type, t);
       timer = setInterval(()=>{
         showPhase(phase.type, t);
-        // Prepare/Set Pause: play 3-2-1-Go in last 4...1 seconds
-        if((phase.type==='PREPARE'||phase.type==='SET PAUSE') && (t==4||t==3||t==2||t==1)) playGo();
-        if((phase.type==='WORK'||phase.type==='REST') && t<=3 && t>0) playBeep();
-        if(t==0 && phase.type==='WORK') playRest();
-        if(t==0 && phase.type==='REST') playRest();
+        // Prepare: 3-2-1-Go.mp3 nur einmal am Anfang von Prepare abspielen
+        if(phase.type==='PREPARE') {
+          if(t === phase.duration) playGo(); // 3-2-1-Go nur einmal am Anfang der Prepare-Phase
+        }
+        // WORK & REST: Beep bei 3, 2, 1; Rest-Ton bei 0
+        if((phase.type==='WORK'||phase.type==='REST') && (t<=3 && t>0)) playBeep();
+        if(t===0 && (phase.type==='WORK'||phase.type==='REST'||phase.type==='SET PAUSE')) playRest();
+
         t--;
         if (t<0) {
           clearInterval(timer);
