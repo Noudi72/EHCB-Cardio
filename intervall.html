@@ -31,7 +31,7 @@
       width: 90vw;
       max-width: 375px;
       min-height: 80px;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: space-between;
       font-size: 2.2rem;
@@ -39,6 +39,11 @@
       box-shadow: 0 0 12px rgba(0,0,0,0.18);
       padding: 0.3em 1.2em;
       letter-spacing: 2px;
+      opacity: 0.7;
+    }
+    .tile.active {
+      display: flex;
+      opacity: 1;
     }
     .tile span {
       flex: 1;
@@ -52,6 +57,7 @@
     .prepare { background: #FFD700; color: #222;}
     .work { background: #00c040; color: #fff;}
     .rest { background: #c80000; color: #fff;}
+    .setpause { background: #FFD700; color: #222;}
     .row {
       display: flex;
       justify-content: center;
@@ -86,7 +92,7 @@
       gap: 1em;
       margin-bottom: 1em;
     }
-    .start-btn, .settings-btn, .pause-btn, .reset-btn, .setpause-btn {
+    .start-btn, .settings-btn, .pause-btn, .reset-btn {
       background: #d50000;
       color: #fff;
       font-size: 1.1rem;
@@ -100,32 +106,6 @@
     .pause-btn { background: #FFA500; color: #222;}
     .reset-btn { background: #222; color: #fff;}
     .settings-btn { background: #222; }
-    .setpause-btn { background: #FFD700; color: #222; margin: 1.2em auto;}
-    .setpause-popup {
-      display: none;
-      background: #FFD700;
-      color: #222;
-      font-size: 1.3rem;
-      font-weight: bold;
-      border-radius: 18px;
-      padding: 2em 1em 1em 1em;
-      position: fixed;
-      z-index: 9000;
-      left: 50%; top: 30vh; transform: translateX(-50%);
-      width: 85vw; max-width: 370px;
-      box-shadow: 0 8px 40px #2227;
-      text-align: center;
-    }
-    .setpause-popup button {
-      margin-top: 1.1em;
-      background: #d50000;
-      color: #fff;
-      border-radius: 8px;
-      padding: 0.4em 2em;
-      font-size: 1.1rem;
-      border: none;
-      cursor: pointer;
-    }
     /* Modal Styles für Settings */
     .modal {
       display: none;
@@ -140,26 +120,40 @@
       background: #1e1e1e;
       color: #fff;
       border-radius: 16px;
-      padding: 2em 1.3em 1em 1.3em;
       max-width: 400px;
+      width: 96vw;
+      max-height: 90vh;
+      overflow-y: auto;
       margin: 0 auto;
       box-shadow: 0 8px 24px #000a;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      padding-bottom: 2.5em;
     }
     .modal-content label { display:block; margin: 0.6em 0 0.15em 0; }
     .modal-content input,
     .modal-content textarea {
-      width: 90%; max-width: 360px;
+      width: 95%; max-width: 360px;
       font-size: 1.05em; text-align: left;
       border-radius: 6px; border: 1px solid #888; margin-bottom: 0.5em;
       padding: 0.2em 0.4em;
       font-family: Arial, sans-serif;
     }
-    .modal-content button { margin: 1.3em 0.5em 0 0.5em; }
+    .modal-content .modal-buttons {
+      display: flex;
+      position: sticky;
+      bottom: 0; left: 0;
+      background: #1e1e1e;
+      gap: 1em;
+      justify-content: center;
+      padding: 0.8em 0 0.5em 0;
+    }
     @media (max-width: 420px) {
       .tile { font-size: 1.1rem; }
       .tile .time { font-size: 1.1rem; }
       .cycles, .tabatas { width: 70px; height: 40px; font-size: 0.8rem;}
-      .setpause-popup { font-size: 1rem;}
     }
   </style>
 </head>
@@ -167,9 +161,10 @@
   <h1>Intervall Tabata</h1>
   <div class="desc" id="descText">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up &amp; Cooldown by your own)</div>
   <!-- Timer Tiles -->
-  <div class="tile prepare"><span>PREPARE</span><span class="time" id="prepareTime">03</span></div>
-  <div class="tile work"><span>WORK</span><span class="time" id="workTime">30</span></div>
-  <div class="tile rest"><span>REST</span><span class="time" id="restTime">15</span></div>
+  <div class="tile prepare" id="tilePrepare"><span>PREPARE</span><span class="time" id="prepareTime">03</span></div>
+  <div class="tile work" id="tileWork"><span>WORK</span><span class="time" id="workTime">30</span></div>
+  <div class="tile rest" id="tileRest"><span>REST</span><span class="time" id="restTime">15</span></div>
+  <div class="tile setpause" id="tileSetPause"><span>SET PAUSE</span><span class="time" id="setPauseTime">120</span></div>
   <div class="row">
     <div class="cycles"><span id="cyclesVal">6</span><span class="label">CYCLES</span></div>
     <div class="tabatas"><span id="tabatasVal">4</span><span class="label">TABATAS</span></div>
@@ -180,14 +175,9 @@
     <button class="reset-btn" onclick="resetTabata()" id="resetBtn" style="display:none;">Reset</button>
   </div>
   <button class="settings-btn" onclick="openSettings()">⚙️ Einstellungen</button>
-  <button class="setpause-btn" onclick="showSetPausePopup()" id="setPauseBtn" style="display:none;">Set Pause anzeigen</button>
-  <div class="setpause-popup" id="setPausePopup">
-    <div>Set Pause – Bereit machen für nächsten Block!</div>
-    <button onclick="hideSetPausePopup()">OK</button>
-  </div>
   <!-- SETTINGS MODAL -->
   <div class="modal" id="settingsModal">
-    <div class="modal-content">
+    <form class="modal-content" onsubmit="saveSettings();return false;">
       <label>Beschreibung (optional):<br>
         <textarea id="descTextarea" rows="2"></textarea>
       </label>
@@ -197,10 +187,11 @@
       <label>Set Pause (sec): <input id="setSetPause" type="number" min="1" max="999" value="120"></label>
       <label>Cycles: <input id="setCycles" type="number" min="1" max="99" value="6"></label>
       <label>Tabatas: <input id="setTabatas" type="number" min="1" max="99" value="4"></label>
-      <br>
-      <button onclick="saveSettings()">✓ Übernehmen</button>
-      <button onclick="closeSettings()">✗ Schließen</button>
-    </div>
+      <div class="modal-buttons">
+        <button type="submit">✓ Übernehmen</button>
+        <button type="button" onclick="closeSettings()">✗ Schließen</button>
+      </div>
+    </form>
   </div>
   <!-- AUDIO -->
   <audio id="soundGo" src="3-2-1-Go.mp3"></audio>
@@ -209,15 +200,11 @@
   <script>
     let timer = null;
     let isPaused = false;
-    let pausedTime = 0;
-    let pausedPhase = null;
-    let pausedCurrent = 0;
     let phases = [];
     let current = 0;
     let cycles = 6, tabatas = 4, prepare = 3, work = 30, rest = 15, setPause = 120;
     let curCycle = 6, curTabata = 4;
     let started = false;
-    let setPauseNow = false;
 
     // Description editing
     const descText = document.getElementById('descText');
@@ -245,12 +232,10 @@
       document.getElementById('settingsModal').style.display = 'none';
     }
     function saveSettings() {
-      // Beschreibung
       let val = descTextarea.value.trim();
       if(val === '') val = '4 Sets – 6× 30s Work / 15s Rest (Warm-Up & Cooldown by your own)';
       descText.innerHTML = val.replace(/\n/g, '<br>');
       localStorage.setItem('tabataDescription', descText.innerHTML);
-      // Zeiten
       prepare = parseInt(document.getElementById('setPrepare').value);
       work = parseInt(document.getElementById('setWork').value);
       rest = parseInt(document.getElementById('setRest').value);
@@ -260,7 +245,6 @@
       document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
       document.getElementById('workTime').textContent = work;
       document.getElementById('restTime').textContent = rest;
-      // Reset curCycle and curTabata to full counts on settings save
       curCycle = cycles;
       curTabata = tabatas;
       document.getElementById('cyclesVal').textContent = curCycle;
@@ -272,75 +256,82 @@
       document.getElementById('tabatasVal').textContent = curTabata >= 0 ? curTabata : 0;
     }
     function showPhase(type, value){
-      document.getElementById('prepareTime').textContent = type=='PREPARE' ? (value<10?'0'+value:value) : (prepare<10?'0'+prepare:prepare);
-      document.getElementById('workTime').textContent = type=='WORK' ? value : work;
-      document.getElementById('restTime').textContent = type=='REST' ? value : rest;
-      document.querySelector('.prepare').style.opacity = (type=='PREPARE') ? 1 : 0.7;
-      document.querySelector('.work').style.opacity = (type=='WORK') ? 1 : 0.7;
-      document.querySelector('.rest').style.opacity = (type=='REST') ? 1 : 0.7;
+      // Hide all tiles first
+      document.getElementById('tilePrepare').classList.remove('active');
+      document.getElementById('tileWork').classList.remove('active');
+      document.getElementById('tileRest').classList.remove('active');
+      document.getElementById('tileSetPause').classList.remove('active');
+      // Show only the current
+      if(type==='PREPARE') {
+        document.getElementById('tilePrepare').classList.add('active');
+        document.getElementById('prepareTime').textContent = value<10 ? '0'+value : value;
+      }
+      if(type==='WORK') {
+        document.getElementById('tileWork').classList.add('active');
+        document.getElementById('workTime').textContent = value;
+      }
+      if(type==='REST') {
+        document.getElementById('tileRest').classList.add('active');
+        document.getElementById('restTime').textContent = value;
+      }
+      if(type==='SET PAUSE') {
+        document.getElementById('tileSetPause').classList.add('active');
+        document.getElementById('setPauseTime').textContent = value;
+      }
     }
     function startTabata() {
       started = true;
       isPaused = false;
-      setPauseNow = false;
       document.getElementById('startBtn').disabled = true;
       document.getElementById('pauseBtn').style.display = '';
       document.getElementById('resetBtn').style.display = '';
-      document.getElementById('setPauseBtn').style.display = '';
       curCycle = cycles;
       curTabata = tabatas;
       updateCounts();
-      // Phasenaufbau (Rest nach letztem Work entfällt!)
+      // Build phases (no REST after last WORK)
       phases = [];
       if (prepare > 0) phases.push({type:'PREPARE', duration:prepare});
       for(let t=1; t<=tabatas; t++){
         for(let c=1; c<=cycles; c++){
           phases.push({type:'WORK', duration:work});
-          // Nur Rest, wenn es nicht der letzte Cycle dieses Sets ist!
           if(c < cycles) phases.push({type:'REST', duration:rest});
         }
         if(t<tabatas) phases.push({type:'SET PAUSE', duration:setPause});
-        // Nach Set Pause optional Prepare für nächsten Block
-        // phases.push({type:'PREPARE', duration:prepare});
       }
       current = 0;
       nextPhase();
     }
-
     function playGo() { document.getElementById('soundGo').play(); }
     function playRest() { document.getElementById('soundRest').play(); }
     function playBeep() { document.getElementById('soundBeep').play(); }
-
     function nextPhase(){
       if (current>=phases.length) {
         showPhase('', 0);
         document.getElementById('startBtn').disabled = false;
         document.getElementById('pauseBtn').style.display = 'none';
         document.getElementById('resetBtn').style.display = 'none';
-        document.getElementById('setPauseBtn').style.display = 'none';
         started = false;
         return;
       }
       let phase = phases[current];
       let t = phase.duration;
       showPhase(phase.type, t);
-      // Prepare-Ton: Go kommt bei t==4 (4,3,2,1) – für 3-2-1-go
       timer = setInterval(()=>{
         showPhase(phase.type, t);
-        if(phase.type=='PREPARE' && (t==4||t==3||t==2||t==1)) playGo();
-        // Countdown-Beep nur in letzten 3 Sekunden bei Work und Rest
-        if((phase.type=='WORK'||phase.type=='REST') && t<=3 && t>0) playBeep();
-        if(t==0 && phase.type=='WORK') playRest(); // Signal für Pause
-        if(t==0 && phase.type=='REST') playRest(); // Signal für Wieder-Einstieg
+        // Prepare/Set Pause: play 3-2-1-Go in last 4...1 seconds
+        if((phase.type==='PREPARE'||phase.type==='SET PAUSE') && (t==4||t==3||t==2||t==1)) playGo();
+        if((phase.type==='WORK'||phase.type==='REST') && t<=3 && t>0) playBeep();
+        if(t==0 && phase.type==='WORK') playRest();
+        if(t==0 && phase.type==='REST') playRest();
         t--;
         if (t<0) {
           clearInterval(timer);
-          // Cycles und Tabatas zählen (down-count)
-          if(phase.type=='WORK'){
+          // Down-count cycles/tabatas
+          if(phase.type==='WORK'){
             if(curCycle > 1) curCycle--;
             else if(curCycle === 1) curCycle = 0;
           }
-          if(phase.type=='SET PAUSE') {
+          if(phase.type==='SET PAUSE') {
             if(curTabata > 1) curTabata--;
             else if(curTabata === 1) curTabata = 0;
             curCycle = cycles;
@@ -351,7 +342,6 @@
         }
       },1000);
     }
-
     function pauseTabata() {
       if (!started) return;
       if (!isPaused) {
@@ -368,28 +358,16 @@
       clearInterval(timer);
       isPaused = false;
       started = false;
-      setPauseNow = false;
       document.getElementById('pauseBtn').textContent = 'Pause';
       document.getElementById('pauseBtn').style.display = 'none';
       document.getElementById('resetBtn').style.display = 'none';
-      document.getElementById('setPauseBtn').style.display = 'none';
       document.getElementById('startBtn').disabled = false;
-      document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
+      showPhase('PREPARE', prepare < 10 ? '0'+prepare : prepare);
       document.getElementById('workTime').textContent = work;
       document.getElementById('restTime').textContent = rest;
       curCycle = cycles;
       curTabata = tabatas;
-      document.getElementById('cyclesVal').textContent = curCycle;
-      document.getElementById('tabatasVal').textContent = curTabata;
-      current = 0;
       updateCounts();
-    }
-    // Set Pause Button
-    function showSetPausePopup() {
-      document.getElementById('setPausePopup').style.display = 'block';
-    }
-    function hideSetPausePopup() {
-      document.getElementById('setPausePopup').style.display = 'none';
     }
   </script>
 </body>
