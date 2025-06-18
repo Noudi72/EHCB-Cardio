@@ -258,7 +258,6 @@
       document.getElementById('tabatasVal').textContent = curTabata >= 0 ? curTabata : 0;
     }
     function showPhase(type, value){
-      // Set all tiles to default opacity, only one is "active"
       document.getElementById('tilePrepare').classList.remove('active');
       document.getElementById('tileWork').classList.remove('active');
       document.getElementById('tileRest').classList.remove('active');
@@ -292,7 +291,6 @@
         document.getElementById('restTime').textContent = rest;
       }
     }
-    // --- SOUND FUNCTIONS ---
     function playGo() {
       let audio = document.getElementById('soundGo');
       audio.pause();
@@ -336,15 +334,30 @@
         t--;
         if (t<0) {
           clearInterval(timer);
+          // --- Nach SET PAUSE: 3s Prepare Countdown + Sound ---
+          if(phase.type==='SET PAUSE') {
+            let prep = 3;
+            showPhase('PREPARE', prep);
+            let prepTimer = setInterval(() => {
+              showPhase('PREPARE', prep);
+              if(prep<=3 && prep>0) playGo();
+              prep--;
+              if(prep<0) {
+                clearInterval(prepTimer);
+                if(curTabata > 1) curTabata--;
+                else if(curTabata === 1) curTabata = 0;
+                curCycle = cycles;
+                updateCounts();
+                current++;
+                if(!isPaused) nextPhase();
+              }
+            },1000);
+            return;
+          }
           // Down-count cycles/tabatas
           if(phase.type==='WORK'){
             if(curCycle > 1) curCycle--;
             else if(curCycle === 1) curCycle = 0;
-          }
-          if(phase.type==='SET PAUSE') {
-            if(curTabata > 1) curTabata--;
-            else if(curTabata === 1) curTabata = 0;
-            curCycle = cycles;
           }
           updateCounts();
           current++;
@@ -353,6 +366,12 @@
       },1000);
     }
     function startTabata() {
+      // --- iOS/Safari Soundfreigabe ---
+      ["soundGo", "soundBeep", "soundRest"].forEach(id => {
+        const audio = document.getElementById(id);
+        audio.volume = 0;
+        audio.play().then(()=>{ audio.pause(); audio.currentTime=0; audio.volume=1; }).catch(()=>{});
+      });
       started = true;
       isPaused = false;
       document.getElementById('startBtn').disabled = true;
