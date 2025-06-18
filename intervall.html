@@ -314,9 +314,24 @@
       current = 0;
       nextPhase();
     }
-    function playGo() { document.getElementById('soundGo').play(); }
-    function playRest() { document.getElementById('soundRest').play(); }
-    function playBeep() { document.getElementById('soundBeep').play(); }
+    function playGo() {
+  let audio = document.getElementById('soundGo');
+  audio.pause();
+  audio.currentTime = 0;
+  audio.play();
+}
+function playRest() {
+  let audio = document.getElementById('soundRest');
+  audio.pause();
+  audio.currentTime = 0;
+  audio.play();
+}
+function playBeep() {
+  let audio = document.getElementById('soundBeep');
+  audio.pause();
+  audio.currentTime = 0;
+  audio.play();
+}
     function nextPhase(){
       if (current>=phases.length) {
         showPhase('', 0);
