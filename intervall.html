@@ -16,13 +16,14 @@
     h1 {
       font-size: 2rem;
       margin-top: 1rem;
+      color: #FFD700;
     }
     .desc {
       margin-bottom: 1rem;
       color: #ccc;
     }
     .phase {
-      font-size: 1.2rem;
+      font-size: 2rem;
       margin-top: 1rem;
     }
     .timer {
@@ -56,7 +57,7 @@
   </style>
 </head>
 <body>
-  <h1>EHCB Intervall Tabata</h1>
+  <h1>Intervall Tabata</h1>
   <div class="desc">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up & Cooldown by your own)</div>
 
   <div class="settings">
@@ -128,8 +129,6 @@
             document.getElementById("phaseLabel").innerText = "Finished";
             document.getElementById("timeDisplay").innerText = "00";
             document.body.className = "";
-            document.getElementById("cycleDisplay").innerText = 0;
-            document.getElementById("tabataDisplay").innerText = 0;
             return;
           }
 
@@ -149,37 +148,23 @@
 
         const phase = tabataPhases[current];
 
-        // Play 3-2-1-Go sound at 4 seconds left in PREPARE and SET PAUSE phases, only once
-        if ((phase.name === "PREPARE" || phase.name === "SET PAUSE") && time === 4 && !soundGoPlayed) {
+        if ((phase.name === "PREPARE" || phase.name === "SET PAUSE" || phase.name === "REST") && time === 4 && !soundGoPlayed) {
           soundGo.play();
           soundGoPlayed = true;
         }
 
-        // Play rest sound at time === 1 in WORK phase
         if (phase.name === "WORK" && time === 1) {
           soundRest.play();
         }
 
-        // Play 3s beep sound at end of REST phase (when time === 1)
         if (phase.name === "REST" && time === 1) {
           soundBeep.play();
         }
-        // Play 3-2-1-Go sound at 4 seconds in REST phase
-        if (phase.name === "REST" && time === 4) {
-          soundGo.play();
-        }
 
         document.getElementById("timeDisplay").innerText = time < 10 ? `0${time}` : time;
-        document.getElementById("cycleDisplay").innerText = remainingCycles;
-        document.getElementById("tabataDisplay").innerText = remainingTabatas;
         time--;
       }, 1000);
     }
   </script>
-
-  <div class="settings">
-    <div>Remaining Cycles: <span id="cycleDisplay">0</span></div>
-    <div>Remaining Tabatas: <span id="tabataDisplay">0</span></div>
-  </div>
 </body>
 </html>
