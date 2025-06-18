@@ -70,10 +70,10 @@ function startTabata() {
 
     const phase = tabataPhases[current];
     if (phase) {
-      if (time === 3 && phase.name === restLabel) {
+      if (time === 4 && phase.name === restLabel) {
         soundBeep.play();
       }
-      if (time === 3 && phase.name === workLabel) {
+      if (time === 4 && phase.name === workLabel) {
         soundRest.play();
       }
 
