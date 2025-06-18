@@ -31,6 +31,8 @@
     </div>
     <div style="margin-top: 2rem;">
       <button class="button" onclick="startTabata()">▶ Start</button>
+      <button class="button" onclick="pauseTabata()">⏸ Pause</button>
+      <button class="button" onclick="resetTabata()">🔁 Reset</button>
       <button class="button" onclick="openSettings()">⚙️ Einstellungen</button>
     </div>
   </div>
@@ -66,26 +68,23 @@
 
   function startTabata() {
     document.querySelector("button[onclick='startTabata()']").style.display = "none";
-    const timer = document.getElementById("tabata-timer");
-    timer.style.display = "block";
+    document.getElementById("tabata-timer").style.display = "block";
     document.body.style.background = "#1e1e1e";
 
-    // Labels for phases
     const prepareLabel = "PREPARE";
     const workLabel = "WORK";
     const restLabel = "REST";
 
-    // Read durations from data-seconds attribute or fallback to innerText
     const prepareTime = parseInt(document.getElementById("prepareDuration").getAttribute("data-seconds") || document.getElementById("prepareDuration").innerText);
     const workTime = parseInt(document.getElementById("workDuration").getAttribute("data-seconds") || document.getElementById("workDuration").innerText);
     const restTime = parseInt(document.getElementById("restDuration").getAttribute("data-seconds") || document.getElementById("restDuration").innerText);
+    const setPauseTime = parseInt(localStorage.getItem("setpause") || 120);
 
     originalCycles = parseInt(document.getElementById("cycleCountInput").value);
     originalTabatas = parseInt(document.getElementById("tabataCountInput").value);
     remainingCycles = originalCycles;
     remainingTabatas = originalTabatas;
 
-    // Build tabataPhases array
     tabataPhases = [];
     if (prepareTime > 0) {
       tabataPhases.push({ name: prepareLabel, duration: prepareTime });
@@ -95,75 +94,81 @@
         tabataPhases.push({ name: workLabel, duration: workTime });
         tabataPhases.push({ name: restLabel, duration: restTime });
       }
-      if (s < originalTabatas - 1) tabataPhases.push({ name: "Set Pause", duration: 120 });
+      if (s < originalTabatas - 1) {
+        tabataPhases.push({ name: "Set Pause", duration: setPauseTime });
+      }
     }
 
     current = -1;
-    countdown = 5;
     time = 0;
 
-    soundGo.play();
-
     tabataInterval = setInterval(() => {
-      if (countdown > 0) {
-        countdown--;
-      } else {
-        if (time === 0) {
-          current++;
-          if (current >= tabataPhases.length) {
-            clearInterval(tabataInterval);
-            tabataInterval = null;
-            return;
-          }
-          const phase = tabataPhases[current];
-
-          if (phase.name.toLowerCase().includes("work")) {
-            document.body.className = "work";
-          } else if (phase.name.toLowerCase().includes("rest")) {
-            document.body.className = "rest";
-          } else if (phase.name.toLowerCase().includes("prepare")) {
-            document.body.style.background = "#1e1e1e";
-            document.body.className = "";
-          } else {
-            document.body.className = "setpause";
-          }
-
-          time = phase.duration;
-
-          if (phase.name.toLowerCase().includes("rest")) {
-            soundBeep.play();
-          } else if (phase.name.toLowerCase().includes("work")) {
-            soundRest.play();
-          } else if (phase.name.toLowerCase().includes("set pause") || phase.name.toLowerCase().includes("prepare")) {
-            soundGo.play();
-          }
-
-          if (phase.name === workLabel) remainingCycles--;
-          if (phase.name === "Set Pause") {
-            remainingTabatas--;
-            remainingCycles = originalCycles;
-          }
-
-          document.getElementById("cycleCountInput").value = remainingCycles;
-          document.getElementById("tabataCountInput").value = remainingTabatas;
-
-          // Update durations display for active phase
-          document.getElementById("prepareDuration").innerText = (phase.name === prepareLabel) ? time : document.getElementById("prepareDuration").innerText;
-          document.getElementById("workDuration").innerText = (phase.name === workLabel) ? time : document.getElementById("workDuration").innerText;
-          document.getElementById("restDuration").innerText = (phase.name === restLabel) ? time : document.getElementById("restDuration").innerText;
+      if (time === 0) {
+        current++;
+        if (current >= tabataPhases.length) {
+          clearInterval(tabataInterval);
+          tabataInterval = null;
+          return;
         }
 
-        time--;
+        const phase = tabataPhases[current];
 
-        // Update durations display dynamically during countdown
-        if(current >= 0 && current < tabataPhases.length) {
-          const label = tabataPhases[current].name;
-          if (label === prepareLabel) document.getElementById("prepareDuration").innerText = time;
-          else if (label === workLabel) document.getElementById("workDuration").innerText = time;
-          else if (label === restLabel) document.getElementById("restDuration").innerText = time;
+        if (phase.name === prepareLabel) {
+          soundGo.play();
+          document.body.className = "";
+        } else if (phase.name === workLabel) {
+          soundRest.play();
+          document.body.className = "work";
+        } else if (phase.name === restLabel) {
+          soundBeep.play();
+          document.body.className = "rest";
+        } else {
+          soundGo.play();
+          document.body.className = "setpause";
+        }
+
+        time = phase.duration;
+
+        if (phase.name === workLabel) remainingCycles--;
+        if (phase.name === "Set Pause") {
+          remainingTabatas--;
+          remainingCycles = originalCycles;
+        }
+
+        document.getElementById("cycleCountInput").value = remainingCycles;
+        document.getElementById("tabataCountInput").value = remainingTabatas;
+      }
+
+      const phase = tabataPhases[current];
+      if (phase) {
+        if (phase.name === prepareLabel) {
+          document.getElementById("prepareDuration").innerText = time;
+        } else if (phase.name === workLabel) {
+          document.getElementById("workDuration").innerText = time;
+        } else if (phase.name === restLabel) {
+          document.getElementById("restDuration").innerText = time;
         }
       }
+
+      time--;
     }, 1000);
+  }
+
+  function pauseTabata() {
+    if (tabataInterval) {
+      clearInterval(tabataInterval);
+      tabataInterval = null;
+    } else {
+      startTabata(); // Fortsetzen (optional: mit anderem Mechanismus ersetzen)
+    }
+  }
+
+  function resetTabata() {
+    if (tabataInterval) {
+      clearInterval(tabataInterval);
+      tabataInterval = null;
+    }
+    location.reload(); // Seite neu laden als Reset
   }
 
   function openSettings() {
