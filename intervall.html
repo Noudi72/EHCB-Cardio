@@ -12,15 +12,17 @@ function startTabata() {
   const restTime = parseInt(document.getElementById("restDuration").getAttribute("data-seconds") || document.getElementById("restDuration").innerText);
   const setPauseTime = parseInt(localStorage.getItem("setpause") || 120);
 
-  originalCycles = parseInt(document.getElementById("cycleCountInput").value);
-  originalTabatas = parseInt(document.getElementById("tabataCountInput").value);
-  remainingCycles = originalCycles;
-  remainingTabatas = originalTabatas;
+  let originalCycles = parseInt(document.getElementById("cycleCountInput").value);
+  let originalTabatas = parseInt(document.getElementById("tabataCountInput").value);
+  let remainingCycles = originalCycles;
+  let remainingTabatas = originalTabatas;
 
-  tabataPhases = [];
+  let tabataPhases = [];
+
   if (prepareTime > 0) {
     tabataPhases.push({ name: prepareLabel, duration: prepareTime });
   }
+
   for (let s = 0; s < originalTabatas; s++) {
     for (let i = 0; i < originalCycles; i++) {
       tabataPhases.push({ name: workLabel, duration: workTime });
@@ -31,8 +33,8 @@ function startTabata() {
     }
   }
 
-  current = -1;
-  time = 0;
+  let current = -1;
+  let time = 0;
 
   tabataInterval = setInterval(() => {
     if (time === 0) {
@@ -46,6 +48,7 @@ function startTabata() {
       const phase = tabataPhases[current];
       time = phase.duration;
 
+      // Phase handling
       if (phase.name === prepareLabel) {
         soundGo.play();
         document.body.className = "";
@@ -58,6 +61,7 @@ function startTabata() {
         soundGo.play();
       }
 
+      // Update counters
       if (phase.name === workLabel) remainingCycles--;
       if (phase.name === "Set Pause") {
         remainingTabatas--;
@@ -70,15 +74,23 @@ function startTabata() {
 
     const phase = tabataPhases[current];
     if (phase) {
-      if (time === 4 && phase.name === restLabel) {
-        soundBeep.play();
-      }
-      if (time === 4 && phase.name === workLabel) {
-        soundRest.play();
+      // Play sounds 4,3,2,1 before phase end
+      if ([4, 3, 2].includes(time)) {
+        if (phase.name === restLabel) {
+          soundBeep.play();
+        }
+      } else if (time === 1) {
+        if (phase.name === restLabel) {
+          soundHorn.play();
+        } else if (phase.name === workLabel) {
+          soundRest.play();
+        }
       }
 
+      // Update UI
       if (phase.name === prepareLabel) {
         document.getElementById("prepareDuration").innerText = time;
+        document.getElementById("prepareDuration").style.color = "black";
       } else if (phase.name === workLabel) {
         document.getElementById("workDuration").innerText = time;
       } else if (phase.name === restLabel) {
