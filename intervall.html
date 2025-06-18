@@ -8,7 +8,7 @@
     <div id="tiles" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
       <div id="prepare" class="tile" style="background: #FFD700;">
         <div style="font-weight:bold; font-size:1.2rem; text-align:center; color:#000;">PREPARE</div>
-        <div id="prepareDuration" data-seconds="3" style="font-size:2.5rem; text-align:center; width:80px; margin: 0 auto;">3</div>
+        <div id="prepareDuration" data-seconds="3" style="font-size:2.5rem; text-align:center; width:80px; margin: 0 auto; color:#000;">3</div>
       </div>
       <div id="work" class="tile" style="background: #00b050;">
         <div style="font-weight:bold; font-size:1.2rem; text-align:center; color:white;">WORK</div>
@@ -49,11 +49,20 @@
   </div>
 
   <script>
+  const soundGo = new Audio("TunePocket-3-2-1-Go.mp3");
+  const soundRest = new Audio("rest_2.mp3");
+  const soundBeep = new Audio("3s sport beep.wav");
+
   let tabataPhases = [];
   let current = -1;
   let countdown = 5;
   let time = 0;
   let tabataInterval = null;
+
+  let originalCycles = 0;
+  let originalTabatas = 0;
+  let remainingCycles = 0;
+  let remainingTabatas = 0;
 
   function startTabata() {
     document.querySelector("button[onclick='startTabata()']").style.display = "none";
@@ -71,25 +80,29 @@
     const workTime = parseInt(document.getElementById("workDuration").getAttribute("data-seconds") || document.getElementById("workDuration").innerText);
     const restTime = parseInt(document.getElementById("restDuration").getAttribute("data-seconds") || document.getElementById("restDuration").innerText);
 
-    const cycles = parseInt(document.getElementById("cycleCountInput").value);
-    const tabatas = parseInt(document.getElementById("tabataCountInput").value);
+    originalCycles = parseInt(document.getElementById("cycleCountInput").value);
+    originalTabatas = parseInt(document.getElementById("tabataCountInput").value);
+    remainingCycles = originalCycles;
+    remainingTabatas = originalTabatas;
 
     // Build tabataPhases array
     tabataPhases = [];
     if (prepareTime > 0) {
       tabataPhases.push({ name: prepareLabel, duration: prepareTime });
     }
-    for (let s = 0; s < tabatas; s++) {
-      for (let i = 0; i < cycles; i++) {
+    for (let s = 0; s < originalTabatas; s++) {
+      for (let i = 0; i < originalCycles; i++) {
         tabataPhases.push({ name: workLabel, duration: workTime });
         tabataPhases.push({ name: restLabel, duration: restTime });
       }
-      if (s < tabatas - 1) tabataPhases.push({ name: "Set Pause", duration: 120 });
+      if (s < originalTabatas - 1) tabataPhases.push({ name: "Set Pause", duration: 120 });
     }
 
     current = -1;
     countdown = 5;
     time = 0;
+
+    soundGo.play();
 
     tabataInterval = setInterval(() => {
       if (countdown > 0) {
@@ -118,9 +131,21 @@
           time = phase.duration;
 
           if (phase.name.toLowerCase().includes("rest")) {
-            const beep = new Audio("3s sport beep.wav");
-            beep.play();
+            soundBeep.play();
+          } else if (phase.name.toLowerCase().includes("work")) {
+            soundRest.play();
+          } else if (phase.name.toLowerCase().includes("set pause") || phase.name.toLowerCase().includes("prepare")) {
+            soundGo.play();
           }
+
+          if (phase.name === workLabel) remainingCycles--;
+          if (phase.name === "Set Pause") {
+            remainingTabatas--;
+            remainingCycles = originalCycles;
+          }
+
+          document.getElementById("cycleCountInput").value = remainingCycles;
+          document.getElementById("tabataCountInput").value = remainingTabatas;
 
           // Update durations display for active phase
           document.getElementById("prepareDuration").innerText = (phase.name === prepareLabel) ? time : document.getElementById("prepareDuration").innerText;
@@ -166,7 +191,29 @@
     document.getElementById("tabataCountInput").value = document.getElementById("setTabatas").value;
     document.getElementById("settingsOverlay").style.display = "none";
     document.getElementById("tabata-timer").style.display = "block";
+
+    localStorage.setItem("prepare", p);
+    localStorage.setItem("work", w);
+    localStorage.setItem("rest", r);
+    localStorage.setItem("setpause", document.getElementById("setPause").value);
+    localStorage.setItem("cycles", document.getElementById("setCycles").value);
+    localStorage.setItem("tabatas", document.getElementById("setTabatas").value);
   }
+
+  window.onload = () => {
+    if (localStorage.getItem("prepare")) document.getElementById("setPrepare").value = localStorage.getItem("prepare");
+    if (localStorage.getItem("work")) document.getElementById("setWork").value = localStorage.getItem("work");
+    if (localStorage.getItem("rest")) document.getElementById("setRest").value = localStorage.getItem("rest");
+    if (localStorage.getItem("setpause")) document.getElementById("setPause").value = localStorage.getItem("setpause");
+    if (localStorage.getItem("cycles")) {
+      document.getElementById("setCycles").value = localStorage.getItem("cycles");
+      document.getElementById("cycleCountInput").value = localStorage.getItem("cycles");
+    }
+    if (localStorage.getItem("tabatas")) {
+      document.getElementById("setTabatas").value = localStorage.getItem("tabatas");
+      document.getElementById("tabataCountInput").value = localStorage.getItem("tabatas");
+    }
+  };
   </script>
   <style>
 body {
