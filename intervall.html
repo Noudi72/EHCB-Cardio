@@ -79,7 +79,7 @@
       color: #222;
       margin-top: 2px;
     }
-    .start-btn, .settings-btn {
+    .start-btn, .settings-btn, .pause-btn, .reset-btn {
       background: #d50000;
       color: #fff;
       font-size: 1.3rem;
@@ -89,9 +89,11 @@
       margin: 1em auto 0.7em auto;
       cursor: pointer;
       box-shadow: 0 2px 8px rgba(0,0,0,0.13);
-      display: block;
+      display: inline-block;
     }
-    .settings-btn { background: #222; font-size: 1.1rem; }
+    .pause-btn { background: #FFA500; color: #222; margin-left: 0.7em;}
+    .reset-btn { background: #222; color: #fff; margin-left: 0.7em;}
+    .settings-btn { background: #222; font-size: 1.1rem; display: block; margin: 0.7em auto;}
     /* Modal Styles für Settings */
     .modal {
       display: none;
@@ -136,7 +138,9 @@
     <div class="cycles"><span id="cyclesVal">6</span><span class="label">CYCLES</span></div>
     <div class="tabatas"><span id="tabatasVal">4</span><span class="label">TABATAS</span></div>
   </div>
-  <button class="start-btn" onclick="startTabata()">▶ Start</button>
+  <button class="start-btn" onclick="startTabata()" id="startBtn">▶ Start</button>
+  <button class="pause-btn" onclick="pauseTabata()" id="pauseBtn" style="display:none;">Pause</button>
+  <button class="reset-btn" onclick="resetTabata()" id="resetBtn" style="display:none;">Reset</button>
   <button class="settings-btn" onclick="openSettings()">⚙️ Einstellungen</button>
   <!-- SETTINGS MODAL -->
   <div class="modal" id="settingsModal">
@@ -157,14 +161,17 @@
   <audio id="soundRest" src="rest_2.mp3"></audio>
   <audio id="soundBeep" src="3s beep.wav"></audio>
   <script>
-    // Variablen und Funktionen für Tabata Logik & Einstellungen
     let timer = null;
+    let isPaused = false;
+    let pausedTime = 0;
+    let pausedPhase = null;
+    let pausedCurrent = 0;
     let phases = [];
     let current = 0;
-    let time = 0;
     let cycles = 6, tabatas = 4, prepare = 3, work = 30, rest = 15, setPause = 120;
     let curCycle = 1, curTabata = 1;
-    // Settings-Handling
+    let started = false;
+
     function openSettings() {
       document.getElementById('setPrepare').value = prepare;
       document.getElementById('setWork').value = work;
@@ -184,7 +191,6 @@
       setPause = parseInt(document.getElementById('setSetPause').value);
       cycles = parseInt(document.getElementById('setCycles').value);
       tabatas = parseInt(document.getElementById('setTabatas').value);
-      // Apply to tiles
       document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
       document.getElementById('workTime').textContent = work;
       document.getElementById('restTime').textContent = rest;
@@ -192,11 +198,26 @@
       document.getElementById('tabatasVal').textContent = tabatas;
       closeSettings();
     }
-    // Start Tabata
+    function updateCounts(){
+      document.getElementById('cyclesVal').textContent = curCycle;
+      document.getElementById('tabatasVal').textContent = curTabata;
+    }
+    function showPhase(type, value){
+      document.getElementById('prepareTime').textContent = type=='PREPARE' ? (value<10?'0'+value:value) : (prepare<10?'0'+prepare:prepare);
+      document.getElementById('workTime').textContent = type=='WORK' ? value : work;
+      document.getElementById('restTime').textContent = type=='REST' ? value : rest;
+      document.querySelector('.prepare').style.opacity = (type=='PREPARE') ? 1 : 0.7;
+      document.querySelector('.work').style.opacity = (type=='WORK') ? 1 : 0.7;
+      document.querySelector('.rest').style.opacity = (type=='REST') ? 1 : 0.7;
+    }
     function startTabata() {
-      // Reset Werte
+      started = true;
+      isPaused = false;
+      document.getElementById('startBtn').disabled = true;
+      document.getElementById('pauseBtn').style.display = '';
+      document.getElementById('resetBtn').style.display = '';
       curCycle = 1; curTabata = 1;
-      document.querySelector('.start-btn').disabled = true;
+      updateCounts();
       phases = [];
       if (prepare > 0) phases.push({type:'PREPARE', duration:prepare});
       for(let t=1; t<=tabatas; t++){
@@ -207,58 +228,80 @@
         if(t<tabatas) phases.push({type:'SET PAUSE', duration:setPause});
       }
       current = 0;
-      nextPhase();
+      playGo(); // 3-2-1-go nur am Anfang
+      setTimeout(() => nextPhase(), 800); // erst nach dem Go-Ton los
     }
+
+    function playGo() { document.getElementById('soundGo').play(); }
+    function playRest() { document.getElementById('soundRest').play(); }
+    function playBeep() { document.getElementById('soundBeep').play(); }
+
     function nextPhase(){
-      if(current>=phases.length){
-        document.getElementById('prepareTime').textContent = '00';
-        document.getElementById('workTime').textContent = '00';
-        document.getElementById('restTime').textContent = '00';
-        document.querySelector('.start-btn').disabled = false;
+      if (current>=phases.length) {
+        showPhase('', 0);
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('pauseBtn').style.display = 'none';
+        document.getElementById('resetBtn').style.display = 'none';
+        started = false;
         return;
       }
       let phase = phases[current];
       let t = phase.duration;
       showPhase(phase.type, t);
-      // Sounds
-      if(phase.type=='PREPARE') document.getElementById('soundGo').play();
-      if(phase.type=='WORK') { document.getElementById('soundGo').play(); }
+      // Ton nur an passender Stelle
+      if(phase.type=='WORK' && current!==1) playRest();
       // Timer-Loop
       timer = setInterval(()=>{
         showPhase(phase.type, t);
-        if((phase.type=='WORK'||phase.type=='REST') && t<=4 && t>1){
-          document.getElementById('soundBeep').play();
-        }
-        if(phase.type=='WORK' && t==1){
-          document.getElementById('soundRest').play();
-        }
-        if(phase.type=='REST' && t==1){
-          document.getElementById('soundGo').play();
-        }
+        // Countdown-Beep nur in letzten 3 Sekunden bei Work und Rest
+        if((phase.type=='WORK'||phase.type=='REST') && t<=3 && t>0) playBeep();
+        if(t==0 && phase.type=='WORK') playRest(); // Signal für Pause
+        if(t==0 && phase.type=='REST') playRest(); // Signal für Wieder-Einstieg
         t--;
-        if(t<0){
+        if (t<0) {
           clearInterval(timer);
-          current++;
-          // Nach jedem Cycle/Tabata updaten
-          if(phase.type=='WORK' && curCycle<cycles) curCycle++;
-          if(phase.type=='SET PAUSE'){ curTabata++; curCycle=1; }
-          if(phase.type=='REST' && curCycle>cycles) curCycle=1;
+          // Cycles und Tabatas zählen
+          if(phase.type=='WORK'){
+            if(curCycle<cycles) curCycle++;
+            else if(curCycle==cycles) curCycle = 1;
+          }
+          if(phase.type=='SET PAUSE') {
+            curTabata++;
+            curCycle = 1;
+          }
           updateCounts();
-          nextPhase();
+          current++;
+          if(!isPaused) nextPhase();
         }
       },1000);
     }
-    function showPhase(type, value){
-      document.getElementById('prepareTime').textContent = type=='PREPARE' ? (value<10?'0'+value:value) : (prepare<10?'0'+prepare:prepare);
-      document.getElementById('workTime').textContent = type=='WORK' ? value : work;
-      document.getElementById('restTime').textContent = type=='REST' ? value : rest;
-      document.querySelector('.prepare').style.opacity = (type=='PREPARE') ? 1 : 0.7;
-      document.querySelector('.work').style.opacity = (type=='WORK') ? 1 : 0.7;
-      document.querySelector('.rest').style.opacity = (type=='REST') ? 1 : 0.7;
+    function pauseTabata() {
+      if (!started) return;
+      if (!isPaused) {
+        clearInterval(timer);
+        isPaused = true;
+        document.getElementById('pauseBtn').textContent = 'Fortsetzen';
+      } else {
+        isPaused = false;
+        document.getElementById('pauseBtn').textContent = 'Pause';
+        nextPhase();
+      }
     }
-    function updateCounts(){
-      document.getElementById('cyclesVal').textContent = curCycle;
-      document.getElementById('tabatasVal').textContent = curTabata;
+    function resetTabata() {
+      clearInterval(timer);
+      isPaused = false;
+      started = false;
+      document.getElementById('pauseBtn').textContent = 'Pause';
+      document.getElementById('pauseBtn').style.display = 'none';
+      document.getElementById('resetBtn').style.display = 'none';
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
+      document.getElementById('workTime').textContent = work;
+      document.getElementById('restTime').textContent = rest;
+      document.getElementById('cyclesVal').textContent = cycles;
+      document.getElementById('tabatasVal').textContent = tabatas;
+      curCycle = 1; curTabata = 1; current = 0;
+      updateCounts();
     }
   </script>
 </body>
