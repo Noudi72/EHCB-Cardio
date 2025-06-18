@@ -1,367 +1,91 @@
-<body style="background: #1e1e1e; color: white; font-family: sans-serif; text-align: center; padding: 20px; margin: 0;">
-  <h1 style="color: #FFD700; margin-top: 100px;">Intervall Tabata</h1>
-  <div class="tile small" style="background: #2b2b2b; color: #ddd; margin: 1rem auto; max-width: 300px;">
-    <input id="headlineLine1" value="4 Sets – 6× 30s Work / 15s Rest" style="font-size: 1rem; background: transparent; border: none; text-align: center; color: #ddd; width: 100%;">
-    <input id="headlineLine2" value="(Warm-Up & Cooldown by your own)" style="font-size: 0.9rem; background: transparent; border: none; text-align: center; color: #aaa; width: 100%;">
-  </div>
-  <div id="tabata-timer" style="display: block;">
-    <div id="tiles" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
-      <div id="prepare" class="tile" style="background: #FFD700;">
-        <div style="font-weight:bold; font-size:1.2rem; text-align:center; color:#000;">PREPARE</div>
-        <div id="prepareDuration" data-seconds="3" style="font-size:2.5rem; text-align:center; width:80px; margin: 0 auto; color:#000;">3</div>
-      </div>
-      <div id="work" class="tile" style="background: #00b050;">
-        <div style="font-weight:bold; font-size:1.2rem; text-align:center; color:white;">WORK</div>
-        <div id="workDuration" data-seconds="45" style="font-size:2.5rem; text-align:center; width:80px; margin: 0 auto;">45</div>
-      </div>
-      <div id="rest" class="tile" style="background: #c00000;">
-        <div style="font-weight:bold; font-size:1.2rem; text-align:center; color:white;">REST</div>
-        <div id="restDuration" data-seconds="15" style="font-size:2.5rem; text-align:center; width:80px; margin: 0 auto;">15</div>
-      </div>
-    </div>
-    <div id="bottomTiles" style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
-      <div class="tile small" style="background: #eee; color: #000;">
-        <input type="number" id="cycleCountInput" value="30" style="font-size: 2rem; text-align: center; width: 80px; border: none; background: transparent; color: #000;">
-        <div style="font-size: 1rem;">CYCLES</div>
-      </div>
-      <div class="tile small" style="background: #eee; color: #000;">
-        <input type="number" id="tabataCountInput" value="1" style="font-size: 2rem; text-align: center; width: 80px; border: none; background: transparent; color: #000;">
-        <div style="font-size: 1rem;">TABATAS</div>
-      </div>
-    </div>
-    <div style="margin-top: 2rem;">
-      <button class="button" onclick="startTabata()">▶ Start</button>
-      <button class="button" onclick="pauseTabata()">⏸ Pause</button>
-      <button class="button" onclick="resetTabata()">🔁 Reset</button>
-      <button class="button" onclick="openSettings()">⚙️ Einstellungen</button>
-    </div>
-  </div>
+function startTabata() {
+  document.querySelector("button[onclick='startTabata()']").style.display = "none";
+  document.getElementById("tabata-timer").style.display = "block";
+  document.body.style.background = "#1e1e1e";
 
-  <div id="settingsOverlay" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:#111; color:#fff; z-index:10; padding:2rem; position: relative;">
-    <h2 style="font-size: 2rem; margin-bottom: 2rem;">⚙️ Einstellungen</h2>
-    <button onclick="closeSettings()" style="position:absolute; top:1rem; right:1rem; font-size:2rem; background:none; border:none; color:white;">✖</button>
-    <label>Prepare (sec): <input type="number" id="setPrepare" value="3"></label><br>
-    <label>Work (sec): <input type="number" id="setWork" value="45"></label><br>
-    <label>Rest (sec): <input type="number" id="setRest" value="15"></label><br>
-    <label>Set Pause (sec): <input type="number" id="setPause" value="120"></label><br>
-    <label>Cycles: <input type="number" id="setCycles" value="30"></label><br>
-    <label>Tabatas: <input type="number" id="setTabatas" value="1"></label><br><br>
-    <button onclick="applySettings()">✔ Übernehmen</button>
-    <button onclick="closeSettings()">✖️ Schließen</button>
-  </div>
+  const prepareLabel = "PREPARE";
+  const workLabel = "WORK";
+  const restLabel = "REST";
 
-  <script>
-  const soundGo = new Audio("TunePocket-3-2-1-Go.mp3");
-  const soundRest = new Audio("rest_2.mp3");
-  const soundBeep = new Audio("3s sport beep.wav");
+  const prepareTime = parseInt(document.getElementById("prepareDuration").getAttribute("data-seconds") || document.getElementById("prepareDuration").innerText);
+  const workTime = parseInt(document.getElementById("workDuration").getAttribute("data-seconds") || document.getElementById("workDuration").innerText);
+  const restTime = parseInt(document.getElementById("restDuration").getAttribute("data-seconds") || document.getElementById("restDuration").innerText);
+  const setPauseTime = parseInt(localStorage.getItem("setpause") || 120);
 
-  let tabataPhases = [];
-  let current = -1;
-  let countdown = 5;
-  let time = 0;
-  let tabataInterval = null;
+  originalCycles = parseInt(document.getElementById("cycleCountInput").value);
+  originalTabatas = parseInt(document.getElementById("tabataCountInput").value);
+  remainingCycles = originalCycles;
+  remainingTabatas = originalTabatas;
 
-  let originalCycles = 0;
-  let originalTabatas = 0;
-  let remainingCycles = 0;
-  let remainingTabatas = 0;
-
-  function startTabata() {
-    document.querySelector("button[onclick='startTabata()']").style.display = "none";
-    document.getElementById("tabata-timer").style.display = "block";
-    document.body.style.background = "#1e1e1e";
-
-    const prepareLabel = "PREPARE";
-    const workLabel = "WORK";
-    const restLabel = "REST";
-
-    const prepareTime = parseInt(document.getElementById("prepareDuration").getAttribute("data-seconds") || document.getElementById("prepareDuration").innerText);
-    const workTime = parseInt(document.getElementById("workDuration").getAttribute("data-seconds") || document.getElementById("workDuration").innerText);
-    const restTime = parseInt(document.getElementById("restDuration").getAttribute("data-seconds") || document.getElementById("restDuration").innerText);
-    const setPauseTime = parseInt(localStorage.getItem("setpause") || 120);
-
-    originalCycles = parseInt(document.getElementById("cycleCountInput").value);
-    originalTabatas = parseInt(document.getElementById("tabataCountInput").value);
-    remainingCycles = originalCycles;
-    remainingTabatas = originalTabatas;
-
-    tabataPhases = [];
-    if (prepareTime > 0) {
-      tabataPhases.push({ name: prepareLabel, duration: prepareTime });
+  tabataPhases = [];
+  if (prepareTime > 0) {
+    tabataPhases.push({ name: prepareLabel, duration: prepareTime });
+  }
+  for (let s = 0; s < originalTabatas; s++) {
+    for (let i = 0; i < originalCycles; i++) {
+      tabataPhases.push({ name: workLabel, duration: workTime });
+      tabataPhases.push({ name: restLabel, duration: restTime });
     }
-    for (let s = 0; s < originalTabatas; s++) {
-      for (let i = 0; i < originalCycles; i++) {
-        tabataPhases.push({ name: workLabel, duration: workTime });
-        tabataPhases.push({ name: restLabel, duration: restTime });
-      }
-      if (s < originalTabatas - 1) {
-        tabataPhases.push({ name: "Set Pause", duration: setPauseTime });
-      }
+    if (s < originalTabatas - 1) {
+      tabataPhases.push({ name: "Set Pause", duration: setPauseTime });
     }
+  }
 
-    current = -1;
-    time = 0;
+  current = -1;
+  time = 0;
 
-    tabataInterval = setInterval(() => {
-      if (time === 0) {
-        current++;
-        if (current >= tabataPhases.length) {
-          clearInterval(tabataInterval);
-          tabataInterval = null;
-          return;
-        }
-
-        const phase = tabataPhases[current];
-
-        if (phase.name === prepareLabel) {
-          soundGo.play();
-          document.body.className = "";
-        } else if (phase.name === workLabel) {
-          soundRest.play();
-          document.body.className = "work";
-        } else if (phase.name === restLabel) {
-          soundBeep.play();
-          document.body.className = "rest";
-        } else {
-          soundGo.play();
-          document.body.className = "setpause";
-        }
-
-        time = phase.duration;
-
-        if (phase.name === workLabel) remainingCycles--;
-        if (phase.name === "Set Pause") {
-          remainingTabatas--;
-          remainingCycles = originalCycles;
-        }
-
-        document.getElementById("cycleCountInput").value = remainingCycles;
-        document.getElementById("tabataCountInput").value = remainingTabatas;
+  tabataInterval = setInterval(() => {
+    if (time === 0) {
+      current++;
+      if (current >= tabataPhases.length) {
+        clearInterval(tabataInterval);
+        tabataInterval = null;
+        return;
       }
 
       const phase = tabataPhases[current];
-      if (phase) {
-        if (phase.name === prepareLabel) {
-          document.getElementById("prepareDuration").innerText = time;
-        } else if (phase.name === workLabel) {
-          document.getElementById("workDuration").innerText = time;
-        } else if (phase.name === restLabel) {
-          document.getElementById("restDuration").innerText = time;
-        }
+      time = phase.duration;
+
+      if (phase.name === prepareLabel) {
+        soundGo.play();
+        document.body.className = "";
+      } else if (phase.name === workLabel) {
+        document.body.className = "work";
+      } else if (phase.name === restLabel) {
+        document.body.className = "rest";
+      } else {
+        document.body.className = "setpause";
+        soundGo.play();
       }
 
-      time--;
-    }, 1000);
-  }
+      if (phase.name === workLabel) remainingCycles--;
+      if (phase.name === "Set Pause") {
+        remainingTabatas--;
+        remainingCycles = originalCycles;
+      }
 
-  function pauseTabata() {
-    if (tabataInterval) {
-      clearInterval(tabataInterval);
-      tabataInterval = null;
-    } else {
-      startTabata(); // Fortsetzen (optional: mit anderem Mechanismus ersetzen)
+      document.getElementById("cycleCountInput").value = remainingCycles;
+      document.getElementById("tabataCountInput").value = remainingTabatas;
     }
-  }
 
-  function resetTabata() {
-    if (tabataInterval) {
-      clearInterval(tabataInterval);
-      tabataInterval = null;
+    const phase = tabataPhases[current];
+    if (phase) {
+      if (time === 3 && phase.name === restLabel) {
+        soundBeep.play();
+      }
+      if (time === 3 && phase.name === workLabel) {
+        soundRest.play();
+      }
+
+      if (phase.name === prepareLabel) {
+        document.getElementById("prepareDuration").innerText = time;
+      } else if (phase.name === workLabel) {
+        document.getElementById("workDuration").innerText = time;
+      } else if (phase.name === restLabel) {
+        document.getElementById("restDuration").innerText = time;
+      }
     }
-    location.reload(); // Seite neu laden als Reset
-  }
 
-  function openSettings() {
-    document.getElementById("settingsOverlay").style.display = "block";
-    document.getElementById("tabata-timer").style.display = "none";
-  }
-  function closeSettings() {
-    document.getElementById("settingsOverlay").style.display = "none";
-    document.getElementById("tabata-timer").style.display = "block";
-  }
-  function applySettings() {
-    const p = document.getElementById("setPrepare").value;
-    const w = document.getElementById("setWork").value;
-    const r = document.getElementById("setRest").value;
-
-    document.getElementById("prepareDuration").innerText = p;
-    document.getElementById("workDuration").innerText = w;
-    document.getElementById("restDuration").innerText = r;
-
-    document.getElementById("prepareDuration").setAttribute("data-seconds", p);
-    document.getElementById("workDuration").setAttribute("data-seconds", w);
-    document.getElementById("restDuration").setAttribute("data-seconds", r);
-
-    document.getElementById("cycleCountInput").value = document.getElementById("setCycles").value;
-    document.getElementById("tabataCountInput").value = document.getElementById("setTabatas").value;
-    document.getElementById("settingsOverlay").style.display = "none";
-    document.getElementById("tabata-timer").style.display = "block";
-
-    localStorage.setItem("prepare", p);
-    localStorage.setItem("work", w);
-    localStorage.setItem("rest", r);
-    localStorage.setItem("setpause", document.getElementById("setPause").value);
-    localStorage.setItem("cycles", document.getElementById("setCycles").value);
-    localStorage.setItem("tabatas", document.getElementById("setTabatas").value);
-  }
-
-  window.onload = () => {
-    if (localStorage.getItem("prepare")) document.getElementById("setPrepare").value = localStorage.getItem("prepare");
-    if (localStorage.getItem("work")) document.getElementById("setWork").value = localStorage.getItem("work");
-    if (localStorage.getItem("rest")) document.getElementById("setRest").value = localStorage.getItem("rest");
-    if (localStorage.getItem("setpause")) document.getElementById("setPause").value = localStorage.getItem("setpause");
-    if (localStorage.getItem("cycles")) {
-      document.getElementById("setCycles").value = localStorage.getItem("cycles");
-      document.getElementById("cycleCountInput").value = localStorage.getItem("cycles");
-    }
-    if (localStorage.getItem("tabatas")) {
-      document.getElementById("setTabatas").value = localStorage.getItem("tabatas");
-      document.getElementById("tabataCountInput").value = localStorage.getItem("tabatas");
-    }
-  };
-  </script>
-  <style>
-body {
-  background: #1e1e1e;
-  color: white;
-  font-family: sans-serif;
-  text-align: center;
-  padding: 20px;
-  margin: 0;
+    time--;
+  }, 1000);
 }
-
-h1 {
-  color: #c00000;
-  font-size: 2rem;
-  margin-top: 2rem;
-}
-
-p {
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-}
-
-.button {
-  background: #c00000;
-  color: white;
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin: 1rem auto;
-  display: block;
-  max-width: 300px;
-}
-
-.button:hover {
-  background: #A00000;
-}
-
-#tabata-timer {
-  margin-top: 2rem;
-}
-
-.work {
-  background: #00b050;
-  color: white;
-}
-
-.rest {
-  background: #c00000;
-  color: white;
-}
-
-.setpause {
-  background: #f4a300;
-  color: white;
-}
-
-#editor textarea {
-  font-family: monospace;
-  font-size: 1rem;
-  padding: 0.5rem;
-}
-
-.tile {
-  width: 95%;
-  max-width: 95%;
-  padding: 2rem;
-  font-size: 2.5rem;
-  margin: 0 auto;
-}
-
-.tile span {
-  font-size: 3rem;
-  display: block;
-  margin-top: 0.5rem;
-}
-
-.tile.small {
-  width: 48%;
-  padding: 1rem;
-  font-size: 1.5rem;
-  background: #eee;
-  color: #000;
-}
-
-#settingsOverlay label {
-  display: block;
-  margin: 1.5rem 0;
-  font-size: 1.6rem;
-}
-#settingsOverlay input {
-  font-size: 2rem;
-  padding: 0.6rem;
-  width: 90%;
-  margin-top: 0.5rem;
-}
-#settingsOverlay h2 {
-  font-size: 2rem;
-  margin-bottom: 2rem;
-}
-#settingsOverlay button {
-  font-size: 1.5rem;
-  margin: 1rem;
-  padding: 0.8rem 2rem;
-}
-
-@media screen and (max-width: 480px) {
-  body {
-    padding: 10px;
-    font-size: 1.4rem;
-  }
-  .tile {
-    font-size: 3rem;
-    padding: 2.5rem;
-  }
-  .tile span {
-    font-size: 3.2rem;
-  }
-  .tile.small {
-    width: 46%;
-    font-size: 2rem;
-    padding: 1.5rem;
-  }
-  .button {
-    font-size: 1.6rem;
-    padding: 1.2rem 2rem;
-  }
-
-  #settingsOverlay label {
-    font-size: 1.8rem;
-  }
-  #settingsOverlay input {
-    font-size: 2.2rem;
-    padding: 1rem;
-  }
-  #settingsOverlay h2 {
-    font-size: 2.2rem;
-  }
-  #settingsOverlay button {
-    font-size: 1.6rem;
-    padding: 1rem 2.5rem;
-  }
-}
-  </style>
-</body>
