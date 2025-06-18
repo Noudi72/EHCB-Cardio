@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EHCB Intervall Tabata</title>
   <style>
     body {
@@ -14,156 +14,251 @@
       padding: 0;
     }
     h1 {
-      font-size: 2rem;
-      margin-top: 1rem;
+      font-size: 2.2rem;
+      margin: 1.2rem 0 0.5rem 0;
       color: #FFD700;
+      letter-spacing: 1px;
     }
     .desc {
-      margin-bottom: 1rem;
+      margin-bottom: 1.2rem;
       color: #ccc;
+      font-size: 1.1rem;
     }
-    .phase {
-      font-size: 2rem;
-      margin-top: 1rem;
-    }
-    .timer {
-      font-size: 5rem;
-      margin: 1rem 0;
-    }
-    .settings {
+    .tile {
+      border-radius: 20px;
+      margin: 0.8rem auto;
+      width: 93vw;
+      max-width: 520px;
+      min-height: 80px;
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 2.2rem;
+      font-weight: bold;
+      box-shadow: 0 0 12px rgba(0,0,0,0.18);
+      padding: 0.3em 1.2em;
+      letter-spacing: 2px;
+    }
+    .tile span {
+      flex: 1;
+      text-align: left;
+    }
+    .tile .time {
+      flex: 0 0 95px;
+      text-align: right;
+      font-size: 2.4rem;
+    }
+    .prepare { background: #FFD700; color: #222;}
+    .work { background: #00c040; color: #fff;}
+    .rest { background: #c80000; color: #fff;}
+    .row {
+      display: flex;
       justify-content: center;
       gap: 1rem;
-      margin: 1rem 0;
+      margin-top: 1.5rem;
+      margin-bottom: 1.2rem;
     }
-    .settings input {
-      width: 4rem;
-      text-align: center;
-      font-size: 1.2rem;
+    .cycles, .tabatas {
+      background: #fff;
+      color: #111;
+      border-radius: 12px;
+      width: 120px;
+      height: 70px;
+      font-size: 2rem;
+      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
     }
-    .start-btn {
-      background-color: red;
-      color: white;
+    .label {
+      font-size: 1.1rem;
+      font-weight: normal;
+      letter-spacing: 0.5px;
+      color: #222;
+      margin-top: 2px;
+    }
+    .start-btn, .settings-btn {
+      background: #d50000;
+      color: #fff;
+      font-size: 1.3rem;
       border: none;
-      font-size: 1.2rem;
-      padding: 0.5rem 1rem;
-      margin-top: 1rem;
+      border-radius: 10px;
+      padding: 0.6em 2em;
+      margin: 1em auto 0.7em auto;
       cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+      display: block;
     }
-    .prepare { background-color: #FFD700; }
-    .work { background-color: #008000; }
-    .rest { background-color: #B22222; }
+    .settings-btn { background: #222; font-size: 1.1rem; }
+    /* Modal Styles für Settings */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1111;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(30,30,30,0.93);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: #1e1e1e;
+      color: #fff;
+      border-radius: 16px;
+      padding: 2em 1.3em 1em 1.3em;
+      max-width: 400px;
+      margin: 0 auto;
+      box-shadow: 0 8px 24px #000a;
+    }
+    .modal-content label { display:block; margin: 0.6em 0 0.15em 0; }
+    .modal-content input {
+      width: 60px; font-size: 1.1em; text-align: center;
+      border-radius: 6px; border: 1px solid #888; margin-bottom: 0.5em;
+    }
+    .modal-content button { margin: 1.3em 0.5em 0 0.5em; }
+    @media (max-width: 600px) {
+      .tile { min-height: 60px; font-size: 1.3rem; }
+      .tile .time { font-size: 1.6rem; }
+      .cycles, .tabatas { width: 90px; height: 50px; font-size: 1.1rem;}
+      .modal-content { padding: 1em 0.5em 0.5em 0.5em;}
+    }
   </style>
 </head>
 <body>
   <h1>Intervall Tabata</h1>
   <div class="desc">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up & Cooldown by your own)</div>
-
-  <div class="settings">
-    Prepare: <input id="prepareInput" type="number" value="3" />
-    Work: <input id="workInput" type="number" value="30" />
-    Rest: <input id="restInput" type="number" value="15" />
-    Set Pause: <input id="setPauseInput" type="number" value="120" />
-    Cycles: <input id="cyclesInput" type="number" value="6" />
-    Tabatas: <input id="tabatasInput" type="number" value="4" />
+  <!-- Timer Tiles -->
+  <div class="tile prepare"><span>PREPARE</span><span class="time" id="prepareTime">03</span></div>
+  <div class="tile work"><span>WORK</span><span class="time" id="workTime">30</span></div>
+  <div class="tile rest"><span>REST</span><span class="time" id="restTime">15</span></div>
+  <div class="row">
+    <div class="cycles"><span id="cyclesVal">6</span><span class="label">CYCLES</span></div>
+    <div class="tabatas"><span id="tabatasVal">4</span><span class="label">TABATAS</span></div>
   </div>
-
-  <button class="start-btn" onclick="startTabata()">Start</button>
-
-  <div class="phase" id="phaseLabel">Ready</div>
-  <div class="timer" id="timeDisplay">00</div>
-
+  <button class="start-btn" onclick="startTabata()">▶ Start</button>
+  <button class="settings-btn" onclick="openSettings()">⚙️ Einstellungen</button>
+  <!-- SETTINGS MODAL -->
+  <div class="modal" id="settingsModal">
+    <div class="modal-content">
+      <label>Prepare (sec): <input id="setPrepare" type="number" min="0" max="99" value="3"></label>
+      <label>Work (sec): <input id="setWork" type="number" min="1" max="999" value="30"></label>
+      <label>Rest (sec): <input id="setRest" type="number" min="1" max="999" value="15"></label>
+      <label>Set Pause (sec): <input id="setSetPause" type="number" min="1" max="999" value="120"></label>
+      <label>Cycles: <input id="setCycles" type="number" min="1" max="99" value="6"></label>
+      <label>Tabatas: <input id="setTabatas" type="number" min="1" max="99" value="4"></label>
+      <br>
+      <button onclick="saveSettings()">✓ Übernehmen</button>
+      <button onclick="closeSettings()">✗ Schließen</button>
+    </div>
+  </div>
+  <!-- AUDIO -->
   <audio id="soundGo" src="3-2-1-Go.mp3"></audio>
   <audio id="soundRest" src="rest_2.mp3"></audio>
   <audio id="soundBeep" src="3s beep.wav"></audio>
-
   <script>
-    let tabataInterval;
-    let tabataPhases = [];
-    let current = -1;
+    // Variablen und Funktionen für Tabata Logik & Einstellungen
+    let timer = null;
+    let phases = [];
+    let current = 0;
     let time = 0;
-    let soundGoPlayed = false;
-    let remainingCycles = 0;
-    let remainingTabatas = 0;
-
+    let cycles = 6, tabatas = 4, prepare = 3, work = 30, rest = 15, setPause = 120;
+    let curCycle = 1, curTabata = 1;
+    // Settings-Handling
+    function openSettings() {
+      document.getElementById('setPrepare').value = prepare;
+      document.getElementById('setWork').value = work;
+      document.getElementById('setRest').value = rest;
+      document.getElementById('setSetPause').value = setPause;
+      document.getElementById('setCycles').value = cycles;
+      document.getElementById('setTabatas').value = tabatas;
+      document.getElementById('settingsModal').style.display = 'flex';
+    }
+    function closeSettings() {
+      document.getElementById('settingsModal').style.display = 'none';
+    }
+    function saveSettings() {
+      prepare = parseInt(document.getElementById('setPrepare').value);
+      work = parseInt(document.getElementById('setWork').value);
+      rest = parseInt(document.getElementById('setRest').value);
+      setPause = parseInt(document.getElementById('setSetPause').value);
+      cycles = parseInt(document.getElementById('setCycles').value);
+      tabatas = parseInt(document.getElementById('setTabatas').value);
+      // Apply to tiles
+      document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
+      document.getElementById('workTime').textContent = work;
+      document.getElementById('restTime').textContent = rest;
+      document.getElementById('cyclesVal').textContent = cycles;
+      document.getElementById('tabatasVal').textContent = tabatas;
+      closeSettings();
+    }
+    // Start Tabata
     function startTabata() {
-      const prepareTime = parseInt(document.getElementById("prepareInput").value);
-      const workTime = parseInt(document.getElementById("workInput").value);
-      const restTime = parseInt(document.getElementById("restInput").value);
-      const setPause = parseInt(document.getElementById("setPauseInput").value);
-      const cycles = parseInt(document.getElementById("cyclesInput").value);
-      const tabatas = parseInt(document.getElementById("tabatasInput").value);
-
-      remainingCycles = cycles;
-      remainingTabatas = tabatas;
-
-      const soundGo = document.getElementById("soundGo");
-      const soundRest = document.getElementById("soundRest");
-      const soundBeep = document.getElementById("soundBeep");
-
-      tabataPhases = [];
-      if (prepareTime > 0) {
-        tabataPhases.push({ name: "PREPARE", duration: prepareTime });
-      }
-
-      for (let t = 0; t < tabatas; t++) {
-        for (let c = 0; c < cycles; c++) {
-          tabataPhases.push({ name: "WORK", duration: workTime });
-          tabataPhases.push({ name: "REST", duration: restTime });
+      // Reset Werte
+      curCycle = 1; curTabata = 1;
+      document.querySelector('.start-btn').disabled = true;
+      phases = [];
+      if (prepare > 0) phases.push({type:'PREPARE', duration:prepare});
+      for(let t=1; t<=tabatas; t++){
+        for(let c=1; c<=cycles; c++){
+          phases.push({type:'WORK', duration:work});
+          phases.push({type:'REST', duration:rest});
         }
-        if (t < tabatas - 1) {
-          tabataPhases.push({ name: "SET PAUSE", duration: setPause });
-        }
+        if(t<tabatas) phases.push({type:'SET PAUSE', duration:setPause});
       }
-
-      current = -1;
-      time = 0;
-      soundGoPlayed = false;
-
-      tabataInterval = setInterval(() => {
-        if (time === 0) {
+      current = 0;
+      nextPhase();
+    }
+    function nextPhase(){
+      if(current>=phases.length){
+        document.getElementById('prepareTime').textContent = '00';
+        document.getElementById('workTime').textContent = '00';
+        document.getElementById('restTime').textContent = '00';
+        document.querySelector('.start-btn').disabled = false;
+        return;
+      }
+      let phase = phases[current];
+      let t = phase.duration;
+      showPhase(phase.type, t);
+      // Sounds
+      if(phase.type=='PREPARE') document.getElementById('soundGo').play();
+      if(phase.type=='WORK') { document.getElementById('soundGo').play(); }
+      // Timer-Loop
+      timer = setInterval(()=>{
+        showPhase(phase.type, t);
+        if((phase.type=='WORK'||phase.type=='REST') && t<=4 && t>1){
+          document.getElementById('soundBeep').play();
+        }
+        if(phase.type=='WORK' && t==1){
+          document.getElementById('soundRest').play();
+        }
+        if(phase.type=='REST' && t==1){
+          document.getElementById('soundGo').play();
+        }
+        t--;
+        if(t<0){
+          clearInterval(timer);
           current++;
-          if (current >= tabataPhases.length) {
-            clearInterval(tabataInterval);
-            document.getElementById("phaseLabel").innerText = "Finished";
-            document.getElementById("timeDisplay").innerText = "00";
-            document.body.className = "";
-            return;
-          }
-
-          const phase = tabataPhases[current];
-          time = phase.duration;
-          document.getElementById("phaseLabel").innerText = phase.name;
-          document.body.className = phase.name.toLowerCase().replace(" ", "");
-          document.getElementById("timeDisplay").innerText = time < 10 ? `0${time}` : time;
-          soundGoPlayed = false;
-
-          if (phase.name === "WORK") remainingCycles--;
-          if (phase.name === "SET PAUSE") {
-            remainingTabatas--;
-            remainingCycles = cycles;
-          }
+          // Nach jedem Cycle/Tabata updaten
+          if(phase.type=='WORK' && curCycle<cycles) curCycle++;
+          if(phase.type=='SET PAUSE'){ curTabata++; curCycle=1; }
+          if(phase.type=='REST' && curCycle>cycles) curCycle=1;
+          updateCounts();
+          nextPhase();
         }
-
-        const phase = tabataPhases[current];
-
-        if ((phase.name === "PREPARE" || phase.name === "SET PAUSE" || phase.name === "REST") && time === 4 && !soundGoPlayed) {
-          soundGo.play();
-          soundGoPlayed = true;
-        }
-
-        if (phase.name === "WORK" && time === 1) {
-          soundRest.play();
-        }
-
-        if (phase.name === "REST" && time === 1) {
-          soundBeep.play();
-        }
-
-        document.getElementById("timeDisplay").innerText = time < 10 ? `0${time}` : time;
-        time--;
-      }, 1000);
+      },1000);
+    }
+    function showPhase(type, value){
+      document.getElementById('prepareTime').textContent = type=='PREPARE' ? (value<10?'0'+value:value) : (prepare<10?'0'+prepare:prepare);
+      document.getElementById('workTime').textContent = type=='WORK' ? value : work;
+      document.getElementById('restTime').textContent = type=='REST' ? value : rest;
+      document.querySelector('.prepare').style.opacity = (type=='PREPARE') ? 1 : 0.7;
+      document.querySelector('.work').style.opacity = (type=='WORK') ? 1 : 0.7;
+      document.querySelector('.rest').style.opacity = (type=='REST') ? 1 : 0.7;
+    }
+    function updateCounts(){
+      document.getElementById('cyclesVal').textContent = curCycle;
+      document.getElementById('tabatasVal').textContent = curTabata;
     }
   </script>
 </body>
