@@ -23,12 +23,36 @@
       margin-bottom: 1.2rem;
       color: #ccc;
       font-size: 1.1rem;
+      display: inline-block;
+      position: relative;
+      max-width: 90vw;
+    }
+    .desc-edit-btn {
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: #FFD700;
+      margin-left: 0.5em;
+      vertical-align: middle;
+      user-select: none;
+    }
+    .desc-textarea {
+      width: 90vw;
+      max-width: 400px;
+      font-size: 1.1rem;
+      border-radius: 6px;
+      border: 1px solid #888;
+      padding: 0.3em;
+      resize: vertical;
+      font-family: Arial, sans-serif;
+      color: #ccc;
+      background: #222;
+      margin-bottom: 1rem;
     }
     .tile {
       border-radius: 20px;
       margin: 0.8rem auto;
-      width: 93vw;
-      max-width: 520px;
+      width: 96vw;
+      max-width: 420px;
       min-height: 80px;
       display: flex;
       align-items: center;
@@ -129,7 +153,13 @@
 </head>
 <body>
   <h1>Intervall Tabata</h1>
-  <div class="desc">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up & Cooldown by your own)</div>
+  <div>
+    <span class="desc" id="descText">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up &amp; Cooldown by your own)</span>
+    <span class="desc-edit-btn" id="descEditBtn" title="Edit description">🖉</span>
+  </div>
+  <!-- Editable description textarea, hidden initially -->
+  <textarea id="descTextarea" class="desc-textarea" style="display:none;"></textarea>
+  <button id="descSaveBtn" style="display:none; margin-bottom:1rem;">Save</button>
   <!-- Timer Tiles -->
   <div class="tile prepare"><span>PREPARE</span><span class="time" id="prepareTime">03</span></div>
   <div class="tile work"><span>WORK</span><span class="time" id="workTime">30</span></div>
@@ -169,8 +199,42 @@
     let phases = [];
     let current = 0;
     let cycles = 6, tabatas = 4, prepare = 3, work = 30, rest = 15, setPause = 120;
-    let curCycle = 1, curTabata = 1;
+    let curCycle = 6, curTabata = 4;
     let started = false;
+
+    // Editable description elements
+    const descText = document.getElementById('descText');
+    const descEditBtn = document.getElementById('descEditBtn');
+    const descTextarea = document.getElementById('descTextarea');
+    const descSaveBtn = document.getElementById('descSaveBtn');
+
+    // Load description from localStorage if available
+    window.addEventListener('load', () => {
+      const savedDesc = localStorage.getItem('tabataDescription');
+      if(savedDesc) {
+        descText.innerHTML = savedDesc.replace(/\n/g, '<br>');
+      }
+    });
+
+    descEditBtn.addEventListener('click', () => {
+      descTextarea.value = descText.textContent.replace(/\u00A0/g, ' ');
+      descTextarea.style.display = 'block';
+      descSaveBtn.style.display = 'inline-block';
+      descText.style.display = 'none';
+      descEditBtn.style.display = 'none';
+      descTextarea.focus();
+    });
+
+    descSaveBtn.addEventListener('click', () => {
+      let val = descTextarea.value.trim();
+      if(val === '') val = '4 Sets – 6× 30s Work / 15s Rest (Warm-Up & Cooldown by your own)';
+      descText.innerHTML = val.replace(/\n/g, '<br>');
+      localStorage.setItem('tabataDescription', descText.innerHTML);
+      descTextarea.style.display = 'none';
+      descSaveBtn.style.display = 'none';
+      descText.style.display = 'inline-block';
+      descEditBtn.style.display = 'inline-block';
+    });
 
     function openSettings() {
       document.getElementById('setPrepare').value = prepare;
@@ -194,13 +258,16 @@
       document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
       document.getElementById('workTime').textContent = work;
       document.getElementById('restTime').textContent = rest;
-      document.getElementById('cyclesVal').textContent = cycles;
-      document.getElementById('tabatasVal').textContent = tabatas;
+      // Reset curCycle and curTabata to full counts on settings save
+      curCycle = cycles;
+      curTabata = tabatas;
+      document.getElementById('cyclesVal').textContent = curCycle;
+      document.getElementById('tabatasVal').textContent = curTabata;
       closeSettings();
     }
     function updateCounts(){
-      document.getElementById('cyclesVal').textContent = curCycle;
-      document.getElementById('tabatasVal').textContent = curTabata;
+      document.getElementById('cyclesVal').textContent = curCycle >= 0 ? curCycle : 0;
+      document.getElementById('tabatasVal').textContent = curTabata >= 0 ? curTabata : 0;
     }
     function showPhase(type, value){
       document.getElementById('prepareTime').textContent = type=='PREPARE' ? (value<10?'0'+value:value) : (prepare<10?'0'+prepare:prepare);
@@ -216,7 +283,8 @@
       document.getElementById('startBtn').disabled = true;
       document.getElementById('pauseBtn').style.display = '';
       document.getElementById('resetBtn').style.display = '';
-      curCycle = 1; curTabata = 1;
+      curCycle = cycles;
+      curTabata = tabatas;
       updateCounts();
       phases = [];
       if (prepare > 0) phases.push({type:'PREPARE', duration:prepare});
@@ -228,8 +296,16 @@
         if(t<tabatas) phases.push({type:'SET PAUSE', duration:setPause});
       }
       current = 0;
-      playGo(); // 3-2-1-go nur am Anfang
-      setTimeout(() => nextPhase(), 800); // erst nach dem Go-Ton los
+      // Play "3-2-1-Go" starting 3 seconds before prepare start, so play at time==4 of prepare countdown
+      if(prepare > 0) {
+        // We start timer at prepare duration, so play soundGo at prepare-3 seconds
+        // We'll start nextPhase after prepare starts counting down
+        // So we start phase with prepare duration, and at t==4 (prepare-3) play soundGo
+        // We'll do this in nextPhase function
+      } else {
+        playGo(); // no prepare, play immediately
+      }
+      nextPhase();
     }
 
     function playGo() { document.getElementById('soundGo').play(); }
@@ -249,10 +325,17 @@
       let t = phase.duration;
       showPhase(phase.type, t);
       // Ton nur an passender Stelle
-      if(phase.type=='WORK' && current!==1) playRest();
+      // We play soundGo at prepare phase at t==4 (prepare-3)
+      if(phase.type=='PREPARE' && t >= 4) {
+        // We'll do countdown in setInterval and play soundGo at t==4
+      } else if(phase.type=='WORK' && current!==1) playRest();
       // Timer-Loop
       timer = setInterval(()=>{
         showPhase(phase.type, t);
+        // Play soundGo at prepare countdown 4 seconds (3-2-1-Go)
+        if(phase.type=='PREPARE' && t === 4) {
+          playGo();
+        }
         // Countdown-Beep nur in letzten 3 Sekunden bei Work und Rest
         if((phase.type=='WORK'||phase.type=='REST') && t<=3 && t>0) playBeep();
         if(t==0 && phase.type=='WORK') playRest(); // Signal für Pause
@@ -260,14 +343,15 @@
         t--;
         if (t<0) {
           clearInterval(timer);
-          // Cycles und Tabatas zählen
+          // Cycles und Tabatas zählen (down-count)
           if(phase.type=='WORK'){
-            if(curCycle<cycles) curCycle++;
-            else if(curCycle==cycles) curCycle = 1;
+            if(curCycle > 1) curCycle--;
+            else if(curCycle === 1) curCycle = 0;
           }
           if(phase.type=='SET PAUSE') {
-            curTabata++;
-            curCycle = 1;
+            if(curTabata > 1) curTabata--;
+            else if(curTabata === 1) curTabata = 0;
+            curCycle = cycles;
           }
           updateCounts();
           current++;
@@ -298,9 +382,11 @@
       document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
       document.getElementById('workTime').textContent = work;
       document.getElementById('restTime').textContent = rest;
-      document.getElementById('cyclesVal').textContent = cycles;
-      document.getElementById('tabatasVal').textContent = tabatas;
-      curCycle = 1; curTabata = 1; current = 0;
+      curCycle = cycles;
+      curTabata = tabatas;
+      document.getElementById('cyclesVal').textContent = curCycle;
+      document.getElementById('tabatasVal').textContent = curTabata;
+      current = 0;
       updateCounts();
     }
   </script>
