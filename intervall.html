@@ -6,7 +6,7 @@
   <title>EHCB Intervall Tabata</title>
   <style>
     body {
-      background-color: #1e1e1e;
+      background: #1e1e1e;
       color: white;
       font-family: Arial, sans-serif;
       text-align: center;
@@ -14,45 +14,22 @@
       padding: 0;
     }
     h1 {
-      font-size: 2.2rem;
-      margin: 1.2rem 0 0.5rem 0;
+      font-size: 2.1rem;
+      margin-top: 1.2rem;
       color: #FFD700;
       letter-spacing: 1px;
     }
     .desc {
-      margin-bottom: 1.2rem;
+      margin-bottom: 1.1rem;
       color: #ccc;
       font-size: 1.1rem;
-      display: inline-block;
-      position: relative;
-      max-width: 90vw;
-    }
-    .desc-edit-btn {
-      cursor: pointer;
-      font-size: 1.1rem;
-      color: #FFD700;
-      margin-left: 0.5em;
-      vertical-align: middle;
-      user-select: none;
-    }
-    .desc-textarea {
-      width: 90vw;
-      max-width: 400px;
-      font-size: 1.1rem;
-      border-radius: 6px;
-      border: 1px solid #888;
-      padding: 0.3em;
-      resize: vertical;
-      font-family: Arial, sans-serif;
-      color: #ccc;
-      background: #222;
-      margin-bottom: 1rem;
+      min-height: 32px;
     }
     .tile {
       border-radius: 20px;
       margin: 0.8rem auto;
-      width: 96vw;
-      max-width: 420px;
+      width: 90vw;
+      max-width: 375px;
       min-height: 80px;
       display: flex;
       align-items: center;
@@ -79,16 +56,16 @@
       display: flex;
       justify-content: center;
       gap: 1rem;
-      margin-top: 1.5rem;
-      margin-bottom: 1.2rem;
+      margin-top: 1.1rem;
+      margin-bottom: 1.1rem;
     }
     .cycles, .tabatas {
       background: #fff;
       color: #111;
       border-radius: 12px;
-      width: 120px;
-      height: 70px;
-      font-size: 2rem;
+      width: 100px;
+      height: 60px;
+      font-size: 1.6rem;
       font-weight: bold;
       display: flex;
       flex-direction: column;
@@ -97,27 +74,58 @@
       box-shadow: 0 0 8px rgba(0,0,0,0.1);
     }
     .label {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: normal;
-      letter-spacing: 0.5px;
       color: #222;
       margin-top: 2px;
     }
-    .start-btn, .settings-btn, .pause-btn, .reset-btn {
+    .button-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1em;
+      margin-bottom: 1em;
+    }
+    .start-btn, .settings-btn, .pause-btn, .reset-btn, .setpause-btn {
       background: #d50000;
       color: #fff;
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       border: none;
       border-radius: 10px;
-      padding: 0.6em 2em;
-      margin: 1em auto 0.7em auto;
+      padding: 0.6em 1.3em;
       cursor: pointer;
       box-shadow: 0 2px 8px rgba(0,0,0,0.13);
-      display: inline-block;
+      margin: 0.5em 0;
     }
-    .pause-btn { background: #FFA500; color: #222; margin-left: 0.7em;}
-    .reset-btn { background: #222; color: #fff; margin-left: 0.7em;}
-    .settings-btn { background: #222; font-size: 1.1rem; display: block; margin: 0.7em auto;}
+    .pause-btn { background: #FFA500; color: #222;}
+    .reset-btn { background: #222; color: #fff;}
+    .settings-btn { background: #222; }
+    .setpause-btn { background: #FFD700; color: #222; margin: 1.2em auto;}
+    .setpause-popup {
+      display: none;
+      background: #FFD700;
+      color: #222;
+      font-size: 1.3rem;
+      font-weight: bold;
+      border-radius: 18px;
+      padding: 2em 1em 1em 1em;
+      position: fixed;
+      z-index: 9000;
+      left: 50%; top: 30vh; transform: translateX(-50%);
+      width: 85vw; max-width: 370px;
+      box-shadow: 0 8px 40px #2227;
+      text-align: center;
+    }
+    .setpause-popup button {
+      margin-top: 1.1em;
+      background: #d50000;
+      color: #fff;
+      border-radius: 8px;
+      padding: 0.4em 2em;
+      font-size: 1.1rem;
+      border: none;
+      cursor: pointer;
+    }
     /* Modal Styles für Settings */
     .modal {
       display: none;
@@ -138,28 +146,26 @@
       box-shadow: 0 8px 24px #000a;
     }
     .modal-content label { display:block; margin: 0.6em 0 0.15em 0; }
-    .modal-content input {
-      width: 60px; font-size: 1.1em; text-align: center;
+    .modal-content input,
+    .modal-content textarea {
+      width: 90%; max-width: 360px;
+      font-size: 1.05em; text-align: left;
       border-radius: 6px; border: 1px solid #888; margin-bottom: 0.5em;
+      padding: 0.2em 0.4em;
+      font-family: Arial, sans-serif;
     }
     .modal-content button { margin: 1.3em 0.5em 0 0.5em; }
-    @media (max-width: 600px) {
-      .tile { min-height: 60px; font-size: 1.3rem; }
-      .tile .time { font-size: 1.6rem; }
-      .cycles, .tabatas { width: 90px; height: 50px; font-size: 1.1rem;}
-      .modal-content { padding: 1em 0.5em 0.5em 0.5em;}
+    @media (max-width: 420px) {
+      .tile { font-size: 1.1rem; }
+      .tile .time { font-size: 1.1rem; }
+      .cycles, .tabatas { width: 70px; height: 40px; font-size: 0.8rem;}
+      .setpause-popup { font-size: 1rem;}
     }
   </style>
 </head>
 <body>
   <h1>Intervall Tabata</h1>
-  <div>
-    <span class="desc" id="descText">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up &amp; Cooldown by your own)</span>
-    <span class="desc-edit-btn" id="descEditBtn" title="Edit description">🖉</span>
-  </div>
-  <!-- Editable description textarea, hidden initially -->
-  <textarea id="descTextarea" class="desc-textarea" style="display:none;"></textarea>
-  <button id="descSaveBtn" style="display:none; margin-bottom:1rem;">Save</button>
+  <div class="desc" id="descText">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up &amp; Cooldown by your own)</div>
   <!-- Timer Tiles -->
   <div class="tile prepare"><span>PREPARE</span><span class="time" id="prepareTime">03</span></div>
   <div class="tile work"><span>WORK</span><span class="time" id="workTime">30</span></div>
@@ -168,13 +174,23 @@
     <div class="cycles"><span id="cyclesVal">6</span><span class="label">CYCLES</span></div>
     <div class="tabatas"><span id="tabatasVal">4</span><span class="label">TABATAS</span></div>
   </div>
-  <button class="start-btn" onclick="startTabata()" id="startBtn">▶ Start</button>
-  <button class="pause-btn" onclick="pauseTabata()" id="pauseBtn" style="display:none;">Pause</button>
-  <button class="reset-btn" onclick="resetTabata()" id="resetBtn" style="display:none;">Reset</button>
+  <div class="button-row">
+    <button class="start-btn" onclick="startTabata()" id="startBtn">▶ Start</button>
+    <button class="pause-btn" onclick="pauseTabata()" id="pauseBtn" style="display:none;">Pause</button>
+    <button class="reset-btn" onclick="resetTabata()" id="resetBtn" style="display:none;">Reset</button>
+  </div>
   <button class="settings-btn" onclick="openSettings()">⚙️ Einstellungen</button>
+  <button class="setpause-btn" onclick="showSetPausePopup()" id="setPauseBtn" style="display:none;">Set Pause anzeigen</button>
+  <div class="setpause-popup" id="setPausePopup">
+    <div>Set Pause – Bereit machen für nächsten Block!</div>
+    <button onclick="hideSetPausePopup()">OK</button>
+  </div>
   <!-- SETTINGS MODAL -->
   <div class="modal" id="settingsModal">
     <div class="modal-content">
+      <label>Beschreibung (optional):<br>
+        <textarea id="descTextarea" rows="2"></textarea>
+      </label>
       <label>Prepare (sec): <input id="setPrepare" type="number" min="0" max="99" value="3"></label>
       <label>Work (sec): <input id="setWork" type="number" min="1" max="999" value="30"></label>
       <label>Rest (sec): <input id="setRest" type="number" min="1" max="999" value="15"></label>
@@ -201,54 +217,40 @@
     let cycles = 6, tabatas = 4, prepare = 3, work = 30, rest = 15, setPause = 120;
     let curCycle = 6, curTabata = 4;
     let started = false;
+    let setPauseNow = false;
 
-    // Editable description elements
+    // Description editing
     const descText = document.getElementById('descText');
-    const descEditBtn = document.getElementById('descEditBtn');
     const descTextarea = document.getElementById('descTextarea');
-    const descSaveBtn = document.getElementById('descSaveBtn');
-
     // Load description from localStorage if available
     window.addEventListener('load', () => {
       const savedDesc = localStorage.getItem('tabataDescription');
       if(savedDesc) {
         descText.innerHTML = savedDesc.replace(/\n/g, '<br>');
+        descTextarea.value = savedDesc.replace(/<br\s*\/?>/gi, '\n');
       }
     });
 
-    descEditBtn.addEventListener('click', () => {
-      descTextarea.value = descText.textContent.replace(/\u00A0/g, ' ');
-      descTextarea.style.display = 'block';
-      descSaveBtn.style.display = 'inline-block';
-      descText.style.display = 'none';
-      descEditBtn.style.display = 'none';
-      descTextarea.focus();
-    });
-
-    descSaveBtn.addEventListener('click', () => {
-      let val = descTextarea.value.trim();
-      if(val === '') val = '4 Sets – 6× 30s Work / 15s Rest (Warm-Up & Cooldown by your own)';
-      descText.innerHTML = val.replace(/\n/g, '<br>');
-      localStorage.setItem('tabataDescription', descText.innerHTML);
-      descTextarea.style.display = 'none';
-      descSaveBtn.style.display = 'none';
-      descText.style.display = 'inline-block';
-      descEditBtn.style.display = 'inline-block';
-    });
-
     function openSettings() {
+      document.getElementById('settingsModal').style.display = 'flex';
+      descTextarea.value = descText.innerHTML.replace(/<br\s*\/?>/gi, '\n');
       document.getElementById('setPrepare').value = prepare;
       document.getElementById('setWork').value = work;
       document.getElementById('setRest').value = rest;
       document.getElementById('setSetPause').value = setPause;
       document.getElementById('setCycles').value = cycles;
       document.getElementById('setTabatas').value = tabatas;
-      document.getElementById('settingsModal').style.display = 'flex';
     }
     function closeSettings() {
       document.getElementById('settingsModal').style.display = 'none';
     }
     function saveSettings() {
+      // Beschreibung
+      let val = descTextarea.value.trim();
+      if(val === '') val = '4 Sets – 6× 30s Work / 15s Rest (Warm-Up & Cooldown by your own)';
+      descText.innerHTML = val.replace(/\n/g, '<br>');
+      localStorage.setItem('tabataDescription', descText.innerHTML);
+      // Zeiten
       prepare = parseInt(document.getElementById('setPrepare').value);
       work = parseInt(document.getElementById('setWork').value);
       rest = parseInt(document.getElementById('setRest').value);
@@ -280,31 +282,28 @@
     function startTabata() {
       started = true;
       isPaused = false;
+      setPauseNow = false;
       document.getElementById('startBtn').disabled = true;
       document.getElementById('pauseBtn').style.display = '';
       document.getElementById('resetBtn').style.display = '';
+      document.getElementById('setPauseBtn').style.display = '';
       curCycle = cycles;
       curTabata = tabatas;
       updateCounts();
+      // Phasenaufbau (Rest nach letztem Work entfällt!)
       phases = [];
       if (prepare > 0) phases.push({type:'PREPARE', duration:prepare});
       for(let t=1; t<=tabatas; t++){
         for(let c=1; c<=cycles; c++){
           phases.push({type:'WORK', duration:work});
-          phases.push({type:'REST', duration:rest});
+          // Nur Rest, wenn es nicht der letzte Cycle dieses Sets ist!
+          if(c < cycles) phases.push({type:'REST', duration:rest});
         }
         if(t<tabatas) phases.push({type:'SET PAUSE', duration:setPause});
+        // Nach Set Pause optional Prepare für nächsten Block
+        // phases.push({type:'PREPARE', duration:prepare});
       }
       current = 0;
-      // Play "3-2-1-Go" starting 3 seconds before prepare start, so play at time==4 of prepare countdown
-      if(prepare > 0) {
-        // We start timer at prepare duration, so play soundGo at prepare-3 seconds
-        // We'll start nextPhase after prepare starts counting down
-        // So we start phase with prepare duration, and at t==4 (prepare-3) play soundGo
-        // We'll do this in nextPhase function
-      } else {
-        playGo(); // no prepare, play immediately
-      }
       nextPhase();
     }
 
@@ -318,24 +317,17 @@
         document.getElementById('startBtn').disabled = false;
         document.getElementById('pauseBtn').style.display = 'none';
         document.getElementById('resetBtn').style.display = 'none';
+        document.getElementById('setPauseBtn').style.display = 'none';
         started = false;
         return;
       }
       let phase = phases[current];
       let t = phase.duration;
       showPhase(phase.type, t);
-      // Ton nur an passender Stelle
-      // We play soundGo at prepare phase at t==4 (prepare-3)
-      if(phase.type=='PREPARE' && t >= 4) {
-        // We'll do countdown in setInterval and play soundGo at t==4
-      } else if(phase.type=='WORK' && current!==1) playRest();
-      // Timer-Loop
+      // Prepare-Ton: Go kommt bei t==4 (4,3,2,1) – für 3-2-1-go
       timer = setInterval(()=>{
         showPhase(phase.type, t);
-        // Play soundGo at prepare countdown 4 seconds (3-2-1-Go)
-        if(phase.type=='PREPARE' && t === 4) {
-          playGo();
-        }
+        if(phase.type=='PREPARE' && (t==4||t==3||t==2||t==1)) playGo();
         // Countdown-Beep nur in letzten 3 Sekunden bei Work und Rest
         if((phase.type=='WORK'||phase.type=='REST') && t<=3 && t>0) playBeep();
         if(t==0 && phase.type=='WORK') playRest(); // Signal für Pause
@@ -359,6 +351,7 @@
         }
       },1000);
     }
+
     function pauseTabata() {
       if (!started) return;
       if (!isPaused) {
@@ -375,9 +368,11 @@
       clearInterval(timer);
       isPaused = false;
       started = false;
+      setPauseNow = false;
       document.getElementById('pauseBtn').textContent = 'Pause';
       document.getElementById('pauseBtn').style.display = 'none';
       document.getElementById('resetBtn').style.display = 'none';
+      document.getElementById('setPauseBtn').style.display = 'none';
       document.getElementById('startBtn').disabled = false;
       document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
       document.getElementById('workTime').textContent = work;
@@ -388,6 +383,13 @@
       document.getElementById('tabatasVal').textContent = curTabata;
       current = 0;
       updateCounts();
+    }
+    // Set Pause Button
+    function showSetPausePopup() {
+      document.getElementById('setPausePopup').style.display = 'block';
+    }
+    function hideSetPausePopup() {
+      document.getElementById('setPausePopup').style.display = 'none';
     }
   </script>
 </body>
