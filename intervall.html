@@ -40,8 +40,8 @@
       padding: 0.3em 1.2em;
       letter-spacing: 2px;
       opacity: 0.6;
-      filter: grayscale(0.25);
-      transition: opacity 0.3s ease, filter 0.3s ease;
+      filter: grayscale(0.12);
+      transition: opacity 0.25s, filter 0.25s;
     }
     .tile.active {
       opacity: 1;
@@ -197,8 +197,8 @@
   </div>
   <!-- AUDIO -->
   <audio id="soundGo" src="3-2-1-Go.mp3"></audio>
+  <audio id="soundBeep" src="beep.wav"></audio>
   <audio id="soundRest" src="rest_2.mp3"></audio>
-  <audio id="soundBeep" src="3s beep.wav"></audio>
   <script>
     let timer = null;
     let isPaused = false;
@@ -247,7 +247,6 @@
       document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
       document.getElementById('workTime').textContent = work;
       document.getElementById('restTime').textContent = rest;
-      document.getElementById('setPauseTime').textContent = setPause;
       curCycle = cycles;
       curTabata = tabatas;
       document.getElementById('cyclesVal').textContent = curCycle;
@@ -259,79 +258,60 @@
       document.getElementById('tabatasVal').textContent = curTabata >= 0 ? curTabata : 0;
     }
     function showPhase(type, value){
-      // Set all tiles to inactive style and default times
-      const prepareTile = document.getElementById('tilePrepare');
-      const workTile = document.getElementById('tileWork');
-      const restTile = document.getElementById('tileRest');
-      const setPauseTile = document.getElementById('tileSetPause');
-
-      // Remove active class from all
-      prepareTile.classList.remove('active');
-      workTile.classList.remove('active');
-      restTile.classList.remove('active');
-      setPauseTile.classList.remove('active');
-
-      // Set default times
-      document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
-      document.getElementById('workTime').textContent = work;
-      document.getElementById('restTime').textContent = rest;
-      document.getElementById('setPauseTime').textContent = setPause;
-
-      // Set active tile opacity and time
+      // Set all tiles to default opacity, only one is "active"
+      document.getElementById('tilePrepare').classList.remove('active');
+      document.getElementById('tileWork').classList.remove('active');
+      document.getElementById('tileRest').classList.remove('active');
+      document.getElementById('tileSetPause').classList.remove('active');
       if(type==='PREPARE') {
-        prepareTile.classList.add('active');
-        document.getElementById('prepareTime').textContent = value < 10 ? '0'+value : value;
-      } else if(type==='WORK') {
-        workTile.classList.add('active');
+        document.getElementById('tilePrepare').classList.add('active');
+        document.getElementById('prepareTime').textContent = value<10 ? '0'+value : value;
+        document.getElementById('workTime').textContent = work;
+        document.getElementById('restTime').textContent = rest;
+        document.getElementById('setPauseTime').textContent = setPause;
+      }
+      if(type==='WORK') {
+        document.getElementById('tileWork').classList.add('active');
         document.getElementById('workTime').textContent = value;
-      } else if(type==='REST') {
-        restTile.classList.add('active');
+        document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
+        document.getElementById('restTime').textContent = rest;
+        document.getElementById('setPauseTime').textContent = setPause;
+      }
+      if(type==='REST') {
+        document.getElementById('tileRest').classList.add('active');
         document.getElementById('restTime').textContent = value;
-      } else if(type==='SET PAUSE') {
-        setPauseTile.classList.add('active');
+        document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
+        document.getElementById('workTime').textContent = work;
+        document.getElementById('setPauseTime').textContent = setPause;
+      }
+      if(type==='SET PAUSE') {
+        document.getElementById('tileSetPause').classList.add('active');
         document.getElementById('setPauseTime').textContent = value;
+        document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
+        document.getElementById('workTime').textContent = work;
+        document.getElementById('restTime').textContent = rest;
       }
     }
-    function startTabata() {
-      started = true;
-      isPaused = false;
-      document.getElementById('startBtn').disabled = true;
-      document.getElementById('pauseBtn').style.display = '';
-      document.getElementById('resetBtn').style.display = '';
-      curCycle = cycles;
-      curTabata = tabatas;
-      updateCounts();
-      // Build phases (no REST after last WORK)
-      phases = [];
-      if (prepare > 0) phases.push({type:'PREPARE', duration:prepare});
-      for(let t=1; t<=tabatas; t++){
-        for(let c=1; c<=cycles; c++){
-          phases.push({type:'WORK', duration:work});
-          if(c < cycles) phases.push({type:'REST', duration:rest});
-        }
-        if(t<tabatas) phases.push({type:'SET PAUSE', duration:setPause});
-      }
-      current = 0;
-      nextPhase();
-    }
+    // --- SOUND FUNCTIONS ---
     function playGo() {
-  let audio = document.getElementById('soundGo');
-  audio.pause();
-  audio.currentTime = 0;
-  audio.play();
-}
-function playRest() {
-  let audio = document.getElementById('soundRest');
-  audio.pause();
-  audio.currentTime = 0;
-  audio.play();
-}
-function playBeep() {
-  let audio = document.getElementById('soundBeep');
-  audio.pause();
-  audio.currentTime = 0;
-  audio.play();
-}
+      let audio = document.getElementById('soundGo');
+      audio.pause();
+      audio.currentTime = 0;
+      audio.play();
+    }
+    function playRest() {
+      let audio = document.getElementById('soundRest');
+      audio.pause();
+      audio.currentTime = 0;
+      audio.play();
+    }
+    function playBeep() {
+      let audio = document.getElementById('soundBeep');
+      audio.pause();
+      audio.currentTime = 0;
+      audio.play();
+    }
+    // --- PHASE TIMER ---
     function nextPhase(){
       if (current>=phases.length) {
         showPhase('', 0);
@@ -344,12 +324,11 @@ function playBeep() {
       let phase = phases[current];
       let t = phase.duration;
       showPhase(phase.type, t);
+
       timer = setInterval(()=>{
         showPhase(phase.type, t);
-        // Prepare: 3-2-1-Go.mp3 nur einmal am Anfang von Prepare abspielen
-        if(phase.type==='PREPARE') {
-          if(t === phase.duration) playGo(); // 3-2-1-Go nur einmal am Anfang der Prepare-Phase
-        }
+        // Prepare: 3-2-1-Go.mp3 **nur EINMAL** am Anfang der Prepare-Phase
+        if(phase.type==='PREPARE' && t === phase.duration) playGo();
         // WORK & REST: Beep bei 3, 2, 1; Rest-Ton bei 0
         if((phase.type==='WORK'||phase.type==='REST') && (t<=3 && t>0)) playBeep();
         if(t===0 && (phase.type==='WORK'||phase.type==='REST'||phase.type==='SET PAUSE')) playRest();
@@ -372,6 +351,28 @@ function playBeep() {
           if(!isPaused) nextPhase();
         }
       },1000);
+    }
+    function startTabata() {
+      started = true;
+      isPaused = false;
+      document.getElementById('startBtn').disabled = true;
+      document.getElementById('pauseBtn').style.display = '';
+      document.getElementById('resetBtn').style.display = '';
+      curCycle = cycles;
+      curTabata = tabatas;
+      updateCounts();
+      // Phasenaufbau (Rest nach letztem Work entfällt!)
+      phases = [];
+      if (prepare > 0) phases.push({type:'PREPARE', duration:prepare});
+      for(let t=1; t<=tabatas; t++){
+        for(let c=1; c<=cycles; c++){
+          phases.push({type:'WORK', duration:work});
+          if(c < cycles) phases.push({type:'REST', duration:rest});
+        }
+        if(t<tabatas) phases.push({type:'SET PAUSE', duration:setPause});
+      }
+      current = 0;
+      nextPhase();
     }
     function pauseTabata() {
       if (!started) return;
@@ -396,7 +397,6 @@ function playBeep() {
       showPhase('PREPARE', prepare < 10 ? '0'+prepare : prepare);
       document.getElementById('workTime').textContent = work;
       document.getElementById('restTime').textContent = rest;
-      document.getElementById('setPauseTime').textContent = setPause;
       curCycle = cycles;
       curTabata = tabatas;
       updateCounts();
