@@ -117,6 +117,11 @@
 
           time = phase.duration;
 
+          if (phase.name.toLowerCase().includes("rest")) {
+            const beep = new Audio("3s sport beep.wav");
+            beep.play();
+          }
+
           // Update durations display for active phase
           document.getElementById("prepareDuration").innerText = (phase.name === prepareLabel) ? time : document.getElementById("prepareDuration").innerText;
           document.getElementById("workDuration").innerText = (phase.name === workLabel) ? time : document.getElementById("workDuration").innerText;
