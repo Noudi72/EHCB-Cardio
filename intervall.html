@@ -1,104 +1,143 @@
-function startTabata() {
-  document.querySelector("button[onclick='startTabata()']").style.display = "none";
-  document.getElementById("tabata-timer").style.display = "block";
-  document.body.style.background = "#1e1e1e";
-
-  const prepareLabel = "PREPARE";
-  const workLabel = "WORK";
-  const restLabel = "REST";
-
-  const prepareTime = parseInt(document.getElementById("prepareDuration").getAttribute("data-seconds") || document.getElementById("prepareDuration").innerText);
-  const workTime = parseInt(document.getElementById("workDuration").getAttribute("data-seconds") || document.getElementById("workDuration").innerText);
-  const restTime = parseInt(document.getElementById("restDuration").getAttribute("data-seconds") || document.getElementById("restDuration").innerText);
-  const setPauseTime = parseInt(localStorage.getItem("setpause") || 120);
-
-  let originalCycles = parseInt(document.getElementById("cycleCountInput").value);
-  let originalTabatas = parseInt(document.getElementById("tabataCountInput").value);
-  let remainingCycles = originalCycles;
-  let remainingTabatas = originalTabatas;
-
-  let tabataPhases = [];
-
-  if (prepareTime > 0) {
-    tabataPhases.push({ name: prepareLabel, duration: prepareTime });
-  }
-
-  for (let s = 0; s < originalTabatas; s++) {
-    for (let i = 0; i < originalCycles; i++) {
-      tabataPhases.push({ name: workLabel, duration: workTime });
-      tabataPhases.push({ name: restLabel, duration: restTime });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EHCB Intervall Tabata</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #1e1e1e;
+      color: white;
+      text-align: center;
     }
-    if (s < originalTabatas - 1) {
-      tabataPhases.push({ name: "Set Pause", duration: setPauseTime });
+    .phase-box {
+      margin-top: 50px;
+      font-size: 48px;
+      font-weight: bold;
     }
-  }
-
-  let current = -1;
-  let time = 0;
-
-  tabataInterval = setInterval(() => {
-    if (time === 0) {
-      current++;
-      if (current >= tabataPhases.length) {
-        clearInterval(tabataInterval);
-        tabataInterval = null;
-        return;
-      }
-
-      const phase = tabataPhases[current];
-      time = phase.duration;
-
-      // Phase handling
-      if (phase.name === prepareLabel) {
-        soundGo.play();
-        document.body.className = "";
-      } else if (phase.name === workLabel) {
-        document.body.className = "work";
-      } else if (phase.name === restLabel) {
-        document.body.className = "rest";
-      } else {
-        document.body.className = "setpause";
-        soundGo.play();
-      }
-
-      // Update counters
-      if (phase.name === workLabel) remainingCycles--;
-      if (phase.name === "Set Pause") {
-        remainingTabatas--;
-        remainingCycles = originalCycles;
-      }
-
-      document.getElementById("cycleCountInput").value = remainingCycles;
-      document.getElementById("tabataCountInput").value = remainingTabatas;
+    .timer {
+      font-size: 100px;
+      margin: 20px 0;
     }
+    .control-panel {
+      margin: 20px;
+    }
+    input {
+      width: 80px;
+      font-size: 24px;
+      text-align: center;
+    }
+    button {
+      font-size: 24px;
+      padding: 10px 20px;
+    }
+    .work { background: #2e8b57; }
+    .rest { background: #b22222; }
+    .setpause { background: orange; }
+    .prepare { background: #f9c74f; }
+  </style>
+</head>
+<body>
+  <h1>EHCB Intervall Tabata</h1>
 
-    const phase = tabataPhases[current];
-    if (phase) {
-      if ([4, 3, 2].includes(time)) {
-        if (phase.name === restLabel) {
-          soundBeep.play();
+  <div class="control-panel">
+    Prepare: <input id="prepareDuration" value="10">
+    Work: <input id="workDuration" value="30">
+    Rest: <input id="restDuration" value="15"><br><br>
+    Cycles: <input id="cycleCountInput" value="6">
+    Tabatas: <input id="tabataCountInput" value="4"><br><br>
+    <button onclick="startTabata()">Start</button>
+  </div>
+
+  <div class="phase-box" id="phaseLabel">Ready</div>
+  <div class="timer" id="phaseTime">00</div>
+
+  <audio id="soundGo" src="TunePocket-3-2-1-Go.mp3"></audio>
+  <audio id="soundBeep" src="3s sport beep.wav"></audio>
+  <audio id="soundHorn" src="rest_2.mp3"></audio>
+  <audio id="soundRest" src="rest.mp3"></audio>
+
+  <script>
+    let tabataInterval;
+
+    function startTabata() {
+      document.body.className = "prepare";
+      document.getElementById("phaseLabel").innerText = "PREPARE";
+
+      const prepareTime = parseInt(document.getElementById("prepareDuration").value);
+      const workTime = parseInt(document.getElementById("workDuration").value);
+      const restTime = parseInt(document.getElementById("restDuration").value);
+      const setPauseTime = 120;
+
+      const originalCycles = parseInt(document.getElementById("cycleCountInput").value);
+      const originalTabatas = parseInt(document.getElementById("tabataCountInput").value);
+
+      let remainingCycles = originalCycles;
+      let remainingTabatas = originalTabatas;
+
+      const phases = [];
+
+      if (prepareTime > 0) phases.push({ name: "PREPARE", duration: prepareTime });
+
+      for (let s = 0; s < originalTabatas; s++) {
+        for (let c = 0; c < originalCycles; c++) {
+          phases.push({ name: "WORK", duration: workTime });
+          phases.push({ name: "REST", duration: restTime });
         }
-      } else if (time === 1) {
-        if (phase.name === restLabel) {
-          soundHorn.play();
+        if (s < originalTabatas - 1) {
+          phases.push({ name: "Set Pause", duration: setPauseTime });
         }
       }
 
-      if (time === 4 && phase.name === workLabel) {
-        soundRest.play();
-      }
+      let current = -1;
+      let time = 0;
 
-      // Update UI
-      if (phase.name === prepareLabel) {
-        document.getElementById("prepareDuration").innerText = time;
-        document.getElementById("prepareDuration").style.color = "black";
-      } else if (phase.name === workLabel) {
-        document.getElementById("workDuration").innerText = time;
-      } else if (phase.name === restLabel) {
-        document.getElementById("restDuration").innerText = time;
-      }
+      tabataInterval = setInterval(() => {
+        if (time === 0) {
+          current++;
+          if (current >= phases.length) {
+            clearInterval(tabataInterval);
+            return;
+          }
+
+          const phase = phases[current];
+          time = phase.duration;
+          document.getElementById("phaseLabel").innerText = phase.name;
+          document.body.className = phase.name.toLowerCase().replace(" ", "");
+
+          if (phase.name === "PREPARE" || phase.name === "Set Pause") {
+            document.getElementById("soundGo").play();
+          } else if (phase.name === "WORK") {
+            document.getElementById("soundRest").play();
+            remainingCycles--;
+          } else if (phase.name === "REST") {
+            // will trigger beeps below
+          }
+
+          if (phase.name === "Set Pause") {
+            remainingTabatas--;
+            remainingCycles = originalCycles;
+            document.getElementById("cycleCountInput").value = remainingCycles;
+            document.getElementById("tabataCountInput").value = remainingTabatas;
+          }
+        }
+
+        const phase = phases[current];
+        document.getElementById("phaseTime").innerText = time;
+
+        if ([4, 3, 2].includes(time) && phase.name === "REST") {
+          document.getElementById("soundBeep").play();
+        }
+        if (time === 1 && phase.name === "REST") {
+          document.getElementById("soundHorn").play();
+        }
+
+        time--;
+      }, 1000);
     }
-
-    time--;
-  }, 1000);
-}
+  </script>
+</body>
+</html>
