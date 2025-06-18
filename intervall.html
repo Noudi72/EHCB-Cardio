@@ -31,7 +31,7 @@
       width: 90vw;
       max-width: 375px;
       min-height: 80px;
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: space-between;
       font-size: 2.2rem;
@@ -39,11 +39,13 @@
       box-shadow: 0 0 12px rgba(0,0,0,0.18);
       padding: 0.3em 1.2em;
       letter-spacing: 2px;
-      opacity: 0.7;
+      opacity: 0.6;
+      filter: grayscale(0.25);
+      transition: opacity 0.3s ease, filter 0.3s ease;
     }
     .tile.active {
-      display: flex;
       opacity: 1;
+      filter: none;
     }
     .tile span {
       flex: 1;
@@ -245,6 +247,7 @@
       document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
       document.getElementById('workTime').textContent = work;
       document.getElementById('restTime').textContent = rest;
+      document.getElementById('setPauseTime').textContent = setPause;
       curCycle = cycles;
       curTabata = tabatas;
       document.getElementById('cyclesVal').textContent = curCycle;
@@ -256,26 +259,36 @@
       document.getElementById('tabatasVal').textContent = curTabata >= 0 ? curTabata : 0;
     }
     function showPhase(type, value){
-      // Hide all tiles first
-      document.getElementById('tilePrepare').classList.remove('active');
-      document.getElementById('tileWork').classList.remove('active');
-      document.getElementById('tileRest').classList.remove('active');
-      document.getElementById('tileSetPause').classList.remove('active');
-      // Show only the current
+      // Set all tiles to inactive style and default times
+      const prepareTile = document.getElementById('tilePrepare');
+      const workTile = document.getElementById('tileWork');
+      const restTile = document.getElementById('tileRest');
+      const setPauseTile = document.getElementById('tileSetPause');
+
+      // Remove active class from all
+      prepareTile.classList.remove('active');
+      workTile.classList.remove('active');
+      restTile.classList.remove('active');
+      setPauseTile.classList.remove('active');
+
+      // Set default times
+      document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
+      document.getElementById('workTime').textContent = work;
+      document.getElementById('restTime').textContent = rest;
+      document.getElementById('setPauseTime').textContent = setPause;
+
+      // Set active tile opacity and time
       if(type==='PREPARE') {
-        document.getElementById('tilePrepare').classList.add('active');
-        document.getElementById('prepareTime').textContent = value<10 ? '0'+value : value;
-      }
-      if(type==='WORK') {
-        document.getElementById('tileWork').classList.add('active');
+        prepareTile.classList.add('active');
+        document.getElementById('prepareTime').textContent = value < 10 ? '0'+value : value;
+      } else if(type==='WORK') {
+        workTile.classList.add('active');
         document.getElementById('workTime').textContent = value;
-      }
-      if(type==='REST') {
-        document.getElementById('tileRest').classList.add('active');
+      } else if(type==='REST') {
+        restTile.classList.add('active');
         document.getElementById('restTime').textContent = value;
-      }
-      if(type==='SET PAUSE') {
-        document.getElementById('tileSetPause').classList.add('active');
+      } else if(type==='SET PAUSE') {
+        setPauseTile.classList.add('active');
         document.getElementById('setPauseTime').textContent = value;
       }
     }
@@ -365,6 +378,7 @@
       showPhase('PREPARE', prepare < 10 ? '0'+prepare : prepare);
       document.getElementById('workTime').textContent = work;
       document.getElementById('restTime').textContent = rest;
+      document.getElementById('setPauseTime').textContent = setPause;
       curCycle = cycles;
       curTabata = tabatas;
       updateCounts();
