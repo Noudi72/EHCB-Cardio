@@ -79,6 +79,7 @@
     let tabataPhases = [];
     let current = -1;
     let time = 0;
+    let soundGoPlayed = false;
 
     function startTabata() {
       const prepareTime = parseInt(document.getElementById("prepareInput").value);
@@ -109,6 +110,7 @@
 
       current = -1;
       time = 0;
+      soundGoPlayed = false;
 
       tabataInterval = setInterval(() => {
         if (time === 0) {
@@ -116,22 +118,32 @@
           if (current >= tabataPhases.length) {
             clearInterval(tabataInterval);
             document.getElementById("phaseLabel").innerText = "Finished";
+            document.getElementById("timeDisplay").innerText = "00";
             return;
           }
 
           const phase = tabataPhases[current];
           time = phase.duration;
           document.getElementById("phaseLabel").innerText = phase.name;
-
-          if (phase.name === "PREPARE" || phase.name === "SET PAUSE") {
-            soundGo.play();
-          } else if (phase.name === "REST") {
-            soundRest.play();
-          }
+          document.getElementById("timeDisplay").innerText = time < 10 ? `0${time}` : time;
+          soundGoPlayed = false;
         }
 
         const phase = tabataPhases[current];
-        if (time === 4 && phase.name === "WORK") {
+
+        // Play 3-2-1-Go sound at 4 seconds left in PREPARE and SET PAUSE phases, only once
+        if ((phase.name === "PREPARE" || phase.name === "SET PAUSE") && time === 4 && !soundGoPlayed) {
+          soundGo.play();
+          soundGoPlayed = true;
+        }
+
+        // Play rest sound at time === 1 in WORK phase
+        if (phase.name === "WORK" && time === 1) {
+          soundRest.play();
+        }
+
+        // Play 3s beep sound at end of REST phase (when time === 1)
+        if (phase.name === "REST" && time === 1) {
           soundBeep.play();
         }
 
