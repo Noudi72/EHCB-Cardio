@@ -50,6 +50,9 @@
       margin-top: 1rem;
       cursor: pointer;
     }
+    .prepare { background-color: #FFD700; }
+    .work { background-color: #008000; }
+    .rest { background-color: #B22222; }
   </style>
 </head>
 <body>
@@ -80,6 +83,8 @@
     let current = -1;
     let time = 0;
     let soundGoPlayed = false;
+    let remainingCycles = 0;
+    let remainingTabatas = 0;
 
     function startTabata() {
       const prepareTime = parseInt(document.getElementById("prepareInput").value);
@@ -88,6 +93,9 @@
       const setPause = parseInt(document.getElementById("setPauseInput").value);
       const cycles = parseInt(document.getElementById("cyclesInput").value);
       const tabatas = parseInt(document.getElementById("tabatasInput").value);
+
+      remainingCycles = cycles;
+      remainingTabatas = tabatas;
 
       const soundGo = document.getElementById("soundGo");
       const soundRest = document.getElementById("soundRest");
@@ -119,14 +127,24 @@
             clearInterval(tabataInterval);
             document.getElementById("phaseLabel").innerText = "Finished";
             document.getElementById("timeDisplay").innerText = "00";
+            document.body.className = "";
+            document.getElementById("cycleDisplay").innerText = 0;
+            document.getElementById("tabataDisplay").innerText = 0;
             return;
           }
 
           const phase = tabataPhases[current];
           time = phase.duration;
           document.getElementById("phaseLabel").innerText = phase.name;
+          document.body.className = phase.name.toLowerCase().replace(" ", "");
           document.getElementById("timeDisplay").innerText = time < 10 ? `0${time}` : time;
           soundGoPlayed = false;
+
+          if (phase.name === "WORK") remainingCycles--;
+          if (phase.name === "SET PAUSE") {
+            remainingTabatas--;
+            remainingCycles = cycles;
+          }
         }
 
         const phase = tabataPhases[current];
@@ -146,11 +164,22 @@
         if (phase.name === "REST" && time === 1) {
           soundBeep.play();
         }
+        // Play 3-2-1-Go sound at 4 seconds in REST phase
+        if (phase.name === "REST" && time === 4) {
+          soundGo.play();
+        }
 
         document.getElementById("timeDisplay").innerText = time < 10 ? `0${time}` : time;
+        document.getElementById("cycleDisplay").innerText = remainingCycles;
+        document.getElementById("tabataDisplay").innerText = remainingTabatas;
         time--;
       }, 1000);
     }
   </script>
+
+  <div class="settings">
+    <div>Remaining Cycles: <span id="cycleDisplay">0</span></div>
+    <div>Remaining Tabatas: <span id="tabataDisplay">0</span></div>
+  </div>
 </body>
 </html>
