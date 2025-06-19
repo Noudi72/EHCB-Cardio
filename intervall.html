@@ -308,7 +308,7 @@ function startTabata() {
       } else {
         // Letzter Cycle: Kein Rest mehr, sondern direkt in Set Pause oder Ende
         if (currentTabata < totalTabatas) {
-          playGo(); // Startsignal für neue Tabata
+          // KEIN playGo() hier!
           currentTabata++;
           currentCycle = 1;
           t = tSetPause;
@@ -328,6 +328,7 @@ function startTabata() {
       t = tPrepare;
       state = "prepare";
       activateTile("prepare");
+      playGo(); // Startsignal jetzt HIER, nach Set Pause!
     }
   }
   updateTiles();
