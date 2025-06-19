@@ -77,19 +77,41 @@
       margin-bottom: 1.1rem;
     }
     .cycles, .tabatas {
-      background: #fff;
-      color: #111;
-      border-radius: 12px;
-      width: 100px;
-      height: 60px;
-      font-size: 1.6rem;
-      font-weight: bold;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-    }
+  background: linear-gradient(120deg, #FFD700 60%, #ffec99 100%);
+  color: #222;
+  border-radius: 16px;
+  width: 160px;
+  max-width: 45vw;
+  height: 70px;
+  font-size: 2.1rem;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px #0004, 0 2px 8px #ffd70077;
+  border: 2.5px solid #fff3;
+  margin: 0 4px;
+  transition: box-shadow 0.2s, background 0.2s;
+}
+
+.cycles {
+  background: linear-gradient(120deg, #ffd700 60%, #ffc800 100%);
+}
+.tabatas {
+  background: linear-gradient(120deg, #00c040 60%, #43e97b 100%);
+  color: #fff;
+  box-shadow: 0 0 10px #0004, 0 2px 8px #00c04055;
+  border: 2.5px solid #fff3;
+}
+.label {
+  font-size: 1rem;
+  font-weight: normal;
+  opacity: 0.7;
+  margin-top: 4px;
+  color: #222;
+  letter-spacing: 0.5px;
+}
     .label {
       font-size: 1rem;
       font-weight: normal;
