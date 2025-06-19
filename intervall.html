@@ -332,10 +332,6 @@ function startTabata() {
   }
   updateTiles();
 }
-      // Resthorn (Work <-> Rest): immer am Ende von Work!
-      if((state==="work"||state==="rest"||state==="setpause") && t === 0) playRest();
-      updateTiles();
-    }
     function stopTabata() {
       clearInterval(timer);
       running = false;
