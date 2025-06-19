@@ -232,12 +232,23 @@
       }
       updateTiles();
     };
-    function startTabata() {
-      document.getElementById("startBtn").style.display = "none";
-      document.getElementById("pauseBtn").style.display = "";
-      document.getElementById("resetBtn").style.display = "";
-      paused = false;
-      running = true;
+  function startTabata() {
+  // "Audio Unlock" für Safari/iOS/Mac
+  [soundGo, soundBeep, soundRest].forEach(a => {
+    try {
+      a.volume = 0;
+      a.play().then(()=>{a.pause();a.currentTime=0;a.volume=1;});
+    } catch(e){}
+  });
+
+  document.getElementById("startBtn").style.display = "none";
+  document.getElementById("pauseBtn").style.display = "";
+  document.getElementById("resetBtn").style.display = "";
+  paused = false;
+  running = true;
+  // Werte holen ...
+  // ... (restlicher Code wie gehabt)
+}
       // Werte holen
       tPrepare = parseInt(document.getElementById("prepareTime").innerText);
       tWork = parseInt(document.getElementById("workTime").innerText);
@@ -362,9 +373,30 @@
       return val<10?"0"+val:val;
     }
     // --- AUDIO ---
-    function playGo() { try{ soundGo.currentTime=0; soundGo.play();}catch(e){} }
-    function playBeep() { try{ soundBeep.currentTime=0; soundBeep.play();}catch(e){} }
-    function playRest() { try{ soundRest.currentTime=0; soundRest.play();}catch(e){} }
+    function playGo() {
+  try {
+    soundGo.pause();
+    soundGo.currentTime = 0;
+    soundGo.volume = 1;
+    setTimeout(()=>soundGo.play().catch(()=>{}), 40);
+  } catch(e){}
+}
+function playBeep() {
+  try {
+    soundBeep.pause();
+    soundBeep.currentTime = 0;
+    soundBeep.volume = 1;
+    setTimeout(()=>soundBeep.play().catch(()=>{}), 40);
+  } catch(e){}
+}
+function playRest() {
+  try {
+    soundRest.pause();
+    soundRest.currentTime = 0;
+    soundRest.volume = 1;
+    setTimeout(()=>soundRest.play().catch(()=>{}), 60);
+  } catch(e){}
+}
     // --- SETTINGS MODAL ---
     function openSettings() {
       document.getElementById("descTextarea").value = document.getElementById("descText").innerText.replace('\n', '');
