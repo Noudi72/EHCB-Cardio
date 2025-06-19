@@ -125,20 +125,77 @@
       gap: 1em;
       margin-bottom: 1em;
     }
-    .start-btn, .settings-btn, .pause-btn, .reset-btn {
+    .start-btn {
+  background: #d50000;
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  width: 180px;
+  max-width: 47vw;
+  height: 70px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.55rem;
+  font-weight: normal; /* NICHT bold, damit wie CYCLES/TABATAS */
+  margin: 0 auto 1em auto;
+  padding: 0;
+  gap: 0.1em;
+}
+.play-icon {
+  font-size: 2.8rem; /* Grösser, wie gewünscht */
+  line-height: 1;
+  margin-bottom: 0.01em;
+  font-weight: bold;
+}
+.start-label,
+.settings-btn .label {
+  text-transform: uppercase;
+  font-size: 1rem;
+  font-weight: normal;
+  letter-spacing: 0.5px;
+}
+    .pause-btn, .reset-btn {
       background: #d50000;
       color: #fff;
       font-size: 1.1rem;
       border: none;
       border-radius: 10px;
-      padding: 0.6em 1.3em;
+      padding: 0.3em 1.2em;
       cursor: pointer;
       box-shadow: 0 2px 8px rgba(0,0,0,0.13);
       margin: 0.5em 0;
+      width: 180px;
+      max-width: 47vw;
+      height: 70px;
+      font-size: 2.1rem;
+      border-radius: 16px;
+      font-weight: bold;
+      margin: 0 4px;
     }
     .pause-btn { background: #FFA500; color: #222;}
     .reset-btn { background: #222; color: #fff;}
-    .settings-btn { background: #222; }
+    .settings-btn {
+      background: #222;
+      color: #fff;
+      border-radius: 16px;
+      width: 160px;
+      max-width: 45vw;
+      height: 70px;
+      font-size: 2.1rem;
+      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 10px #0004, 0 2px 8px #ffd70077;
+      border: 2.5px solid #fff3;
+      margin: 0 auto 1.8em auto;
+      transition: box-shadow 0.2s, background 0.2s;
+      gap: 0;
+    }
     /* Modal Styles für Settings */
     .modal {
       display: none;
@@ -204,11 +261,17 @@
     <div class="tabatas"><span id="tabatasVal">4</span><span class="label">TABATAS</span></div>
   </div>
   <div class="button-row">
-    <button class="start-btn" onclick="startTabata()" id="startBtn">▶ Start</button>
+    <button class="start-btn" onclick="startTabata()" id="startBtn">
+      <span class="play-icon">▶</span>
+      <span class="start-label">Start</span>
+    </button>
     <button class="pause-btn" onclick="pauseTabata()" id="pauseBtn" style="display:none;">Pause</button>
     <button class="reset-btn" onclick="resetTabata()" id="resetBtn" style="display:none;">Reset</button>
   </div>
-  <button class="settings-btn" onclick="openSettings()">⚙️ Einstellungen</button>
+  <button class="settings-btn" onclick="openSettings()">
+    <span style="font-size:2.1rem; font-weight:bold; color:#fff;">⚙️</span>
+    <span class="label" style="color:#fff;">Einstellungen</span>
+  </button>
   <!-- SETTINGS MODAL -->
   <div class="modal" id="settingsModal">
     <form class="modal-content" onsubmit="saveSettings();return false;">
