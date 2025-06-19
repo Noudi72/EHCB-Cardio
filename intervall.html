@@ -249,9 +249,15 @@
   </style>
 </head>
 <body>
+  <a href="index.html" id="backBtn" style="position: absolute; left: 28px; top: 26px; text-decoration: none; z-index: 10;">
+    <button style="background:#ffe028;color:#222;font-weight:bold;border:none;border-radius:8px;padding:10px 28px;font-size:1.1em;box-shadow:1px 2px 8px #0004;cursor:pointer;display:flex;align-items:center;gap:7px;">
+      &#8592; Zurück
+    </button>
+  </a>
   <img src="icon-cardio.png" class="logo" alt="Cardio Logo" />
   <h1>Intervall Tabata</h1>
   <div class="desc" id="descText">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up &amp; Cooldown by your own)</div>
+  <div id="phaseCount" style="font-size:1.08em; color:#ffe028; font-weight:500; margin-bottom:6px;"></div>
   <div class="tile prepare active" id="tilePrepare"><span>PREPARE</span><span class="time" id="prepareTime">03</span></div>
   <div class="tile work" id="tileWork"><span>WORK</span><span class="time" id="workTime">30</span></div>
   <div class="tile rest" id="tileRest"><span>REST</span><span class="time" id="restTime">15</span></div>
@@ -456,6 +462,16 @@ function startTabata() {
         if(state==="rest") document.getElementById("restTime").innerText = pad(t);
         if(state==="setpause") document.getElementById("setPauseTime").innerText = pad(t);
       }
+      // Phasenfortschritt anzeigen
+      let phaseText = "";
+      if(state === "prepare") {
+        phaseText = "Prepare – Set " + currentTabata + " von " + totalTabatas;
+      } else if(state === "work" || state === "rest") {
+        phaseText = "Set " + currentTabata + " von " + totalTabatas + ", Cycle " + currentCycle + " von " + totalCycles;
+      } else if(state === "setpause") {
+        phaseText = "Set Pause – " + currentTabata + " von " + totalTabatas;
+      }
+      document.getElementById("phaseCount").textContent = phaseText;
     }
     function pad(val) {
       return val<10?"0"+val:val;
