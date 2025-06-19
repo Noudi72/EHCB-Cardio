@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -170,18 +170,10 @@
   </style>
 </head>
 <body>
-  <img src="App Icon Cardio.png" class="logo" alt="Cardio Logo" />
+  <img src="icon-cardio.png" class="logo" alt="Cardio Logo" />
   <h1>Intervall Tabata</h1>
   <div class="desc" id="descText">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up &amp; Cooldown by your own)</div>
-  <!-- Der Rest bleibt wie in deiner letzten Version ... -->
-  <!-- ... -->
-  <!-- AUDIO + SCRIPT ebenfalls wie gehabt ... -->
-</body>
-</html>
-  <h1>Intervall Tabata</h1>
-  <div class="desc" id="descText">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up &amp; Cooldown by your own)</div>
-  <!-- Timer Tiles -->
-  <div class="tile prepare" id="tilePrepare"><span>PREPARE</span><span class="time" id="prepareTime">03</span></div>
+  <div class="tile prepare active" id="tilePrepare"><span>PREPARE</span><span class="time" id="prepareTime">03</span></div>
   <div class="tile work" id="tileWork"><span>WORK</span><span class="time" id="workTime">30</span></div>
   <div class="tile rest" id="tileRest"><span>REST</span><span class="time" id="restTime">15</span></div>
   <div class="tile setpause" id="tileSetPause"><span>SET PAUSE</span><span class="time" id="setPauseTime">120</span></div>
@@ -218,233 +210,220 @@
   <audio id="soundBeep" src="beep.wav"></audio>
   <audio id="soundRest" src="rest_2.mp3"></audio>
   <script>
+    // Variablen für den Timer
     let timer = null;
-    let isPaused = false;
-    let phases = [];
-    let current = 0;
-    let cycles = 6, tabatas = 4, prepare = 3, work = 30, rest = 15, setPause = 120;
-    let curCycle = 6, curTabata = 4;
-    let started = false;
-
-    // Description editing
-    const descText = document.getElementById('descText');
-    const descTextarea = document.getElementById('descTextarea');
-    // Load description from localStorage if available
-    window.addEventListener('load', () => {
-      const savedDesc = localStorage.getItem('tabataDescription');
-      if(savedDesc) {
-        descText.innerHTML = savedDesc.replace(/\n/g, '<br>');
-        descTextarea.value = savedDesc.replace(/<br\s*\/?>/gi, '\n');
+    let state = "prepare";
+    let running = false;
+    let paused = false;
+    let currentCycle = 1, totalCycles = 6;
+    let currentTabata = 1, totalTabatas = 4;
+    let tPrepare = 3, tWork = 30, tRest = 15, tSetPause = 120;
+    let t = tPrepare;
+    let settings = {};
+    // Audio Elemente
+    const soundGo = document.getElementById("soundGo");
+    const soundBeep = document.getElementById("soundBeep");
+    const soundRest = document.getElementById("soundRest");
+    // Initialisieren (Settings aus localStorage)
+    window.onload = function() {
+      if(localStorage.getItem("tabataSettings")) {
+        settings = JSON.parse(localStorage.getItem("tabataSettings"));
+        loadSettings();
       }
-    });
-
-    function openSettings() {
-      document.getElementById('settingsModal').style.display = 'flex';
-      descTextarea.value = descText.innerHTML.replace(/<br\s*\/?>/gi, '\n');
-      document.getElementById('setPrepare').value = prepare;
-      document.getElementById('setWork').value = work;
-      document.getElementById('setRest').value = rest;
-      document.getElementById('setSetPause').value = setPause;
-      document.getElementById('setCycles').value = cycles;
-      document.getElementById('setTabatas').value = tabatas;
-    }
-    function closeSettings() {
-      document.getElementById('settingsModal').style.display = 'none';
-    }
-    function saveSettings() {
-      let val = descTextarea.value.trim();
-      if(val === '') val = '4 Sets – 6× 30s Work / 15s Rest (Warm-Up & Cooldown by your own)';
-      descText.innerHTML = val.replace(/\n/g, '<br>');
-      localStorage.setItem('tabataDescription', descText.innerHTML);
-      prepare = parseInt(document.getElementById('setPrepare').value);
-      work = parseInt(document.getElementById('setWork').value);
-      rest = parseInt(document.getElementById('setRest').value);
-      setPause = parseInt(document.getElementById('setSetPause').value);
-      cycles = parseInt(document.getElementById('setCycles').value);
-      tabatas = parseInt(document.getElementById('setTabatas').value);
-      document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
-      document.getElementById('workTime').textContent = work;
-      document.getElementById('restTime').textContent = rest;
-      curCycle = cycles;
-      curTabata = tabatas;
-      document.getElementById('cyclesVal').textContent = curCycle;
-      document.getElementById('tabatasVal').textContent = curTabata;
-      closeSettings();
-    }
-    function updateCounts(){
-      document.getElementById('cyclesVal').textContent = curCycle >= 0 ? curCycle : 0;
-      document.getElementById('tabatasVal').textContent = curTabata >= 0 ? curTabata : 0;
-    }
-    function showPhase(type, value){
-      document.getElementById('tilePrepare').classList.remove('active');
-      document.getElementById('tileWork').classList.remove('active');
-      document.getElementById('tileRest').classList.remove('active');
-      document.getElementById('tileSetPause').classList.remove('active');
-      if(type==='PREPARE') {
-        document.getElementById('tilePrepare').classList.add('active');
-        document.getElementById('prepareTime').textContent = value<10 ? '0'+value : value;
-        document.getElementById('workTime').textContent = work;
-        document.getElementById('restTime').textContent = rest;
-        document.getElementById('setPauseTime').textContent = setPause;
-      }
-      if(type==='WORK') {
-        document.getElementById('tileWork').classList.add('active');
-        document.getElementById('workTime').textContent = value;
-        document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
-        document.getElementById('restTime').textContent = rest;
-        document.getElementById('setPauseTime').textContent = setPause;
-      }
-      if(type==='REST') {
-        document.getElementById('tileRest').classList.add('active');
-        document.getElementById('restTime').textContent = value;
-        document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
-        document.getElementById('workTime').textContent = work;
-        document.getElementById('setPauseTime').textContent = setPause;
-      }
-      if(type==='SET PAUSE') {
-        document.getElementById('tileSetPause').classList.add('active');
-        document.getElementById('setPauseTime').textContent = value;
-        document.getElementById('prepareTime').textContent = prepare < 10 ? '0'+prepare : prepare;
-        document.getElementById('workTime').textContent = work;
-        document.getElementById('restTime').textContent = rest;
-      }
-    }
-    function playGo() {
-      let beep = document.getElementById('soundBeep');
-      beep.pause();
-      beep.currentTime = 0;
-      let audio = document.getElementById('soundGo');
-      audio.pause();
-      audio.currentTime = 0;
-      audio.play();
-    }
-    function playRest() {
-      let beep = document.getElementById('soundBeep');
-      beep.pause();
-      beep.currentTime = 0;
-      let audio = document.getElementById('soundRest');
-      audio.pause();
-      audio.currentTime = 0;
-      audio.play();
-    }
-    function playBeep() {
-      let audio = document.getElementById('soundBeep');
-      audio.pause();
-      audio.currentTime = 0;
-      audio.play();
-    }
-    // --- PHASE TIMER ---
-    function nextPhase(){
-      if (current>=phases.length) {
-        showPhase('', 0);
-        document.getElementById('startBtn').disabled = false;
-        document.getElementById('pauseBtn').style.display = 'none';
-        document.getElementById('resetBtn').style.display = 'none';
-        started = false;
-        return;
-      }
-      let phase = phases[current];
-      let t = phase.duration;
-      showPhase(phase.type, t);
-
-      timer = setInterval(()=>{
-        showPhase(phase.type, t);
-        // Prepare: 3-2-1-Go.mp3 **nur EINMAL** am Anfang der Prepare-Phase
-        if(phase.type==='PREPARE' && t === phase.duration) playGo();
-        // WORK & REST: Beep bei 3, 2, 1; Rest-Ton bei 0
-        if((phase.type==='WORK'||phase.type==='REST') && (t<=3 && t>0)) playBeep();
-        if(t===0 && (phase.type==='WORK'||phase.type==='REST')) setTimeout(playRest, 120);
-        if(t===0 && phase.type==='SET PAUSE') setTimeout(playRest, 120);
-
-        t--;
-        if (t<0) {
-          clearInterval(timer);
-          // --- Nach SET PAUSE: 3s Prepare Countdown + Sound ---
-          if(phase.type==='SET PAUSE') {
-            let prep = 3;
-            showPhase('PREPARE', prep);
-            let prepTimer = setInterval(() => {
-              showPhase('PREPARE', prep);
-              if(prep<=3 && prep>0) playGo();
-              prep--;
-              if(prep<0) {
-                clearInterval(prepTimer);
-                if(curTabata > 1) curTabata--;
-                else if(curTabata === 1) curTabata = 0;
-                curCycle = cycles;
-                updateCounts();
-                current++;
-                if(!isPaused) nextPhase();
-              }
-            },1000);
-            return;
-          }
-          // Down-count cycles/tabatas
-          if(phase.type==='WORK'){
-            if(curCycle > 1) curCycle--;
-            else if(curCycle === 1) curCycle = 0;
-          }
-          updateCounts();
-          current++;
-          if(!isPaused) nextPhase();
-        }
-      },1000);
-    }
+      updateTiles();
+    };
     function startTabata() {
-      // --- iOS/Safari Soundfreigabe ---
-      ["soundGo", "soundBeep", "soundRest"].forEach(id => {
-        const audio = document.getElementById(id);
-        audio.volume = 0;
-        audio.play().then(()=>{ audio.pause(); audio.currentTime=0; audio.volume=1; }).catch(()=>{});
-      });
-      started = true;
-      isPaused = false;
-      document.getElementById('startBtn').disabled = true;
-      document.getElementById('pauseBtn').style.display = '';
-      document.getElementById('resetBtn').style.display = '';
-      curCycle = cycles;
-      curTabata = tabatas;
-      updateCounts();
-      // Phasenaufbau (Rest nach letztem Work entfällt!)
-      phases = [];
-      if (prepare > 0) phases.push({type:'PREPARE', duration:prepare});
-      for(let t=1; t<=tabatas; t++){
-        for(let c=1; c<=cycles; c++){
-          phases.push({type:'WORK', duration:work});
-          if(c < cycles) phases.push({type:'REST', duration:rest});
-        }
-        if(t<tabatas) phases.push({type:'SET PAUSE', duration:setPause});
-      }
-      current = 0;
-      nextPhase();
+      document.getElementById("startBtn").style.display = "none";
+      document.getElementById("pauseBtn").style.display = "";
+      document.getElementById("resetBtn").style.display = "";
+      paused = false;
+      running = true;
+      // Werte holen
+      tPrepare = parseInt(document.getElementById("prepareTime").innerText);
+      tWork = parseInt(document.getElementById("workTime").innerText);
+      tRest = parseInt(document.getElementById("restTime").innerText);
+      tSetPause = parseInt(document.getElementById("setPauseTime").innerText);
+      totalCycles = parseInt(document.getElementById("cyclesVal").innerText);
+      totalTabatas = parseInt(document.getElementById("tabatasVal").innerText);
+      // State initialisieren
+      state = "prepare";
+      currentCycle = 1;
+      currentTabata = 1;
+      updateTiles();
+      t = tPrepare;
+      playGo(); // Startsignal
+      timer = setInterval(step, 1000);
     }
     function pauseTabata() {
-      if (!started) return;
-      if (!isPaused) {
-        clearInterval(timer);
-        isPaused = true;
-        document.getElementById('pauseBtn').textContent = 'Fortsetzen';
+      if(paused) {
+        paused = false;
+        document.getElementById("pauseBtn").textContent = "Pause";
+        timer = setInterval(step, 1000);
       } else {
-        isPaused = false;
-        document.getElementById('pauseBtn').textContent = 'Pause';
-        nextPhase();
+        paused = true;
+        document.getElementById("pauseBtn").textContent = "Weiter";
+        clearInterval(timer);
       }
     }
     function resetTabata() {
       clearInterval(timer);
-      isPaused = false;
-      started = false;
-      document.getElementById('pauseBtn').textContent = 'Pause';
-      document.getElementById('pauseBtn').style.display = 'none';
-      document.getElementById('resetBtn').style.display = 'none';
-      document.getElementById('startBtn').disabled = false;
-      showPhase('PREPARE', prepare < 10 ? '0'+prepare : prepare);
-      document.getElementById('workTime').textContent = work;
-      document.getElementById('restTime').textContent = rest;
-      curCycle = cycles;
-      curTabata = tabatas;
-      updateCounts();
+      running = false; paused = false;
+      document.getElementById("startBtn").style.display = "";
+      document.getElementById("pauseBtn").style.display = "none";
+      document.getElementById("resetBtn").style.display = "none";
+      state = "prepare";
+      currentCycle = 1;
+      currentTabata = 1;
+      t = tPrepare;
+      updateTiles();
     }
+    function step() {
+      if(paused) return;
+      t--;
+      if(t <= 3 && t > 0 && (state==="work"||state==="rest"||state==="setpause")) playBeep();
+      if(t === 0) {
+        // Phase fertig
+        if(state === "prepare") {
+          t = tWork;
+          state = "work";
+          activateTile("work");
+        } else if(state === "work") {
+          playRest();
+          t = tRest;
+          state = "rest";
+          activateTile("rest");
+        } else if(state === "rest") {
+          if(currentCycle < totalCycles) {
+            currentCycle++;
+            t = tWork;
+            state = "work";
+            activateTile("work");
+          } else if(currentTabata < totalTabatas) {
+            playGo();
+            currentTabata++;
+            currentCycle = 1;
+            t = tSetPause;
+            state = "setpause";
+            activateTile("setpause");
+          } else {
+            stopTabata();
+            return;
+          }
+        } else if(state === "setpause") {
+          t = tPrepare;
+          state = "prepare";
+          activateTile("prepare");
+        }
+      }
+      // Resthorn (Work <-> Rest): immer am Ende von Work!
+      if((state==="work"||state==="rest"||state==="setpause") && t === 0) playRest();
+      updateTiles();
+    }
+    function stopTabata() {
+      clearInterval(timer);
+      running = false;
+      document.getElementById("startBtn").style.display = "";
+      document.getElementById("pauseBtn").style.display = "none";
+      document.getElementById("resetBtn").style.display = "none";
+      state = "prepare";
+      t = tPrepare;
+      currentCycle = 1;
+      currentTabata = 1;
+      updateTiles();
+    }
+    function activateTile(tile) {
+      document.getElementById("tilePrepare").classList.remove("active");
+      document.getElementById("tileWork").classList.remove("active");
+      document.getElementById("tileRest").classList.remove("active");
+      document.getElementById("tileSetPause").classList.remove("active");
+      if(tile==="prepare") document.getElementById("tilePrepare").classList.add("active");
+      if(tile==="work") document.getElementById("tileWork").classList.add("active");
+      if(tile==="rest") document.getElementById("tileRest").classList.add("active");
+      if(tile==="setpause") document.getElementById("tileSetPause").classList.add("active");
+    }
+    function updateTiles() {
+      document.getElementById("prepareTime").innerText = pad(tPrepare);
+      document.getElementById("workTime").innerText = pad(tWork);
+      document.getElementById("restTime").innerText = pad(tRest);
+      document.getElementById("setPauseTime").innerText = pad(tSetPause);
+      document.getElementById("cyclesVal").innerText = totalCycles-(currentCycle-1);
+      document.getElementById("tabatasVal").innerText = totalTabatas-(currentTabata-1);
+      // Highlight Active
+      activateTile(state);
+      // Countdowns in Tile
+      if(running) {
+        if(state==="prepare") document.getElementById("prepareTime").innerText = pad(t);
+        if(state==="work") document.getElementById("workTime").innerText = pad(t);
+        if(state==="rest") document.getElementById("restTime").innerText = pad(t);
+        if(state==="setpause") document.getElementById("setPauseTime").innerText = pad(t);
+      }
+    }
+    function pad(val) {
+      return val<10?"0"+val:val;
+    }
+    // --- AUDIO ---
+    function playGo() { try{ soundGo.currentTime=0; soundGo.play();}catch(e){} }
+    function playBeep() { try{ soundBeep.currentTime=0; soundBeep.play();}catch(e){} }
+    function playRest() { try{ soundRest.currentTime=0; soundRest.play();}catch(e){} }
+    // --- SETTINGS MODAL ---
+    function openSettings() {
+      document.getElementById("descTextarea").value = document.getElementById("descText").innerText.replace('\n', '');
+      document.getElementById("setPrepare").value = tPrepare;
+      document.getElementById("setWork").value = tWork;
+      document.getElementById("setRest").value = tRest;
+      document.getElementById("setSetPause").value = tSetPause;
+      document.getElementById("setCycles").value = totalCycles;
+      document.getElementById("setTabatas").value = totalTabatas;
+      document.getElementById("settingsModal").style.display = "flex";
+    }
+    function closeSettings() {
+      document.getElementById("settingsModal").style.display = "none";
+    }
+    function saveSettings() {
+      // Werte übernehmen
+      tPrepare = parseInt(document.getElementById("setPrepare").value);
+      tWork = parseInt(document.getElementById("setWork").value);
+      tRest = parseInt(document.getElementById("setRest").value);
+      tSetPause = parseInt(document.getElementById("setSetPause").value);
+      totalCycles = parseInt(document.getElementById("setCycles").value);
+      totalTabatas = parseInt(document.getElementById("setTabatas").value);
+      document.getElementById("prepareTime").innerText = pad(tPrepare);
+      document.getElementById("workTime").innerText = pad(tWork);
+      document.getElementById("restTime").innerText = pad(tRest);
+      document.getElementById("setPauseTime").innerText = pad(tSetPause);
+      document.getElementById("cyclesVal").innerText = totalCycles;
+      document.getElementById("tabatasVal").innerText = totalTabatas;
+      // Beschreibung speichern
+      document.getElementById("descText").innerText = document.getElementById("descTextarea").value;
+      // Save localStorage
+      settings = {
+        tPrepare, tWork, tRest, tSetPause,
+        totalCycles, totalTabatas,
+        desc: document.getElementById("descTextarea").value
+      };
+      localStorage.setItem("tabataSettings", JSON.stringify(settings));
+      closeSettings();
+      resetTabata();
+    }
+    function loadSettings() {
+      if(settings.tPrepare) tPrepare = settings.tPrepare;
+      if(settings.tWork) tWork = settings.tWork;
+      if(settings.tRest) tRest = settings.tRest;
+      if(settings.tSetPause) tSetPause = settings.tSetPause;
+      if(settings.totalCycles) totalCycles = settings.totalCycles;
+      if(settings.totalTabatas) totalTabatas = settings.totalTabatas;
+      document.getElementById("prepareTime").innerText = pad(tPrepare);
+      document.getElementById("workTime").innerText = pad(tWork);
+      document.getElementById("restTime").innerText = pad(tRest);
+      document.getElementById("setPauseTime").innerText = pad(tSetPause);
+      document.getElementById("cyclesVal").innerText = totalCycles;
+      document.getElementById("tabatasVal").innerText = totalTabatas;
+      if(settings.desc) document.getElementById("descText").innerText = settings.desc;
+    }
+    // Modal close outside click
+    window.onclick = function(e){
+      if(e.target===document.getElementById("settingsModal")) closeSettings();
+    };
   </script>
 </body>
 </html>
