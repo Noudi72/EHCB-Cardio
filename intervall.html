@@ -246,22 +246,6 @@ function startTabata() {
   document.getElementById("resetBtn").style.display = "";
   paused = false;
   running = true;
-  // Werte holen
-  tPrepare = parseInt(document.getElementById("prepareTime").innerText);
-  tWork = parseInt(document.getElementById("workTime").innerText);
-  tRest = parseInt(document.getElementById("restTime").innerText);
-  tSetPause = parseInt(document.getElementById("setPauseTime").innerText);
-  totalCycles = parseInt(document.getElementById("cyclesVal").innerText);
-  totalTabatas = parseInt(document.getElementById("tabatasVal").innerText);
-  // State initialisieren
-  state = "prepare";
-  currentCycle = 1;
-  currentTabata = 1;
-  updateTiles();
-  t = tPrepare;
-  playGo(); // Startsignal
-  timer = setInterval(step, 1000);
-}
       // Werte holen
       tPrepare = parseInt(document.getElementById("prepareTime").innerText);
       tWork = parseInt(document.getElementById("workTime").innerText);
