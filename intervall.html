@@ -286,43 +286,52 @@ function startTabata() {
       updateTiles();
     }
     function step() {
-      if(paused) return;
-      t--;
-      if(t <= 3 && t > 0 && (state==="work"||state==="rest"||state==="setpause")) playBeep();
-      if(t === 0) {
-        // Phase fertig
-        if(state === "prepare") {
-          t = tWork;
-          state = "work";
-          activateTile("work");
-        } else if(state === "work") {
-          playRest();
-          t = tRest;
-          state = "rest";
-          activateTile("rest");
-        } else if(state === "rest") {
-          if(currentCycle < totalCycles) {
-            currentCycle++;
-            t = tWork;
-            state = "work";
-            activateTile("work");
-          } else if(currentTabata < totalTabatas) {
-            playGo();
-            currentTabata++;
-            currentCycle = 1;
-            t = tSetPause;
-            state = "setpause";
-            activateTile("setpause");
-          } else {
-            stopTabata();
-            return;
-          }
-        } else if(state === "setpause") {
-          t = tPrepare;
-          state = "prepare";
-          activateTile("prepare");
+  if (paused) return;
+  t--;
+
+  // Countdown-Beep in letzten 3 Sekunden für Work, Rest, Setpause
+  if (t <= 3 && t > 0 && (state === "work" || state === "rest" || state === "setpause")) playBeep();
+
+  if (t === 0) {
+    // PHASEN-ÜBERGANG
+    if (state === "prepare") {
+      t = tWork;
+      state = "work";
+      activateTile("work");
+    } else if (state === "work") {
+      // Prüfen, ob dies der letzte Cycle in der Tabata ist
+      if (currentCycle < totalCycles) {
+        playRest();
+        t = tRest;
+        state = "rest";
+        activateTile("rest");
+      } else {
+        // Letzter Cycle: Kein Rest mehr, sondern direkt in Set Pause oder Ende
+        if (currentTabata < totalTabatas) {
+          playGo(); // Startsignal für neue Tabata
+          currentTabata++;
+          currentCycle = 1;
+          t = tSetPause;
+          state = "setpause";
+          activateTile("setpause");
+        } else {
+          stopTabata(); // FERTIG!
+          return;
         }
       }
+    } else if (state === "rest") {
+      currentCycle++;
+      t = tWork;
+      state = "work";
+      activateTile("work");
+    } else if (state === "setpause") {
+      t = tPrepare;
+      state = "prepare";
+      activateTile("prepare");
+    }
+  }
+  updateTiles();
+}
       // Resthorn (Work <-> Rest): immer am Ende von Work!
       if((state==="work"||state==="rest"||state==="setpause") && t === 0) playRest();
       updateTiles();
