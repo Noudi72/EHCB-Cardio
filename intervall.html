@@ -63,6 +63,17 @@
       word-break: break-word;
       white-space: normal;
     }
+    .cyclesets-row { text-align: center; margin-bottom: 10px; }
+    .cyclesets-row input[type="number"] {
+      width: 3.1em;
+      font-size: 1.1em;
+      padding: 3px;
+      border-radius: 5px;
+      border: 1px solid #ffe02888;
+      margin: 0 10px;
+      text-align: center;
+    }
+    .cyclesets-row label { margin: 0 6px; font-size: 1.05em; color: #ffe028; }
   </style>
 </head>
 <body>
@@ -72,8 +83,7 @@
   <img src="icon-cardio.png" class="logo" alt="Cardio Logo" />
   <h1>Intervall</h1>
   <div class="desc">
-    Ziel: Effizientes Trainingskonzept, das sich durch kurze, intensive Intervalle auszeichnet, um in kurzer Zeit maximale Ergebnisse in Bezug auf Fettverbrennung, Ausdauer und Muskelaufbau zu erzielen.<br>
-    Fokus: Die Intensität sollte so hoch sein, dass man kurz vor dem Erreichen des persönlichen Limits ist.
+    Ziel: Effizientes Intervalltraining mit Work- und Rest-Phasen – einfach anpassen und durchstarten!
   </div>
   <div class="phaseBox prepare" id="phaseBox">
     <div class="phaseLabel" id="phaseLabel">BEREIT</div>
@@ -86,13 +96,19 @@
     <button id="editBtn">PHASEN BEARBEITEN</button>
     <button id="resetBtn" style="display:none;">RESET</button>
   </div>
+  <div class="cyclesets-row">
+    <label>Cycles (Work/Rest pro Set):</label>
+    <input type="number" id="cyclesInput" value="8" min="1" max="30">
+    <label>Sets:</label>
+    <input type="number" id="setsInput" value="4" min="1" max="10">
+  </div>
   <div class="info">Nächste Phase wird automatisch gestartet</div>
   <table>
     <thead>
       <tr>
         <th>#</th>
-        <th>Dauer</th>
-        <th>Beschreibung</th>
+        <th>Phase</th>
+        <th>Dauer (s)</th>
         <th>RPM</th>
         <th>HF%</th>
       </tr>
@@ -104,42 +120,33 @@
   <audio id="audioBeep" src="beep.wav"></audio>
 
   <script>
-    // --- Intervall-Phasen (bearbeitbar) ---
-    let phases = [
-      { name: "Aufwärmen", duration: 300, rpm: "70-80", hf: "50-60", desc: "5 Min. Leichter Widerstand steigernd" },
-      { name: "Intervall 1", duration: 15, rpm: "100-110", hf: "85-100", desc: "15 Sek. sehr hart" },
-      { name: "Pause", duration: 15, rpm: "60-70", hf: "50-60", desc: "15 Sek. Sehr locker" },
-      { name: "Intervall 2", duration: 15, rpm: "100-110", hf: "85-100", desc: "15 Sek. sehr hart" },
-      { name: "Pause", duration: 15, rpm: "60-70", hf: "50-60", desc: "15 Sek. Sehr locker" },
-      { name: "Intervall 3", duration: 15, rpm: "100-110", hf: "85-100", desc: "15 Sek. sehr hart" },
-      { name: "Pause", duration: 15, rpm: "60-70", hf: "50-60", desc: "15 Sek. Sehr locker" },
-      { name: "Intervall 4", duration: 15, rpm: "100-110", hf: "85-100", desc: "15 Sek. sehr hart" },
-      { name: "Pause", duration: 15, rpm: "60-70", hf: "50-60", desc: "15 Sek. Sehr locker" },
-      { name: "Intervall 5", duration: 15, rpm: "100-110", hf: "85-100", desc: "15 Sek. sehr hart" },
-      { name: "Pause", duration: 15, rpm: "60-70", hf: "50-60", desc: "15 Sek. Sehr locker" },
-      { name: "Intervall 6", duration: 15, rpm: "100-110", hf: "85-100", desc: "15 Sek. sehr hart" },
-      { name: "Pause", duration: 15, rpm: "60-70", hf: "50-60", desc: "15 Sek. Sehr locker" },
-      { name: "Intervall 7", duration: 15, rpm: "100-110", hf: "85-100", desc: "15 Sek. sehr hart" },
-      { name: "Pause", duration: 15, rpm: "60-70", hf: "50-60", desc: "15 Sek. Sehr locker" },
-      { name: "Intervall 8", duration: 15, rpm: "100-110", hf: "85-100", desc: "15 Sek. sehr hart" },
-      { name: "Pause", duration: 15, rpm: "60-70", hf: "50-60", desc: "15 Sek. Sehr locker" },
-      { name: "Cool-Down", duration: 600, rpm: "60", hf: "40-50", desc: "10 Min. Locker fahren, niedriger Widerstand" }
+    // --- Intervall Grundphasen (bearbeitbar) ---
+    let basePhases = [
+      { name: "Aufwärmen", duration: 300, rpm: "70-80", hf: "50-60" },
+      { name: "Work", duration: 30, rpm: "100", hf: "90-95" },
+      { name: "Rest", duration: 15, rpm: "60", hf: "60-70" },
+      { name: "Set Pause", duration: 120, rpm: "50", hf: "50-60" },
+      { name: "Cool-Down", duration: 300, rpm: "60", hf: "40-50" }
     ];
 
-    // === Tabelle: Bearbeitbar/Anzeige-Logik ===
+    // Cycles & Sets
+    let cycles = 8;
+    let sets = 4;
+
+    // Tabelle rendern
     function renderPhaseTable(editMode=false) {
       const table = document.getElementById('phaseTable');
       table.innerHTML = "";
-      phases.forEach((p, i) => {
+      basePhases.forEach((p, i) => {
         let row = document.createElement("tr");
         row.innerHTML =
           `<td>${i+1}</td>
            <td>${editMode
-             ? `<input type="text" style="width:4em" value="${p.duration >= 60 ? (p.duration/60)+" Min." : p.duration+" Sek."}" />`
-             : (p.duration >= 60 ? Math.floor(p.duration/60)+" Min." : p.duration+" Sek.")}</td>
+             ? `<input type="text" style="width:8em" value="${p.name}" />`
+             : p.name}</td>
            <td>${editMode
-             ? `<input type="text" style="width:15em" value="${p.desc || p.name}" />`
-             : (p.desc || p.name)}</td>
+             ? `<input type="number" min="1" style="width:5em" value="${p.duration}" />`
+             : p.duration}</td>
            <td>${editMode
              ? `<input type="text" style="width:6em" value="${p.rpm}" />`
              : p.rpm}</td>
@@ -148,7 +155,7 @@
              : p.hf}</td>`;
         table.appendChild(row);
       });
-      // Speichern-Button einfügen
+      // Speichern-Button
       if (editMode) {
         const saveRow = document.createElement("tr");
         saveRow.innerHTML = `<td colspan="5"><button id="savePhases">SPEICHERN</button></td>`;
@@ -160,32 +167,21 @@
 
     function savePhaseTable() {
       const rows = document.querySelectorAll("#phaseTable tr");
-      let newPhases = [];
+      let newBase = [];
       rows.forEach((row, idx) => {
-        if (idx < phases.length) {
+        if (idx < basePhases.length) {
           const inputs = row.querySelectorAll("input");
-          if (inputs.length === 4) {
-            // Dauer analysieren
-            let dur = inputs[0].value.trim();
-            let duration = 0;
-            if (dur.toLowerCase().includes("min")) {
-              duration = parseInt(dur) * 60;
-            } else if (dur.toLowerCase().includes("sek")) {
-              duration = parseInt(dur);
-            } else {
-              duration = parseInt(dur);
-            }
-            newPhases.push({
-              name: phases[idx].name,
-              duration: duration,
+          if (inputs.length === 4 || inputs.length === 5) {
+            newBase.push({
+              name: inputs[0].value.trim(),
+              duration: parseInt(inputs[1].value),
               rpm: inputs[2].value.trim(),
-              hf: inputs[3].value.trim(),
-              desc: inputs[1].value.trim()
+              hf: inputs[3].value.trim()
             });
           }
         }
       });
-      phases = newPhases;
+      basePhases = newBase;
       renderPhaseTable(false);
     }
 
@@ -193,43 +189,60 @@
       renderPhaseTable(true);
     };
 
-    // === Intervall- und Sound-Logik ===
+    // Cycles/Sets Inputs
+    document.getElementById("cyclesInput").oninput = function() {
+      let val = parseInt(this.value);
+      if (!isNaN(val) && val >= 1 && val <= 30) {
+        cycles = val;
+      }
+    };
+    document.getElementById("setsInput").oninput = function() {
+      let val = parseInt(this.value);
+      if (!isNaN(val) && val >= 1 && val <= 10) {
+        sets = val;
+      }
+    };
+
+    // === Intervall-Timer-Logik ===
     function playSound(id) {
       const el = document.getElementById(id);
       if (el) { el.currentTime = 0; el.play(); }
     }
 
-    let running = false, phaseIdx = 0, t = 0, interval;
+    let running = false, setIdx = 1, cycleIdx = 1, phasePointer = 0, t = 0, interval;
 
     function toMMSS(secs) {
       const m = Math.floor(secs/60), s = secs%60;
       return (m > 0 ? m + ":" : "") + (s < 10 ? "0" : "") + s;
     }
 
-    function updatePhaseUI(idx, remaining) {
+    function getPhaseType(idx) {
+      // 0 = Aufwärmen, 1 = Work, 2 = Rest, 3 = Set Pause, 4 = Cooldown
+      if (idx === 0) return "prepare";
+      if (idx === 1) return "work";
+      if (idx === 2) return "rest";
+      if (idx === 3) return "setpause";
+      if (idx === 4) return "prepare";
+      return "prepare";
+    }
+
+    function updatePhaseUI(type, name, rpm, hf, remaining, setNum, setTotal, cycleNum, cycleTotal) {
       const box = document.getElementById("phaseBox");
       const lbl = document.getElementById("phaseLabel");
       const timer = document.getElementById("timer");
       const info = document.getElementById("phaseInfo");
-      const phase = phases[idx];
-      let colorClass = "prepare";
-      if (!phase) {
-        box.className = "phaseBox prepare";
-        lbl.textContent = "BEREIT";
-        timer.textContent = "00:00";
-        info.textContent = "";
-        document.getElementById("phaseCount").textContent = "";
-        return;
-      }
-      if (phase.name.toLowerCase().includes("pause") || phase.desc.toLowerCase().includes("locker")) colorClass = "rest";
-      if (phase.name.toLowerCase().includes("intervall") || phase.desc.toLowerCase().includes("hart")) colorClass = "work";
-      if (phase.name.toLowerCase().includes("cool") || phase.desc.toLowerCase().includes("cool")) colorClass = "setpause";
-      if (phase.name.toLowerCase().includes("warm")) colorClass = "prepare";
-      box.className = "phaseBox " + colorClass;
-      lbl.textContent = (phase.desc ? phase.desc : phase.name).toUpperCase();
+      box.className = "phaseBox " + type;
+      lbl.textContent = name.toUpperCase();
       timer.textContent = toMMSS(remaining);
-      info.innerHTML = `RPM: <b>${phase.rpm}</b> – HF: <b>${phase.hf}%</b>`;
-      document.getElementById("phaseCount").innerHTML = "Phase " + (idx+1) + " von " + phases.length;
+      info.innerHTML = `RPM: <b>${rpm}</b> – HF: <b>${hf}%</b>`;
+      let pc = document.getElementById("phaseCount");
+      if (type === "work" || type === "rest") {
+        pc.innerHTML = `Set ${setNum} von ${setTotal} &nbsp;|&nbsp; Cycle ${cycleNum} von ${cycleTotal}`;
+      } else if (type === "setpause") {
+        pc.innerHTML = `Set-Pause &ndash; Set ${setNum} von ${setTotal}`;
+      } else {
+        pc.innerHTML = "";
+      }
     }
 
     function playBeepSequence(cb) {
@@ -253,42 +266,126 @@
       running = true;
       document.getElementById("startBtn").style.display = "none";
       document.getElementById("resetBtn").style.display = "";
-      phaseIdx = 0;
+      setIdx = 1;
+      cycleIdx = 1;
+      phasePointer = 0;
       playSound("audioGo");
-      setTimeout(() => {
-        nextPhase(true);
-      }, 2000);
+      setTimeout(() => nextPhase(true), 1500);
     }
 
-    function nextPhase(isFirst = false) {
-      if (phaseIdx >= phases.length) {
-        document.getElementById("phaseBox").className = "phaseBox prepare";
-        document.getElementById("phaseLabel").textContent = "FERTIG!";
-        document.getElementById("timer").textContent = "00:00";
-        document.getElementById("phaseInfo").textContent = "";
-        running = false;
-        document.getElementById("resetBtn").style.display = "";
-        playSound("audioBeep"); // Abschluss
+    function nextPhase(isFirst=false) {
+      // 0=Warmup, 1=Work, 2=Rest, 3=Setpause, 4=Cooldown
+      clearInterval(interval);
+      let currPhase;
+      if (phasePointer === 0) {
+        currPhase = basePhases[0];
+        t = currPhase.duration;
+        updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
+        interval = setInterval(() => {
+          t--;
+          updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
+          if (t <= 0) {
+            clearInterval(interval);
+            phasePointer = 1;
+            cycleIdx = 1;
+            nextPhase();
+          }
+        }, 1000);
         return;
       }
-      // Vor jeder Phase (außer Start): 3×Beep
-      if (!isFirst) {
-        playBeepSequence(() => startPhase());
-      } else {
-        startPhase();
+      if (phasePointer === 1) { // Work
+        if (!isFirst) {
+          playBeepSequence(() => {
+            startWorkPhase();
+          });
+        } else {
+          startWorkPhase();
+        }
+        return;
+      }
+      if (phasePointer === 2) { // Rest
+        playBeepSequence(() => {
+          startRestPhase();
+        });
+        return;
+      }
+      if (phasePointer === 3) { // Set Pause
+        currPhase = basePhases[3];
+        t = currPhase.duration;
+        updatePhaseUI("setpause", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx-1, cycles);
+        interval = setInterval(() => {
+          t--;
+          updatePhaseUI("setpause", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx-1, cycles);
+          if (t <= 0) {
+            clearInterval(interval);
+            setIdx++;
+            cycleIdx = 1;
+            phasePointer = 1;
+            nextPhase();
+          }
+        }, 1000);
+        return;
+      }
+      if (phasePointer === 4) { // Cooldown
+        currPhase = basePhases[4];
+        t = currPhase.duration;
+        updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
+        interval = setInterval(() => {
+          t--;
+          updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
+          if (t <= 0) {
+            clearInterval(interval);
+            running = false;
+            document.getElementById("resetBtn").style.display = "";
+            document.getElementById("phaseLabel").textContent = "FERTIG!";
+            document.getElementById("timer").textContent = "00:00";
+            document.getElementById("phaseInfo").textContent = "";
+            document.getElementById("phaseCount").textContent = "";
+            document.getElementById("startBtn").style.display = "";
+            playSound("audioBeep");
+          }
+        }, 1000);
+        return;
       }
     }
 
-    function startPhase() {
-      t = phases[phaseIdx].duration;
-      updatePhaseUI(phaseIdx, t);
+    function startWorkPhase() {
+      let work = basePhases[1];
+      t = work.duration;
+      updatePhaseUI("work", work.name, work.rpm, work.hf, t, setIdx, sets, cycleIdx, cycles);
       interval = setInterval(() => {
         t--;
-        updatePhaseUI(phaseIdx, t);
+        updatePhaseUI("work", work.name, work.rpm, work.hf, t, setIdx, sets, cycleIdx, cycles);
         if (t <= 0) {
           clearInterval(interval);
-          phaseIdx++;
+          phasePointer = 2;
           nextPhase();
+        }
+      }, 1000);
+    }
+
+    function startRestPhase() {
+      let rest = basePhases[2];
+      t = rest.duration;
+      updatePhaseUI("rest", rest.name, rest.rpm, rest.hf, t, setIdx, sets, cycleIdx, cycles);
+      interval = setInterval(() => {
+        t--;
+        updatePhaseUI("rest", rest.name, rest.rpm, rest.hf, t, setIdx, sets, cycleIdx, cycles);
+        if (t <= 0) {
+          clearInterval(interval);
+          cycleIdx++;
+          if (cycleIdx <= cycles) {
+            phasePointer = 1;
+            nextPhase();
+          } else {
+            if (setIdx < sets) {
+              phasePointer = 3;
+              nextPhase();
+            } else {
+              phasePointer = 4;
+              nextPhase();
+            }
+          }
         }
       }, 1000);
     }
@@ -297,7 +394,9 @@
     document.getElementById("resetBtn").onclick = function() {
       clearInterval(interval);
       running = false;
-      phaseIdx = 0;
+      setIdx = 1;
+      cycleIdx = 1;
+      phasePointer = 0;
       document.getElementById("phaseBox").className = "phaseBox prepare";
       document.getElementById("phaseLabel").textContent = "BEREIT";
       document.getElementById("timer").textContent = "00:00";
