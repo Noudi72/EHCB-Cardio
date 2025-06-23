@@ -3,562 +3,610 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EHCB Intervall Tabata</title>
+  <title>Cardio Intervall</title>
   <style>
-    body {
-      background: #1e1e1e;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
+    :root {
+      --cardio-yellow: #FFD700;
+      --cardio-green: #00c040;
+      --cardio-red: #c80000;
+      --cardio-brown: #8B5C2B;
+      --cardio-bg: #181818;
+    }
+    html, body {
+      background: var(--cardio-bg);
+      color: #fff;
+      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
       margin: 0;
       padding: 0;
+      min-height: 100vh;
+      width: 100vw;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 1.2em;
+      padding: 1.1em 1em 0.3em 1em;
+      position: relative;
+    }
+    .back-btn {
+      background: var(--cardio-yellow);
+      color: #222;
+      border: none;
+      border-radius: 13px;
+      font-size: 1.18em;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      box-shadow: 0 2px 8px #0003;
+      padding: 0.6em 1.3em;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.18s;
+    }
+    .back-btn:hover {
+      background: #ffe95b;
     }
     .logo {
-      width: 92px;
-      max-width: 24vw;
-      margin: 1.2rem auto 0.3rem auto;
-      display: block;
+      width: 72px;
+      max-width: 20vw;
       border-radius: 16px;
-      box-shadow: 0 2px 8px #0006;
       background: #fff;
+      box-shadow: 0 2px 8px #0006;
     }
-    h1 {
+    .main-title {
       font-size: 2.1rem;
-      margin-top: 0.3rem;
-      color: #FFD700;
+      color: var(--cardio-yellow);
+      margin: 0.3em 0 0.1em 0;
       letter-spacing: 1px;
+      font-weight: bold;
+      text-align: center;
     }
     .desc {
-      margin-bottom: 1.1rem;
-      color: #ccc;
-      font-size: 1.1rem;
-      min-height: 32px;
+      color: #bbb;
+      font-size: 1.13rem;
+      margin: 0 auto 1.2em auto;
+      text-align: center;
+      min-height: 36px;
+      max-width: 95vw;
     }
-    .tile {
-      border-radius: 20px;
-      margin: 0.8rem auto;
-      width: 90vw;
-      max-width: 375px;
-      min-height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 2.2rem;
-      font-weight: bold;
-      box-shadow: 0 0 12px rgba(0,0,0,0.18);
-      padding: 0.3em 1.2em;
-      letter-spacing: 2px;
-      opacity: 0.6;
-      filter: grayscale(0.12);
-      transition: opacity 0.25s, filter 0.25s;
-    }
-    .tile.active {
-      opacity: 1;
-      filter: none;
-    }
-    .tile span {
-      flex: 1;
-      text-align: left;
-    }
-    .tile .time {
-      flex: 0 0 95px;
-      text-align: right;
-      font-size: 2.4rem;
-    }
-    .prepare { background: #FFD700; color: #222;}
-    .work { background: #00c040; color: #fff;}
-    .rest { background: #c80000; color: #fff;}
-    .setpause { background: #FFD700; color: #222;}
-    .row {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 1.1rem;
-      margin-bottom: 1.1rem;
-    }
-    .cycles, .tabatas {
-  background: linear-gradient(120deg, #FFD700 60%, #ffec99 100%);
-  color: #222;
-  border-radius: 16px;
-  width: 160px;
-  max-width: 45vw;
-  height: 70px;
-  font-size: 2.1rem;
-  font-weight: bold;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 10px #0004, 0 2px 8px #ffd70077;
-  border: 2.5px solid #fff3;
-  margin: 0 4px;
-  transition: box-shadow 0.2s, background 0.2s;
-}
-
-.cycles {
-  background: linear-gradient(120deg, #ffd700 60%, #ffc800 100%);
-}
-.tabatas {
-  background: linear-gradient(120deg, #00c040 60%, #43e97b 100%);
-  color: #fff;
-  box-shadow: 0 0 10px #0004, 0 2px 8px #00c04055;
-  border: 2.5px solid #fff3;
-}
-.label {
-  font-size: 1rem;
-  font-weight: normal;
-  opacity: 0.7;
-  margin-top: 4px;
-  color: #222;
-  letter-spacing: 0.5px;
-}
-    .label {
-      font-size: 1rem;
-      font-weight: normal;
-      color: #222;
-      margin-top: 2px;
-    }
-    .button-row {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1em;
-      margin-bottom: 1em;
-    }
-    .start-btn {
-  background: #d50000;
-  color: #fff;
-  border: none;
-  border-radius: 16px;
-  width: 180px;
-  max-width: 47vw;
-  height: 70px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.13);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.55rem;
-  font-weight: normal; /* NICHT bold, damit wie CYCLES/TABATAS */
-  margin: 0 auto 1em auto;
-  padding: 0;
-  gap: 0.1em;
-}
-.play-icon {
-  font-size: 2.8rem; /* Grösser, wie gewünscht */
-  line-height: 1;
-  margin-bottom: 0.01em;
-  font-weight: bold;
-}
-.start-label,
-.settings-btn .label {
-  text-transform: uppercase;
-  font-size: 1rem;
-  font-weight: normal;
-  letter-spacing: 0.5px;
-}
-    .pause-btn, .reset-btn {
-      background: #d50000;
-      color: #fff;
-      font-size: 1.1rem;
-      border: none;
-      border-radius: 10px;
-      padding: 0.3em 1.2em;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.13);
-      margin: 0.5em 0;
-      width: 180px;
-      max-width: 47vw;
-      height: 70px;
-      font-size: 2.1rem;
-      border-radius: 16px;
-      font-weight: bold;
-      margin: 0 4px;
-    }
-    .pause-btn { background: #FFA500; color: #222;}
-    .reset-btn { background: #222; color: #fff;}
-    .settings-btn {
-      background: #222;
-      color: #fff;
-      border-radius: 16px;
-      width: 160px;
-      max-width: 45vw;
-      height: 70px;
-      font-size: 2.1rem;
-      font-weight: bold;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 10px #0004, 0 2px 8px #ffd70077;
-      border: 2.5px solid #fff3;
-      margin: 0 auto 1.8em auto;
-      transition: box-shadow 0.2s, background 0.2s;
-      gap: 0;
-    }
-    /* Modal Styles für Settings */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1111;
-      left: 0; top: 0; width: 100vw; height: 100vh;
-      background: rgba(30,30,30,0.93);
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-content {
-      background: #1e1e1e;
-      color: #fff;
-      border-radius: 16px;
-      max-width: 400px;
+    .phase-card {
+      margin: 0 auto 1.2em auto;
+      background: #232323;
+      border-radius: 22px;
+      box-shadow: 0 2px 16px #0008;
+      max-width: 430px;
       width: 96vw;
-      max-height: 90vh;
-      overflow-y: auto;
-      margin: 0 auto;
-      box-shadow: 0 8px 24px #000a;
+      padding: 0.7em 1.2em 1.1em 1.2em;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      align-items: stretch;
-      padding-bottom: 2.5em;
+      align-items: center;
+      gap: 0.6em;
     }
-    .modal-content label { display:block; margin: 0.6em 0 0.15em 0; }
-    .modal-content input,
-    .modal-content textarea {
-      width: 95%; max-width: 360px;
-      font-size: 1.05em; text-align: left;
-      border-radius: 6px; border: 1px solid #888; margin-bottom: 0.5em;
-      padding: 0.2em 0.4em;
-      font-family: Arial, sans-serif;
+    .phase-label {
+      font-size: 1.2em;
+      letter-spacing: 1.5px;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 0.15em;
+      padding: 0.2em 1.1em;
+      border-radius: 12px;
+      color: #222;
+      background: var(--cardio-yellow);
+      transition: background 0.2s, color 0.2s;
+      display: inline-block;
     }
-    .modal-content .modal-buttons {
+    .phase-label.work { background: var(--cardio-green); color: #fff;}
+    .phase-label.rest { background: var(--cardio-red); color: #fff;}
+    .phase-label.prepare { background: var(--cardio-yellow); color: #222;}
+    .phase-label.setpause { background: var(--cardio-brown); color: #fff;}
+    .phase-timer {
+      font-size: 3.1em;
+      font-weight: bold;
+      margin: 0.18em 0 0.1em 0;
+      letter-spacing: 2px;
+    }
+    .phase-desc {
+      font-size: 1.12em;
+      color: #ffe28c;
+      margin-bottom: 0.18em;
+      min-height: 1.8em;
+      text-align: center;
+    }
+    .phase-info-bar {
       display: flex;
-      position: sticky;
-      bottom: 0; left: 0;
-      background: #1e1e1e;
-      gap: 1em;
+      gap: 1.5em;
       justify-content: center;
-      padding: 0.8em 0 0.5em 0;
+      align-items: center;
+      margin: 0.3em 0 0.1em 0;
     }
-    @media (max-width: 420px) {
-      .tile { font-size: 1.1rem; }
-      .tile .time { font-size: 1.1rem; }
-      .cycles, .tabatas { width: 70px; height: 40px; font-size: 0.8rem;}
-      .logo { max-width: 44vw; }
+    .phase-info-item {
+      background: #222;
+      border-radius: 10px;
+      padding: 0.2em 0.8em;
+      font-size: 1.0em;
+      color: #ffe028;
+      font-weight: 500;
+      min-width: 48px;
+      text-align: center;
+    }
+    .phase-rpm, .phase-hf {
+      color: #fff;
+      font-weight: bold;
+      background: #2e2e2e;
+      border-radius: 8px;
+      padding: 0.18em 0.7em;
+      margin: 0 0.2em;
+    }
+    .progress-bar {
+      margin: 0.2em auto 0.5em auto;
+      width: 100%;
+      max-width: 390px;
+      display: flex;
+      gap: 0.7em;
+      justify-content: center;
+      font-size: 1.08em;
+      color: var(--cardio-yellow);
+      font-weight: 500;
+    }
+    .btn-row {
+      display: flex;
+      gap: 1.1em;
+      justify-content: center;
+      align-items: center;
+      margin: 1em 0 1.3em 0;
+      flex-wrap: wrap;
+    }
+    .btn {
+      border: none;
+      border-radius: 15px;
+      padding: 0.6em 2.1em;
+      font-size: 1.18em;
+      font-weight: bold;
+      box-shadow: 0 2px 8px #0005;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      margin: 0.2em 0;
+      min-width: 110px;
+    }
+    .btn-start { background: var(--cardio-red); color: #fff;}
+    .btn-start:hover { background: #ff4d4d;}
+    .btn-reset { background: #333; color: #fff;}
+    .btn-reset:hover { background: #555;}
+    .btn-edit { background: var(--cardio-yellow); color: #222;}
+    .btn-edit:hover { background: #ffe95b;}
+    .phases-table-container {
+      max-width: 500px;
+      margin: 0 auto 2em auto;
+      background: #232323;
+      border-radius: 18px;
+      box-shadow: 0 2px 12px #0007;
+      padding: 0.8em 0.5em 1em 0.5em;
+      overflow-x: auto;
+    }
+    table.phases-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 0.18em;
+      margin: 0 auto;
+      font-size: 1.02em;
+    }
+    table.phases-table th, table.phases-table td {
+      padding: 0.35em 0.6em;
+      text-align: center;
+      border-radius: 9px;
+    }
+    table.phases-table th {
+      color: #ffe028;
+      background: #282828;
+      font-weight: bold;
+      font-size: 1.04em;
+    }
+    table.phases-table td {
+      background: #2b2b2b;
+      color: #fff;
+      font-size: 1.03em;
+    }
+    .phases-table td input, .phases-table td select {
+      width: 90%;
+      padding: 0.2em 0.3em;
+      font-size: 1em;
+      background: #202020;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 7px;
+      text-align: center;
+    }
+    .phases-table .color-dot {
+      display: inline-block;
+      width: 1.1em;
+      height: 1.1em;
+      border-radius: 50%;
+      margin-right: 0.4em;
+      vertical-align: middle;
+    }
+    .dot-prepare { background: var(--cardio-yellow);}
+    .dot-work { background: var(--cardio-green);}
+    .dot-rest { background: var(--cardio-red);}
+    .dot-setpause { background: var(--cardio-brown);}
+    .table-controls {
+      margin: 0.8em 0 0.1em 0;
+      text-align: right;
+    }
+    .table-controls button {
+      background: #222;
+      color: #ffe028;
+      border: none;
+      border-radius: 8px;
+      padding: 0.2em 1em;
+      margin-left: 0.3em;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .table-controls button:hover {
+      background: #444;
+    }
+    @media (max-width: 600px) {
+      .main-title { font-size: 1.23rem; }
+      .phase-card { max-width: 99vw; padding: 0.5em 0.3em 0.7em 0.3em;}
+      .phases-table-container { max-width: 99vw; }
+      .logo { width: 56px; }
+      .header { gap: 0.5em; padding: 0.6em 0.3em 0.2em 0.3em; }
+      .btn { font-size: 1em; padding: 0.45em 1.1em; }
+      .btn-row { gap: 0.5em; }
+      .desc { font-size: 1em; }
     }
   </style>
 </head>
 <body>
-  <a href="index.html" id="backBtn" style="position: absolute; left: 28px; top: 26px; text-decoration: none; z-index: 10;">
-    <button style="background:#ffe028;color:#222;font-weight:bold;border:none;border-radius:8px;padding:10px 28px;font-size:1.1em;box-shadow:1px 2px 8px #0004;cursor:pointer;display:flex;align-items:center;gap:7px;">
-      &#8592; Zurück
-    </button>
-  </a>
-  <img src="icon-cardio.png" class="logo" alt="Cardio Logo" />
-  <h1>Intervall Tabata</h1>
+  <div class="header">
+    <a href="index.html" class="back-btn" id="backBtn">
+      <span style="font-size:1.5em;line-height:1;">&#8592;</span>
+      <span>Zurück</span>
+    </a>
+    <img src="icon-cardio.png" class="logo" alt="Cardio Logo" />
+  </div>
+  <h1 class="main-title">Cardio Intervall</h1>
   <div class="desc" id="descText">4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up &amp; Cooldown by your own)</div>
-  <div id="phaseCount" style="font-size:1.08em; color:#ffe028; font-weight:500; margin-bottom:6px;"></div>
-  <div class="tile prepare active" id="tilePrepare"><span>PREPARE</span><span class="time" id="prepareTime">03</span></div>
-  <div class="tile work" id="tileWork"><span>WORK</span><span class="time" id="workTime">30</span></div>
-  <div class="tile rest" id="tileRest"><span>REST</span><span class="time" id="restTime">15</span></div>
-  <div class="tile setpause" id="tileSetPause"><span>SET PAUSE</span><span class="time" id="setPauseTime">120</span></div>
-  <div class="row">
-    <div class="cycles"><span id="cyclesVal">6</span><span class="label">CYCLES</span></div>
-    <div class="tabatas"><span id="tabatasVal">4</span><span class="label">TABATAS</span></div>
+
+  <div class="phase-card" id="phaseCard">
+    <div class="phase-label prepare" id="phaseLabel">Prepare</div>
+    <div class="phase-timer" id="phaseTimer">03</div>
+    <div class="phase-desc" id="phaseDesc">Bereit machen</div>
+    <div class="phase-info-bar">
+      <div class="phase-info-item">
+        <span>RPM</span>
+        <span class="phase-rpm" id="phaseRpm">-</span>
+      </div>
+      <div class="phase-info-item">
+        <span>HF%</span>
+        <span class="phase-hf" id="phaseHf">-</span>
+      </div>
+    </div>
+    <div class="progress-bar" id="progressBar">
+      <span id="progressSets">Set 1 von 4</span>
+      <span id="progressCycles">Cycle 1 von 6</span>
+    </div>
   </div>
-  <div class="button-row">
-    <button class="start-btn" onclick="startTabata()" id="startBtn">
-      <span class="play-icon">▶</span>
-      <span class="start-label">Start</span>
+
+  <div class="btn-row">
+    <button class="btn btn-start" id="startBtn" onclick="startTabata()">
+      <span style="font-size:1.5em;vertical-align:middle;">▶</span> Start
     </button>
-    <button class="pause-btn" onclick="pauseTabata()" id="pauseBtn" style="display:none;">Pause</button>
-    <button class="reset-btn" onclick="resetTabata()" id="resetBtn" style="display:none;">Reset</button>
+    <button class="btn btn-reset" id="resetBtn" onclick="resetTabata()" style="display:none;">Reset</button>
+    <button class="btn btn-edit" id="editBtn" onclick="openSettings()">Bearbeiten</button>
   </div>
-  <button class="settings-btn" onclick="openSettings()">
-    <span style="font-size:2.1rem; font-weight:bold; color:#fff;">⚙️</span>
-    <span class="label" style="color:#fff;">Einstellungen</span>
-  </button>
+
+  <div class="phases-table-container">
+    <div class="table-controls">
+      <button onclick="addPhase()" title="Phase hinzufügen">+ Phase</button>
+      <button onclick="resetPhases()" title="Standard">Reset</button>
+    </div>
+    <table class="phases-table" id="phasesTable">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Phase</th>
+          <th>Dauer (s)</th>
+          <th>RPM</th>
+          <th>HF%</th>
+          <th>Beschreibung</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="phasesTableBody">
+        <!-- Phasen werden hier eingefügt -->
+      </tbody>
+    </table>
+    <div style="display:flex;justify-content:center;gap:1.2em;margin-top:1.1em;">
+      <div>
+        <label for="cyclesInput" style="color:#ffe028;font-weight:bold;">Cycles:</label>
+        <input type="number" id="cyclesInput" min="1" max="99" value="6" style="width:3em;text-align:center;">
+      </div>
+      <div>
+        <label for="tabatasInput" style="color:#00c040;font-weight:bold;">Sets:</label>
+        <input type="number" id="tabatasInput" min="1" max="99" value="4" style="width:3em;text-align:center;">
+      </div>
+    </div>
+  </div>
+
   <!-- SETTINGS MODAL -->
-  <div class="modal" id="settingsModal">
+  <div class="modal" id="settingsModal" style="display:none;">
     <form class="modal-content" onsubmit="saveSettings();return false;">
       <label>Beschreibung (optional):<br>
         <textarea id="descTextarea" rows="2"></textarea>
       </label>
-      <label>Prepare (sec): <input id="setPrepare" type="number" min="0" max="99" value="3"></label>
-      <label>Work (sec): <input id="setWork" type="number" min="1" max="999" value="30"></label>
-      <label>Rest (sec): <input id="setRest" type="number" min="1" max="999" value="15"></label>
-      <label>Set Pause (sec): <input id="setSetPause" type="number" min="1" max="999" value="120"></label>
-      <label>Cycles: <input id="setCycles" type="number" min="1" max="99" value="6"></label>
-      <label>Tabatas: <input id="setTabatas" type="number" min="1" max="99" value="4"></label>
+      <div style="margin:0.8em 0;">
+        <label>Cycles: <input id="setCycles" type="number" min="1" max="99" value="6" style="width:4em;"></label>
+        <label style="margin-left:2em;">Sets: <input id="setTabatas" type="number" min="1" max="99" value="4" style="width:4em;"></label>
+      </div>
+      <label>Phasenstruktur (Tabelle unten editieren)</label>
       <div class="modal-buttons">
         <button type="submit">✓ Übernehmen</button>
         <button type="button" onclick="closeSettings()">✗ Schließen</button>
       </div>
     </form>
   </div>
+
   <!-- AUDIO -->
   <audio id="soundGo" src="3-2-1-Go.mp3"></audio>
   <audio id="soundBeep" src="beep.wav"></audio>
   <audio id="soundRest" src="rest_2.mp3"></audio>
+
   <script>
-    // Variablen für den Timer
+    // --- Cardio Intervall JS ---
+    // Standard-Phasenstruktur
+    let phases = [
+      { name: "Prepare", duration: 3, color: "prepare", rpm: "-", hf: "-", desc: "Bereit machen" },
+      { name: "Work", duration: 30, color: "work", rpm: "100", hf: "90-95", desc: "30s Belastung" },
+      { name: "Rest", duration: 15, color: "rest", rpm: "60", hf: "60-70", desc: "15s Erholung" },
+      { name: "Set Pause", duration: 120, color: "setpause", rpm: "50", hf: "50-60", desc: "Set Pause" }
+    ];
+    let cycles = 6;
+    let tabatas = 4;
+    let descText = '4 Sets – 6× 30s Work / 15s Rest<br>(Warm-Up &amp; Cooldown by your own)';
     let timer = null;
-    let state = "prepare";
     let running = false;
     let paused = false;
-    let currentCycle = 1, totalCycles = 6;
-    let currentTabata = 1, totalTabatas = 4;
-    let tPrepare = 3, tWork = 30, tRest = 15, tSetPause = 120;
-    let t = tPrepare;
-    let settings = {};
-    // Audio Elemente
+    let currentPhaseIndex = 0;
+    let currentCycle = 1;
+    let currentTabata = 1;
+    let t = 0;
+    // Audio
     const soundGo = document.getElementById("soundGo");
     const soundBeep = document.getElementById("soundBeep");
     const soundRest = document.getElementById("soundRest");
-    // Initialisieren (Settings aus localStorage)
-    window.onload = function() {
-      if(localStorage.getItem("tabataSettings")) {
-        settings = JSON.parse(localStorage.getItem("tabataSettings"));
-        loadSettings();
-      }
-      updateTiles();
-    };
-function startTabata() {
-  // "Audio Unlock" für Safari/iOS/Mac
-  [soundGo, soundBeep, soundRest].forEach(a => {
-    try {
-      a.volume = 0;
-      a.play().then(()=>{a.pause();a.currentTime=0;a.volume=1;});
-    } catch(e){}
-  });
 
-  document.getElementById("startBtn").style.display = "none";
-  document.getElementById("pauseBtn").style.display = "";
-  document.getElementById("resetBtn").style.display = "";
-  paused = false;
-  running = true;
-      // Werte holen
-      tPrepare = parseInt(document.getElementById("prepareTime").innerText);
-      tWork = parseInt(document.getElementById("workTime").innerText);
-      tRest = parseInt(document.getElementById("restTime").innerText);
-      tSetPause = parseInt(document.getElementById("setPauseTime").innerText);
-      totalCycles = parseInt(document.getElementById("cyclesVal").innerText);
-      totalTabatas = parseInt(document.getElementById("tabatasVal").innerText);
-      // State initialisieren
-      state = "prepare";
-      currentCycle = 1;
-      currentTabata = 1;
-      updateTiles();
-      t = tPrepare;
-      playGo(); // Startsignal
-      timer = setInterval(step, 1000);
-    }
-    function pauseTabata() {
-      if(paused) {
-        paused = false;
-        document.getElementById("pauseBtn").textContent = "Pause";
-        timer = setInterval(step, 1000);
-      } else {
-        paused = true;
-        document.getElementById("pauseBtn").textContent = "Weiter";
-        clearInterval(timer);
+    // --- INIT ---
+    function loadFromStorage() {
+      let data = localStorage.getItem("cardioIntervallSettings");
+      if(data) {
+        let s = JSON.parse(data);
+        if(s.phases) phases = s.phases;
+        if(s.cycles) cycles = s.cycles;
+        if(s.tabatas) tabatas = s.tabatas;
+        if(s.descText) descText = s.descText;
       }
     }
-    function resetTabata() {
-      clearInterval(timer);
-      running = false; paused = false;
-      document.getElementById("startBtn").style.display = "";
-      document.getElementById("pauseBtn").style.display = "none";
-      document.getElementById("resetBtn").style.display = "none";
-      state = "prepare";
+    function saveToStorage() {
+      localStorage.setItem("cardioIntervallSettings", JSON.stringify({
+        phases, cycles, tabatas, descText
+      }));
+    }
+    function renderPhasesTable() {
+      let tbody = document.getElementById("phasesTableBody");
+      tbody.innerHTML = "";
+      phases.forEach((p, idx) => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><span class="color-dot dot-${p.color||'prepare'}"></span></td>
+          <td>
+            <select onchange="editPhase(${idx},'name',this.value)">
+              <option value="Prepare"${p.name==='Prepare'?' selected':''}>Prepare</option>
+              <option value="Work"${p.name==='Work'?' selected':''}>Work</option>
+              <option value="Rest"${p.name==='Rest'?' selected':''}>Rest</option>
+              <option value="Set Pause"${p.name==='Set Pause'?' selected':''}>Set Pause</option>
+            </select>
+          </td>
+          <td><input type="number" min="1" max="999" value="${p.duration}" onchange="editPhase(${idx},'duration',this.value)"></td>
+          <td><input type="text" value="${p.rpm}" onchange="editPhase(${idx},'rpm',this.value)"></td>
+          <td><input type="text" value="${p.hf}" onchange="editPhase(${idx},'hf',this.value)"></td>
+          <td><input type="text" value="${p.desc}" onchange="editPhase(${idx},'desc',this.value)"></td>
+          <td>
+            <button onclick="removePhase(${idx})" title="Entfernen" style="background:#222;color:#c80000;">✗</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    function editPhase(idx, field, value) {
+      if(field==="name") {
+        phases[idx].name = value;
+        // Automatische Farbwahl
+        if(value==="Prepare") phases[idx].color = "prepare";
+        else if(value==="Work") phases[idx].color = "work";
+        else if(value==="Rest") phases[idx].color = "rest";
+        else if(value==="Set Pause") phases[idx].color = "setpause";
+        renderPhasesTable();
+      } else if(field==="duration") {
+        phases[idx].duration = Math.max(1, parseInt(value)||1);
+      } else {
+        phases[idx][field] = value;
+      }
+      saveToStorage();
+    }
+    function addPhase() {
+      phases.push({ name: "Work", duration: 30, color: "work", rpm: "90", hf: "85", desc: "" });
+      renderPhasesTable();
+      saveToStorage();
+    }
+    function removePhase(idx) {
+      if(phases.length>1) {
+        phases.splice(idx,1);
+        renderPhasesTable();
+        saveToStorage();
+      }
+    }
+    function resetPhases() {
+      phases = [
+        { name: "Prepare", duration: 3, color: "prepare", rpm: "-", hf: "-", desc: "Bereit machen" },
+        { name: "Work", duration: 30, color: "work", rpm: "100", hf: "90-95", desc: "30s Belastung" },
+        { name: "Rest", duration: 15, color: "rest", rpm: "60", hf: "60-70", desc: "15s Erholung" },
+        { name: "Set Pause", duration: 120, color: "setpause", rpm: "50", hf: "50-60", desc: "Set Pause" }
+      ];
+      renderPhasesTable();
+      saveToStorage();
+    }
+    function updateCyclesTabatasInputs() {
+      document.getElementById("cyclesInput").value = cycles;
+      document.getElementById("tabatasInput").value = tabatas;
+    }
+    function updatePhaseCard() {
+      let p = phases[currentPhaseIndex];
+      document.getElementById("phaseLabel").textContent = p.name;
+      document.getElementById("phaseLabel").className = "phase-label " + (p.color||"prepare");
+      document.getElementById("phaseTimer").textContent = t<10 ? "0"+t : t;
+      document.getElementById("phaseDesc").textContent = p.desc||"";
+      document.getElementById("phaseRpm").textContent = p.rpm||"-";
+      document.getElementById("phaseHf").textContent = p.hf||"-";
+      document.getElementById("progressSets").textContent = "Set " + currentTabata + " von " + tabatas;
+      document.getElementById("progressCycles").textContent = "Cycle " + currentCycle + " von " + cycles;
+    }
+    function updateDesc() {
+      document.getElementById("descText").innerHTML = descText;
+    }
+    function updateAll() {
+      renderPhasesTable();
+      updateCyclesTabatasInputs();
+      updatePhaseCard();
+      updateDesc();
+    }
+    // --- TIMER LOGIK ---
+    function startTabata() {
+      // Audio unlock
+      [soundGo, soundBeep, soundRest].forEach(a => {
+        try { a.volume=0; a.play().then(()=>{a.pause();a.currentTime=0;a.volume=1;}); } catch(e){}
+      });
+      running = true;
+      paused = false;
+      document.getElementById("startBtn").style.display = "none";
+      document.getElementById("resetBtn").style.display = "";
+      document.getElementById("editBtn").disabled = true;
+      // Werte übernehmen
+      cycles = parseInt(document.getElementById("cyclesInput").value)||6;
+      tabatas = parseInt(document.getElementById("tabatasInput").value)||4;
+      saveToStorage();
+      currentPhaseIndex = 0;
       currentCycle = 1;
       currentTabata = 1;
-      t = tPrepare;
-      updateTiles();
+      t = phases[0].duration;
+      playGo();
+      updatePhaseCard();
+      timer = setInterval(timerStep, 1000);
     }
-    function step() {
-  if (paused) return;
-  t--;
-
-  // Countdown-Beep in letzten 3 Sekunden für Work, Rest, Setpause
-  if (t <= 3 && t > 0 && (state === "work" || state === "rest" || state === "setpause")) playBeep();
-
-  if (t === 0) {
-    // PHASEN-ÜBERGANG
-    if (state === "prepare") {
-      t = tWork;
-      state = "work";
-      activateTile("work");
-    } else if (state === "work") {
-      // Prüfen, ob dies der letzte Cycle in der Tabata ist
-      if (currentCycle < totalCycles) {
-        playRest();
-        t = tRest;
-        state = "rest";
-        activateTile("rest");
-      } else {
-        // Letzter Cycle: Kein Rest mehr, sondern direkt in Set Pause oder Ende
-        if (currentTabata < totalTabatas) {
-          // KEIN playGo() hier!
-          currentTabata++;
-          currentCycle = 1;
-          t = tSetPause;
-          state = "setpause";
-          activateTile("setpause");
+    function timerStep() {
+      if(paused) return;
+      t--;
+      // Countdown Beep
+      if(t<=3 && t>0) playBeep();
+      if(t<=0) {
+        let p = phases[currentPhaseIndex];
+        // Phase wechseln
+        if(currentPhaseIndex < phases.length-1) {
+          if(p.name==="Work") playRest();
+          currentPhaseIndex++;
         } else {
-          stopTabata(); // FERTIG!
-          return;
+          // Letzte Phase im Set
+          if(currentCycle < cycles) {
+            currentCycle++;
+            currentPhaseIndex = 1; // Nach Prepare → Work
+          } else {
+            // Nächster Tabata/Set
+            if(currentTabata < tabatas) {
+              currentTabata++;
+              currentCycle = 1;
+              currentPhaseIndex = 0;
+              playGo();
+            } else {
+              stopTabata();
+              return;
+            }
+          }
         }
+        t = phases[currentPhaseIndex].duration;
       }
-    } else if (state === "rest") {
-      currentCycle++;
-      t = tWork;
-      state = "work";
-      activateTile("work");
-    } else if (state === "setpause") {
-      t = tPrepare;
-      state = "prepare";
-      activateTile("prepare");
-      playGo(); // Startsignal jetzt HIER, nach Set Pause!
+      updatePhaseCard();
     }
-  }
-  updateTiles();
-}
     function stopTabata() {
       clearInterval(timer);
       running = false;
       document.getElementById("startBtn").style.display = "";
-      document.getElementById("pauseBtn").style.display = "none";
       document.getElementById("resetBtn").style.display = "none";
-      state = "prepare";
-      t = tPrepare;
+      document.getElementById("editBtn").disabled = false;
+      currentPhaseIndex = 0;
       currentCycle = 1;
       currentTabata = 1;
-      updateTiles();
+      t = phases[0].duration;
+      updatePhaseCard();
     }
-    function activateTile(tile) {
-      document.getElementById("tilePrepare").classList.remove("active");
-      document.getElementById("tileWork").classList.remove("active");
-      document.getElementById("tileRest").classList.remove("active");
-      document.getElementById("tileSetPause").classList.remove("active");
-      if(tile==="prepare") document.getElementById("tilePrepare").classList.add("active");
-      if(tile==="work") document.getElementById("tileWork").classList.add("active");
-      if(tile==="rest") document.getElementById("tileRest").classList.add("active");
-      if(tile==="setpause") document.getElementById("tileSetPause").classList.add("active");
-    }
-    function updateTiles() {
-      document.getElementById("prepareTime").innerText = pad(tPrepare);
-      document.getElementById("workTime").innerText = pad(tWork);
-      document.getElementById("restTime").innerText = pad(tRest);
-      document.getElementById("setPauseTime").innerText = pad(tSetPause);
-      document.getElementById("cyclesVal").innerText = totalCycles-(currentCycle-1);
-      document.getElementById("tabatasVal").innerText = totalTabatas-(currentTabata-1);
-      // Highlight Active
-      activateTile(state);
-      // Countdowns in Tile
-      if(running) {
-        if(state==="prepare") document.getElementById("prepareTime").innerText = pad(t);
-        if(state==="work") document.getElementById("workTime").innerText = pad(t);
-        if(state==="rest") document.getElementById("restTime").innerText = pad(t);
-        if(state==="setpause") document.getElementById("setPauseTime").innerText = pad(t);
-      }
-      // Phasenfortschritt anzeigen
-      let phaseText = "";
-      if(state === "prepare") {
-        phaseText = "Prepare – Set " + currentTabata + " von " + totalTabatas;
-      } else if(state === "work" || state === "rest") {
-        phaseText = "Set " + currentTabata + " von " + totalTabatas + ", Cycle " + currentCycle + " von " + totalCycles;
-      } else if(state === "setpause") {
-        phaseText = "Set Pause – " + currentTabata + " von " + totalTabatas;
-      }
-      document.getElementById("phaseCount").textContent = phaseText;
-    }
-    function pad(val) {
-      return val<10?"0"+val:val;
+    function resetTabata() {
+      stopTabata();
     }
     // --- AUDIO ---
     function playGo() {
-  try {
-    soundGo.pause();
-    soundGo.currentTime = 0;
-    soundGo.volume = 1;
-    setTimeout(()=>soundGo.play().catch(()=>{}), 40);
-  } catch(e){}
-}
-function playBeep() {
-  try {
-    soundBeep.pause();
-    soundBeep.currentTime = 0;
-    soundBeep.volume = 1;
-    setTimeout(()=>soundBeep.play().catch(()=>{}), 40);
-  } catch(e){}
-}
-function playRest() {
-  try {
-    soundRest.pause();
-    soundRest.currentTime = 0;
-    soundRest.volume = 1;
-    setTimeout(()=>soundRest.play().catch(()=>{}), 60);
-  } catch(e){}
-}
+      try { soundGo.pause(); soundGo.currentTime=0; soundGo.volume=1; setTimeout(()=>soundGo.play().catch(()=>{}), 40);} catch(e){}
+    }
+    function playBeep() {
+      try { soundBeep.pause(); soundBeep.currentTime=0; soundBeep.volume=1; setTimeout(()=>soundBeep.play().catch(()=>{}), 40);} catch(e){}
+    }
+    function playRest() {
+      try { soundRest.pause(); soundRest.currentTime=0; soundRest.volume=1; setTimeout(()=>soundRest.play().catch(()=>{}), 60);} catch(e){}
+    }
     // --- SETTINGS MODAL ---
     function openSettings() {
-      document.getElementById("descTextarea").value = document.getElementById("descText").innerText.replace('\n', '');
-      document.getElementById("setPrepare").value = tPrepare;
-      document.getElementById("setWork").value = tWork;
-      document.getElementById("setRest").value = tRest;
-      document.getElementById("setSetPause").value = tSetPause;
-      document.getElementById("setCycles").value = totalCycles;
-      document.getElementById("setTabatas").value = totalTabatas;
       document.getElementById("settingsModal").style.display = "flex";
+      document.getElementById("descTextarea").value = descText.replace(/<br>/g, "\n");
+      document.getElementById("setCycles").value = cycles;
+      document.getElementById("setTabatas").value = tabatas;
     }
     function closeSettings() {
       document.getElementById("settingsModal").style.display = "none";
     }
     function saveSettings() {
-      // Werte übernehmen
-      tPrepare = parseInt(document.getElementById("setPrepare").value);
-      tWork = parseInt(document.getElementById("setWork").value);
-      tRest = parseInt(document.getElementById("setRest").value);
-      tSetPause = parseInt(document.getElementById("setSetPause").value);
-      totalCycles = parseInt(document.getElementById("setCycles").value);
-      totalTabatas = parseInt(document.getElementById("setTabatas").value);
-      document.getElementById("prepareTime").innerText = pad(tPrepare);
-      document.getElementById("workTime").innerText = pad(tWork);
-      document.getElementById("restTime").innerText = pad(tRest);
-      document.getElementById("setPauseTime").innerText = pad(tSetPause);
-      document.getElementById("cyclesVal").innerText = totalCycles;
-      document.getElementById("tabatasVal").innerText = totalTabatas;
-      // Beschreibung speichern
-      document.getElementById("descText").innerText = document.getElementById("descTextarea").value;
-      // Save localStorage
-      settings = {
-        tPrepare, tWork, tRest, tSetPause,
-        totalCycles, totalTabatas,
-        desc: document.getElementById("descTextarea").value
-      };
-      localStorage.setItem("tabataSettings", JSON.stringify(settings));
+      descText = document.getElementById("descTextarea").value.replace(/\n/g,"<br>");
+      cycles = parseInt(document.getElementById("setCycles").value)||6;
+      tabatas = parseInt(document.getElementById("setTabatas").value)||4;
+      document.getElementById("cyclesInput").value = cycles;
+      document.getElementById("tabatasInput").value = tabatas;
+      saveToStorage();
+      updateAll();
       closeSettings();
-      resetTabata();
     }
-    function loadSettings() {
-      if(settings.tPrepare) tPrepare = settings.tPrepare;
-      if(settings.tWork) tWork = settings.tWork;
-      if(settings.tRest) tRest = settings.tRest;
-      if(settings.tSetPause) tSetPause = settings.tSetPause;
-      if(settings.totalCycles) totalCycles = settings.totalCycles;
-      if(settings.totalTabatas) totalTabatas = settings.totalTabatas;
-      document.getElementById("prepareTime").innerText = pad(tPrepare);
-      document.getElementById("workTime").innerText = pad(tWork);
-      document.getElementById("restTime").innerText = pad(tRest);
-      document.getElementById("setPauseTime").innerText = pad(tSetPause);
-      document.getElementById("cyclesVal").innerText = totalCycles;
-      document.getElementById("tabatasVal").innerText = totalTabatas;
-      if(settings.desc) document.getElementById("descText").innerText = settings.desc;
-    }
+
+    // --- Event Handler ---
+    document.getElementById("cyclesInput").addEventListener("input", function() {
+      cycles = Math.max(1, parseInt(this.value)||1);
+      saveToStorage();
+      updatePhaseCard();
+    });
+    document.getElementById("tabatasInput").addEventListener("input", function() {
+      tabatas = Math.max(1, parseInt(this.value)||1);
+      saveToStorage();
+      updatePhaseCard();
+    });
     // Modal close outside click
     window.onclick = function(e){
       if(e.target===document.getElementById("settingsModal")) closeSettings();
+    };
+
+    // --- Init on Load ---
+    window.onload = function() {
+      loadFromStorage();
+      updateAll();
+      stopTabata();
     };
   </script>
 </body>
