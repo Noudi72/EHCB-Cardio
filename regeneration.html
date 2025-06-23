@@ -152,6 +152,28 @@
       font-weight: bold;
       user-select: none;
     }
+    @media (max-width: 600px) {
+      table, thead, tbody, th, td, tr {
+        font-size: 0.98em !important;
+        padding: 6px 4px !important;
+      }
+      th, td {
+        word-break: break-word !important;
+        white-space: normal !important;
+        font-size: 0.98em !important;
+      }
+      table {
+        display: block;
+        overflow-x: auto;
+        width: 100vw;
+        min-width: 420px;
+        max-width: none;
+      }
+    }
+    td {
+      word-break: break-word;
+      white-space: normal;
+    }
   </style>
 </head>
 <body>
