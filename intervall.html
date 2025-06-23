@@ -129,7 +129,6 @@
       { name: "Cool-Down", duration: 300, rpm: "60", hf: "40-50" }
     ];
 
-    // Cycles & Sets
     let cycles = 8;
     let sets = 4;
 
@@ -206,7 +205,13 @@
     // === Intervall-Timer-Logik ===
     function playSound(id) {
       const el = document.getElementById(id);
-      if (el) { el.currentTime = 0; el.play(); }
+      if (el) {
+        try {
+          el.pause();
+          el.currentTime = 0;
+          el.play();
+        } catch(e) {}
+      }
     }
 
     let running = false, setIdx = 1, cycleIdx = 1, phasePointer = 0, t = 0, interval;
@@ -214,16 +219,6 @@
     function toMMSS(secs) {
       const m = Math.floor(secs/60), s = secs%60;
       return (m > 0 ? m + ":" : "") + (s < 10 ? "0" : "") + s;
-    }
-
-    function getPhaseType(idx) {
-      // 0 = Aufwärmen, 1 = Work, 2 = Rest, 3 = Set Pause, 4 = Cooldown
-      if (idx === 0) return "prepare";
-      if (idx === 1) return "work";
-      if (idx === 2) return "rest";
-      if (idx === 3) return "setpause";
-      if (idx === 4) return "prepare";
-      return "prepare";
     }
 
     function updatePhaseUI(type, name, rpm, hf, remaining, setNum, setTotal, cycleNum, cycleTotal) {
@@ -245,16 +240,23 @@
       }
     }
 
+    // Sound-optimierte Countdown-Logik für bessere Wahrnehmung
     function playBeepSequence(cb) {
       let count = 3;
       const timer = document.getElementById("timer");
       timer.textContent = "3";
+      let beeped = 0;
       playSound("audioBeep");
       const beepInterval = setInterval(() => {
+        beeped++;
         count--;
-        timer.textContent = count > 0 ? count : "Go!";
-        playSound("audioBeep");
-        if (count <= 0) {
+        if (count > 0) {
+          timer.textContent = count;
+          playSound("audioBeep");
+        } else if (count === 0) {
+          timer.textContent = "Go!";
+          playSound("audioGo");
+        } else {
           clearInterval(beepInterval);
           setTimeout(cb, 400);
         }
@@ -274,7 +276,6 @@
     }
 
     function nextPhase(isFirst=false) {
-      // 0=Warmup, 1=Work, 2=Rest, 3=Setpause, 4=Cooldown
       clearInterval(interval);
       let currPhase;
       if (phasePointer === 0) {
@@ -288,51 +289,76 @@
             clearInterval(interval);
             phasePointer = 1;
             cycleIdx = 1;
-            nextPhase();
+            playBeepSequence(() => nextPhase());
           }
         }, 1000);
         return;
       }
       if (phasePointer === 1) { // Work
-        if (!isFirst) {
-          playBeepSequence(() => {
-            startWorkPhase();
-          });
-        } else {
-          startWorkPhase();
-        }
+        let work = basePhases[1];
+        t = work.duration;
+        updatePhaseUI("work", work.name, work.rpm, work.hf, t, setIdx, sets, cycleIdx, cycles);
+        interval = setInterval(() => {
+          t--;
+          updatePhaseUI("work", work.name, work.rpm, work.hf, t, setIdx, sets, cycleIdx, cycles);
+          if (t <= 0) {
+            clearInterval(interval);
+            phasePointer = 2;
+            playBeepSequence(() => nextPhase());
+          }
+        }, 1000);
         return;
       }
       if (phasePointer === 2) { // Rest
-        playBeepSequence(() => {
-          startRestPhase();
-        });
+        let rest = basePhases[2];
+        t = rest.duration;
+        updatePhaseUI("rest", rest.name, rest.rpm, rest.hf, t, setIdx, sets, cycleIdx, cycles);
+        interval = setInterval(() => {
+          t--;
+          updatePhaseUI("rest", rest.name, rest.rpm, rest.hf, t, setIdx, sets, cycleIdx, cycles);
+          if (t <= 0) {
+            clearInterval(interval);
+            cycleIdx++;
+            if (cycleIdx <= cycles) {
+              phasePointer = 1;
+              playBeepSequence(() => nextPhase());
+            } else {
+              if (setIdx < sets) {
+                phasePointer = 3;
+                playBeepSequence(() => nextPhase());
+              } else {
+                phasePointer = 4;
+                nextPhase();
+              }
+            }
+          }
+        }, 1000);
         return;
       }
       if (phasePointer === 3) { // Set Pause
-        currPhase = basePhases[3];
-        t = currPhase.duration;
-        updatePhaseUI("setpause", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx-1, cycles);
+        let setpause = basePhases[3];
+        t = setpause.duration;
+        updatePhaseUI("setpause", setpause.name, setpause.rpm, setpause.hf, t, setIdx, sets, cycleIdx-1, cycles);
         interval = setInterval(() => {
           t--;
-          updatePhaseUI("setpause", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx-1, cycles);
+          updatePhaseUI("setpause", setpause.name, setpause.rpm, setpause.hf, t, setIdx, sets, cycleIdx-1, cycles);
           if (t <= 0) {
             clearInterval(interval);
             setIdx++;
             cycleIdx = 1;
             phasePointer = 1;
-            nextPhase();
+            playBeepSequence(() => nextPhase());
           }
         }, 1000);
         return;
       }
       if (phasePointer === 4) { // Cooldown
-        currPhase = basePhases[4];
-        t = currPhase.duration;
-        updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
+        let cooldown = basePhases[4];
+        t = cooldown.duration;
+        updatePhaseUI("prepare", cooldown.name, cooldown.rpm, cooldown.hf, t, setIdx, sets, cycleIdx, cycles);
         interval = setInterval(() => {
           t--;
-          updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
+          updatePhaseUI("prepare", cooldown.name, cooldown.rpm, cooldown.hf, t, setIdx, sets, cycleIdx, cycles);
           if (t <= 0) {
             clearInterval(interval);
             running = false;
@@ -347,47 +373,6 @@
         }, 1000);
         return;
       }
-    }
-
-    function startWorkPhase() {
-      let work = basePhases[1];
-      t = work.duration;
-      updatePhaseUI("work", work.name, work.rpm, work.hf, t, setIdx, sets, cycleIdx, cycles);
-      interval = setInterval(() => {
-        t--;
-        updatePhaseUI("work", work.name, work.rpm, work.hf, t, setIdx, sets, cycleIdx, cycles);
-        if (t <= 0) {
-          clearInterval(interval);
-          phasePointer = 2;
-          nextPhase();
-        }
-      }, 1000);
-    }
-
-    function startRestPhase() {
-      let rest = basePhases[2];
-      t = rest.duration;
-      updatePhaseUI("rest", rest.name, rest.rpm, rest.hf, t, setIdx, sets, cycleIdx, cycles);
-      interval = setInterval(() => {
-        t--;
-        updatePhaseUI("rest", rest.name, rest.rpm, rest.hf, t, setIdx, sets, cycleIdx, cycles);
-        if (t <= 0) {
-          clearInterval(interval);
-          cycleIdx++;
-          if (cycleIdx <= cycles) {
-            phasePointer = 1;
-            nextPhase();
-          } else {
-            if (setIdx < sets) {
-              phasePointer = 3;
-              nextPhase();
-            } else {
-              phasePointer = 4;
-              nextPhase();
-            }
-          }
-        }
-      }, 1000);
     }
 
     document.getElementById("startBtn").onclick = startProgram;
