@@ -68,9 +68,20 @@
     background: #005f8c;
   }
   #backBtn {
-    background: #555;
-    margin-top: 1rem;
-    width: 100%;
+    background: #d32f2f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 1000;
+  }
+  #backBtn:hover {
+    background: #9a2424;
   }
   table {
     width: 100%;
@@ -93,6 +104,11 @@
     background: #666;
     cursor: text;
   }
+  .logo {
+    display: block;
+    max-width: 150px;
+    margin: 1rem auto 2rem auto;
+  }
   @media (max-width: 480px) {
     .phaseLabel {
       font-size: 1.5rem;
@@ -104,17 +120,23 @@
       font-size: 0.9rem;
       padding: 0.5rem 1rem;
     }
+    .logo {
+      max-width: 120px;
+      margin: 0.5rem auto 1.5rem auto;
+    }
   }
 </style>
 </head>
 <body>
+<button id="backBtn">Zurück</button>
 <div class="container">
+  <img src="https://ehcb.de/wp-content/uploads/2021/02/EHCB_Logo-1.png" alt="EHCB Logo" class="logo" />
   <div class="phaseBox">
     <div class="phaseLabel" id="phaseLabel">Get Ready</div>
     <div id="phaseDesc">Bereite dich vor!</div>
     <div id="timer">00:30</div>
     <div id="phaseInfo">Startschuss in 30 Sekunden</div>
-    <div id="phaseCount">Phase 1 von 18</div>
+    <div id="phaseCount">Phase 1 von 17</div>
   </div>
   <div class="buttons">
     <button id="startBtn">Start</button>
@@ -145,13 +167,11 @@
       <tr><td contenteditable="true">Sprint 7</td><td contenteditable="true">20</td></tr>
       <tr><td contenteditable="true">Pause 7</td><td contenteditable="true">40</td></tr>
       <tr><td contenteditable="true">Cool Down</td><td contenteditable="true">60</td></tr>
-      <tr><td contenteditable="true">Ende</td><td contenteditable="true">10</td></tr>
     </tbody>
   </table>
-  <button id="backBtn">Zurück</button>
 </div>
 <script>
-  // JS from intervall.html adapted for Explosiv-Antritt phases
+  // JS adapted for Explosiv-Antritt phases with Cardio Intervall structure
   const phases = [
     {label: "Get Ready", desc: "Bereite dich vor!", duration: 30, info: "Startschuss in 30 Sekunden"},
     {label: "Sprint 1", desc: "Explosiver Sprint", duration: 20, info: "Gib alles!"},
@@ -168,8 +188,7 @@
     {label: "Pause 6", desc: "Kurze Erholung", duration: 40, info: "Atme tief"},
     {label: "Sprint 7", desc: "Explosiver Sprint", duration: 20, info: "Endspurt!"},
     {label: "Pause 7", desc: "Kurze Erholung", duration: 40, info: "Fast fertig"},
-    {label: "Cool Down", desc: "Abkühlen", duration: 60, info: "Locker auslaufen"},
-    {label: "Ende", desc: "Training beendet", duration: 10, info: "Gut gemacht!"}
+    {label: "Cool Down", desc: "Abkühlen", duration: 60, info: "Locker auslaufen"}
   ];
 
   let currentPhase = 0;
@@ -273,11 +292,6 @@
         case "cool down":
           desc = "Abkühlen";
           info = "Locker auslaufen";
-          break;
-        case "ende":
-        case "end":
-          desc = "Training beendet";
-          info = "Gut gemacht!";
           break;
         default:
           if (phaseName.toLowerCase().includes("sprint")) {
