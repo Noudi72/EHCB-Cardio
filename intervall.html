@@ -424,10 +424,12 @@
       });
       basePhases = newBase;
       renderPhaseTable(false);
+      showDesc(false); // Beschreibung nach Speichern ausblenden
     }
 
     document.getElementById("editBtn").onclick = function() {
       renderPhaseTable(true);
+      showDesc(true); // Beschreibung beim Bearbeiten anzeigen
     };
 
     // Cycles/Sets Inputs
@@ -529,7 +531,7 @@
       setIdx = 1;
       cycleIdx = 1;
       phasePointer = 0;
-      showDesc(false);
+      showDesc(false); // Beschreibung bei Start ausblenden
       // Kein Go-Sound direkt, sondern wie in nextPhase() behandelt
       nextPhase(true);
     }
@@ -546,11 +548,8 @@
         interval = setInterval(() => {
           t--;
           updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
-          // Beep at 4,3,2,1 seconds left
-          if (t <= 4 && t > 0) {
-            playSound("audioBeep");
-          }
-          // At 0, play Go and direct to Work
+          // Keine Beep-Töne mehr bei t=4,3,2,1!
+          // Nur bei t===0 Go-Sound:
           if (t === 0) {
             document.getElementById("timer").textContent = "Go!";
             playSound("audioGo");
@@ -695,7 +694,7 @@
       document.getElementById("phaseCount").textContent = "";
       document.getElementById("startBtn").style.display = "";
       document.getElementById("resetBtn").style.display = "none";
-      showDesc(true);
+      showDesc(true); // Beschreibung nach Reset wieder anzeigen
     };
   </script>
 </body>
