@@ -249,8 +249,8 @@
       let count = 3;
       const timer = document.getElementById("timer");
       timer.textContent = "3";
-      let beeped = 0;
       playSound("audioBeep");
+      let beeped = 0;
       const beepInterval = setInterval(() => {
         beeped++;
         count--;
@@ -267,6 +267,12 @@
       }, 800);
     }
 
+    // Spiele einen einzelnen Beep und rufe dann cb auf (direkt, keine Wartezeit)
+    function playSingleBeep(cb) {
+      playSound("audioBeep");
+      if (typeof cb === "function") cb();
+    }
+
     function startProgram() {
       if (running) return;
       running = true;
@@ -276,8 +282,8 @@
       setIdx = 1;
       cycleIdx = 1;
       phasePointer = 0;
-      playSound("audioGo");
-      setTimeout(() => nextPhase(true), 1200);
+      // Kein Go-Sound direkt, sondern wie in nextPhase() behandelt
+      nextPhase(true);
     }
 
     document.getElementById("skipWarmUpBtn").onclick = function() {
@@ -289,14 +295,15 @@
         setIdx = 1;
         cycleIdx = 1;
         phasePointer = 1;
-        playSound("audioGo");
-        setTimeout(() => nextPhase(true), 800);
+        // Kein Go-Sound direkt, sondern wie in nextPhase() behandelt
+        nextPhase(true);
       }
     };
 
     function nextPhase(isFirst=false) {
       clearInterval(interval);
       let currPhase;
+      // --- WarmUp Phase ---
       if (phasePointer === 0 && !skipToWork) {
         currPhase = basePhases[0];
         t = currPhase.duration;
@@ -308,12 +315,15 @@
             clearInterval(interval);
             phasePointer = 1;
             cycleIdx = 1;
+            // Vor dem allerersten Work: 3-2-1-Go
             playBeepSequence(() => nextPhase());
           }
         }, 1000);
         return;
       }
-      if (phasePointer === 1) { // Work
+
+      // --- Work Phase ---
+      if (phasePointer === 1) {
         let work = basePhases[1];
         t = work.duration;
         updatePhaseUI("work", work.name, work.rpm, work.hf, t, setIdx, sets, cycleIdx, cycles);
@@ -323,12 +333,15 @@
           if (t <= 0) {
             clearInterval(interval);
             phasePointer = 2;
-            playBeepSequence(() => nextPhase());
+            // Nach Work → Rest: nur EIN Beep, außer letzter Cycle (dann kommt Set Pause)
+            playSingleBeep(() => nextPhase());
           }
         }, 1000);
         return;
       }
-      if (phasePointer === 2) { // Rest
+
+      // --- Rest Phase ---
+      if (phasePointer === 2) {
         let rest = basePhases[2];
         t = rest.duration;
         updatePhaseUI("rest", rest.name, rest.rpm, rest.hf, t, setIdx, sets, cycleIdx, cycles);
@@ -340,11 +353,13 @@
             cycleIdx++;
             if (cycleIdx <= cycles) {
               phasePointer = 1;
-              playBeepSequence(() => nextPhase());
+              // Rest → Work (innerhalb Set): nur EIN Beep
+              playSingleBeep(() => nextPhase());
             } else {
               if (setIdx < sets) {
                 phasePointer = 3;
-                playBeepSequence(() => nextPhase());
+                // Nach letztem Rest im Set → Set Pause: nur EIN Beep
+                playSingleBeep(() => nextPhase());
               } else {
                 phasePointer = 4;
                 nextPhase();
@@ -354,7 +369,9 @@
         }, 1000);
         return;
       }
-      if (phasePointer === 3) { // Set Pause
+
+      // --- Set Pause Phase ---
+      if (phasePointer === 3) {
         let setpause = basePhases[3];
         t = setpause.duration;
         updatePhaseUI("setpause", setpause.name, setpause.rpm, setpause.hf, t, setIdx, sets, cycleIdx-1, cycles);
@@ -366,12 +383,15 @@
             setIdx++;
             cycleIdx = 1;
             phasePointer = 1;
+            // Nach Set Pause, vor neuem Set-Work: 3-2-1-Go
             playBeepSequence(() => nextPhase());
           }
         }, 1000);
         return;
       }
-      if (phasePointer === 4) { // Cooldown
+
+      // --- Cooldown Phase ---
+      if (phasePointer === 4) {
         let cooldown = basePhases[4];
         t = cooldown.duration;
         updatePhaseUI("prepare", cooldown.name, cooldown.rpm, cooldown.hf, t, setIdx, sets, cycleIdx, cycles);
