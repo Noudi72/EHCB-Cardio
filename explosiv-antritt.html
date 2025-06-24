@@ -1,344 +1,346 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Explosiv-Antritt - Cardio Tabata</title>
-<style>
-  /* CSS from intervall.html */
-  body {
-    font-family: Arial, sans-serif;
-    background: #222;
-    color: #eee;
-    margin: 0;
-    padding: 0;
-  }
-  .container {
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 1rem;
-  }
-  .phaseBox {
-    background: #444;
-    border-radius: 10px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    text-align: center;
-    box-shadow: 0 0 10px #000;
-  }
-  .phaseLabel {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-  }
-  #phaseDesc {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-  }
-  #timer {
-    font-size: 4rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-  }
-  #phaseInfo {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-  }
-  #phaseCount {
-    font-size: 1rem;
-    font-style: italic;
-    margin-bottom: 1rem;
-  }
-  .buttons {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 1rem;
-  }
-  button {
-    background: #0088cc;
-    border: none;
-    color: white;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  button:hover {
-    background: #005f8c;
-  }
-  #backBtn {
-    background: #d32f2f;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 0.5rem 1rem;
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    z-index: 1000;
-  }
-  #backBtn:hover {
-    background: #9a2424;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1rem;
-    background: #333;
-    border-radius: 5px;
-    overflow: hidden;
-  }
-  th, td {
-    padding: 0.5rem;
-    border: 1px solid #555;
-    text-align: center;
-    color: #eee;
-  }
-  th {
-    background: #555;
-  }
-  td[contenteditable="true"] {
-    background: #666;
-    cursor: text;
-  }
-  .logo {
-    display: block;
-    max-width: 150px;
-    margin: 1rem auto 2rem auto;
-  }
-  @media (max-width: 480px) {
-    .phaseLabel {
-      font-size: 1.5rem;
-    }
-    #timer {
-      font-size: 3rem;
-    }
-    button {
-      font-size: 0.9rem;
-      padding: 0.5rem 1rem;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Explosiv-Antritt – Cardio Intervall</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #181818;
+      color: #eee;
+      margin: 0;
+      padding: 0;
     }
     .logo {
-      max-width: 120px;
-      margin: 0.5rem auto 1.5rem auto;
+      display: block;
+      margin: 26px auto 9px auto;
+      width: 110px;
+      max-width: 34vw;
     }
-  }
-</style>
+    #backBtn {
+      position: fixed;
+      top: 24px;
+      left: 20px;
+      z-index: 9;
+      border: none;
+      background: #d32f2f;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.12em;
+      border-radius: 18px;
+      padding: 8px 19px;
+      cursor: pointer;
+      box-shadow: 0 1px 9px #0002;
+      transition: background 0.15s;
+    }
+    #backBtn:hover {
+      background: #b71c1c;
+    }
+    .phaseBox {
+      margin: 44px auto 50px auto;
+      max-width: 600px;
+      width: 95vw;
+      border-radius: 42px;
+      box-shadow: 0 4px 18px #0008;
+      text-align: center;
+      font-size: 2.9em;
+      font-weight: bold;
+      padding: 44px 0 36px 0;
+      min-height: 260px;
+      background: #ffe028;
+      color: #222;
+      transition: background 0.22s, color 0.22s;
+    }
+    .phaseLabel {
+      font-size: 2.15em;
+      letter-spacing: 2.5px;
+      font-weight: 900;
+      margin-bottom: 18px;
+      text-shadow: 0 2px 8px #0003;
+      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+      text-transform: uppercase;
+    }
+    #phaseDesc {
+      font-size: 1.08em;
+      margin-bottom: 19px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+    #timer {
+      font-size: 6em;
+      font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
+      font-weight: bold;
+      margin: 0 0 14px 0;
+      letter-spacing: 2.2px;
+      text-shadow: 0 2px 10px #0002;
+      line-height: 1.07;
+    }
+    #phaseInfo {
+      font-size: 1.1em;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: inherit;
+    }
+    #phaseCount {
+      font-size: 1.16em;
+      margin-top: 17px;
+      color: #222;
+      font-weight: 800;
+      opacity: 0.98;
+      text-shadow: 0 2px 10px #0001;
+    }
+    .cardio-buttons {
+      text-align: center;
+      margin-bottom: 34px;
+      margin-top: 5px;
+    }
+    .cardio-buttons button {
+      background: #d32f2f;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.11em;
+      border: none;
+      border-radius: 16px;
+      margin: 0 10px 0 10px;
+      padding: 11px 23px;
+      cursor: pointer;
+      box-shadow: 0 1px 6px #0002;
+      transition: background 0.13s;
+    }
+    .cardio-buttons button:hover {
+      background: #b71c1c;
+    }
+    .edit-table {
+      max-width: 520px;
+      margin: 0 auto 26px auto;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 3px 12px #0003;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #181818;
+      border-radius: 8px;
+      font-size: 1.13em;
+    }
+    th, td {
+      padding: 0.65em 0.4em;
+      text-align: center;
+    }
+    th {
+      background: #232323;
+      color: #ffe028;
+      font-weight: bold;
+      letter-spacing: 1.2px;
+    }
+    td {
+      background: #232323;
+      color: #eee;
+    }
+    td[contenteditable="true"] {
+      background: #373737;
+      color: #ffe028;
+      font-weight: bold;
+      outline: 2px solid #ffe02833;
+    }
+    @media (min-width: 800px) {
+      .phaseBox {
+        max-width: 400px;
+        min-height: 150px;
+        padding: 20px 0 20px 0;
+        margin-top: 38px;
+      }
+      #timer {
+        font-size: 2.65em;
+      }
+      .phaseLabel {
+        font-size: 1.15em;
+      }
+    }
+    @media (max-width: 600px) {
+      .logo {
+        margin-top: 13px;
+        width: 72px;
+        max-width: 25vw;
+      }
+      .phaseBox {
+        font-size: 1.37em;
+        padding: 32px 0 28px 0;
+        min-height: 310px;
+        max-width: 98vw;
+        width: 99vw;
+        border-radius: 16px;
+        margin: 21px auto 10px auto;
+      }
+      #timer {
+        font-size: 3.4em;
+        margin-bottom: 7px;
+      }
+      .phaseLabel {
+        font-size: 1.05em;
+        margin-bottom: 8px;
+      }
+    }
+  </style>
 </head>
 <body>
-<button id="backBtn">Zurück</button>
-<div class="container">
-  <img src="https://ehcb.de/wp-content/uploads/2021/02/EHCB_Logo-1.png" alt="EHCB Logo" class="logo" />
-  <div class="phaseBox">
-    <div class="phaseLabel" id="phaseLabel">Get Ready</div>
-    <div id="phaseDesc">Bereite dich vor!</div>
-    <div id="timer">00:30</div>
-    <div id="phaseInfo">Startschuss in 30 Sekunden</div>
-    <div id="phaseCount">Phase 1 von 17</div>
-  </div>
-  <div class="buttons">
-    <button id="startBtn">Start</button>
-    <button id="editBtn">Bearbeiten</button>
-    <button id="resetBtn">Reset</button>
-  </div>
+<button id="backBtn" onclick="window.location.href='index.html'">Zurück</button>
+<img src="https://ehcb.de/wp-content/uploads/2021/02/EHCB_Logo-1.png" alt="EHCB Logo" class="logo" />
+<div class="phaseBox" id="phaseBox">
+  <div class="phaseLabel" id="phaseLabel">Get Ready</div>
+  <div id="phaseDesc">Bereite dich vor!</div>
+  <div id="timer">00:30</div>
+  <div id="phaseInfo">Startschuss in 30 Sekunden</div>
+  <div id="phaseCount">Phase 1 von 16</div>
+</div>
+<div class="cardio-buttons">
+  <button id="startBtn">Start</button>
+  <button id="editBtn">Bearbeiten</button>
+  <button id="resetBtn">Reset</button>
+</div>
+<div class="edit-table" id="editTableWrapper">
   <table id="phaseTable">
     <thead>
       <tr>
         <th>Phase</th>
         <th>Dauer (Sek.)</th>
+        <th>Beschreibung</th>
       </tr>
     </thead>
     <tbody>
-      <tr><td contenteditable="true">Get Ready</td><td contenteditable="true">30</td></tr>
-      <tr><td contenteditable="true">Sprint 1</td><td contenteditable="true">20</td></tr>
-      <tr><td contenteditable="true">Pause 1</td><td contenteditable="true">40</td></tr>
-      <tr><td contenteditable="true">Sprint 2</td><td contenteditable="true">20</td></tr>
-      <tr><td contenteditable="true">Pause 2</td><td contenteditable="true">40</td></tr>
-      <tr><td contenteditable="true">Sprint 3</td><td contenteditable="true">20</td></tr>
-      <tr><td contenteditable="true">Pause 3</td><td contenteditable="true">40</td></tr>
-      <tr><td contenteditable="true">Sprint 4</td><td contenteditable="true">20</td></tr>
-      <tr><td contenteditable="true">Pause 4</td><td contenteditable="true">40</td></tr>
-      <tr><td contenteditable="true">Sprint 5</td><td contenteditable="true">20</td></tr>
-      <tr><td contenteditable="true">Pause 5</td><td contenteditable="true">40</td></tr>
-      <tr><td contenteditable="true">Sprint 6</td><td contenteditable="true">20</td></tr>
-      <tr><td contenteditable="true">Pause 6</td><td contenteditable="true">40</td></tr>
-      <tr><td contenteditable="true">Sprint 7</td><td contenteditable="true">20</td></tr>
-      <tr><td contenteditable="true">Pause 7</td><td contenteditable="true">40</td></tr>
-      <tr><td contenteditable="true">Cool Down</td><td contenteditable="true">60</td></tr>
+      <tr><td contenteditable="true">Get Ready</td><td contenteditable="true">30</td><td contenteditable="true">Bereite dich vor!</td></tr>
+      <tr><td contenteditable="true">Sprint 1</td><td contenteditable="true">20</td><td contenteditable="true">Explosiver Sprint</td></tr>
+      <tr><td contenteditable="true">Pause 1</td><td contenteditable="true">40</td><td contenteditable="true">Kurze Erholung</td></tr>
+      <tr><td contenteditable="true">Sprint 2</td><td contenteditable="true">20</td><td contenteditable="true">Explosiver Sprint</td></tr>
+      <tr><td contenteditable="true">Pause 2</td><td contenteditable="true">40</td><td contenteditable="true">Kurze Erholung</td></tr>
+      <tr><td contenteditable="true">Sprint 3</td><td contenteditable="true">20</td><td contenteditable="true">Explosiver Sprint</td></tr>
+      <tr><td contenteditable="true">Pause 3</td><td contenteditable="true">40</td><td contenteditable="true">Kurze Erholung</td></tr>
+      <tr><td contenteditable="true">Sprint 4</td><td contenteditable="true">20</td><td contenteditable="true">Explosiver Sprint</td></tr>
+      <tr><td contenteditable="true">Pause 4</td><td contenteditable="true">40</td><td contenteditable="true">Kurze Erholung</td></tr>
+      <tr><td contenteditable="true">Sprint 5</td><td contenteditable="true">20</td><td contenteditable="true">Explosiver Sprint</td></tr>
+      <tr><td contenteditable="true">Pause 5</td><td contenteditable="true">40</td><td contenteditable="true">Kurze Erholung</td></tr>
+      <tr><td contenteditable="true">Sprint 6</td><td contenteditable="true">20</td><td contenteditable="true">Explosiver Sprint</td></tr>
+      <tr><td contenteditable="true">Pause 6</td><td contenteditable="true">40</td><td contenteditable="true">Kurze Erholung</td></tr>
+      <tr><td contenteditable="true">Sprint 7</td><td contenteditable="true">20</td><td contenteditable="true">Explosiver Sprint</td></tr>
+      <tr><td contenteditable="true">Pause 7</td><td contenteditable="true">40</td><td contenteditable="true">Kurze Erholung</td></tr>
+      <tr><td contenteditable="true">Cool Down</td><td contenteditable="true">60</td><td contenteditable="true">Locker auslaufen</td></tr>
     </tbody>
   </table>
 </div>
 <script>
-  // JS adapted for Explosiv-Antritt phases with Cardio Intervall structure
-  const phases = [
-    {label: "Get Ready", desc: "Bereite dich vor!", duration: 30, info: "Startschuss in 30 Sekunden"},
-    {label: "Sprint 1", desc: "Explosiver Sprint", duration: 20, info: "Gib alles!"},
-    {label: "Pause 1", desc: "Kurze Erholung", duration: 40, info: "Atme tief durch"},
-    {label: "Sprint 2", desc: "Explosiver Sprint", duration: 20, info: "Weiter so!"},
-    {label: "Pause 2", desc: "Kurze Erholung", duration: 40, info: "Bleib locker"},
-    {label: "Sprint 3", desc: "Explosiver Sprint", duration: 20, info: "Halbzeit!"},
-    {label: "Pause 3", desc: "Kurze Erholung", duration: 40, info: "Kraft sammeln"},
-    {label: "Sprint 4", desc: "Explosiver Sprint", duration: 20, info: "Gib alles!"},
-    {label: "Pause 4", desc: "Kurze Erholung", duration: 40, info: "Atme tief durch"},
-    {label: "Sprint 5", desc: "Explosiver Sprint", duration: 20, info: "Fast geschafft!"},
-    {label: "Pause 5", desc: "Kurze Erholung", duration: 40, info: "Locker bleiben"},
-    {label: "Sprint 6", desc: "Explosiver Sprint", duration: 20, info: "Letzter Sprint!"},
-    {label: "Pause 6", desc: "Kurze Erholung", duration: 40, info: "Atme tief"},
-    {label: "Sprint 7", desc: "Explosiver Sprint", duration: 20, info: "Endspurt!"},
-    {label: "Pause 7", desc: "Kurze Erholung", duration: 40, info: "Fast fertig"},
-    {label: "Cool Down", desc: "Abkühlen", duration: 60, info: "Locker auslaufen"}
+  let phases = [
+    {label: "Get Ready", desc: "Bereite dich vor!", duration: 30},
+    {label: "Sprint 1", desc: "Explosiver Sprint", duration: 20},
+    {label: "Pause 1", desc: "Kurze Erholung", duration: 40},
+    {label: "Sprint 2", desc: "Explosiver Sprint", duration: 20},
+    {label: "Pause 2", desc: "Kurze Erholung", duration: 40},
+    {label: "Sprint 3", desc: "Explosiver Sprint", duration: 20},
+    {label: "Pause 3", desc: "Kurze Erholung", duration: 40},
+    {label: "Sprint 4", desc: "Explosiver Sprint", duration: 20},
+    {label: "Pause 4", desc: "Kurze Erholung", duration: 40},
+    {label: "Sprint 5", desc: "Explosiver Sprint", duration: 20},
+    {label: "Pause 5", desc: "Kurze Erholung", duration: 40},
+    {label: "Sprint 6", desc: "Explosiver Sprint", duration: 20},
+    {label: "Pause 6", desc: "Kurze Erholung", duration: 40},
+    {label: "Sprint 7", desc: "Explosiver Sprint", duration: 20},
+    {label: "Pause 7", desc: "Kurze Erholung", duration: 40},
+    {label: "Cool Down", desc: "Locker auslaufen", duration: 60}
   ];
+  let currentPhase = 0, timer = null, running = false, t = phases[0].duration;
 
-  let currentPhase = 0;
-  let timerInterval = null;
-  let timeLeft = phases[0].duration;
-  let isRunning = false;
-
-  const phaseLabel = document.getElementById("phaseLabel");
-  const phaseDesc = document.getElementById("phaseDesc");
-  const timer = document.getElementById("timer");
-  const phaseInfo = document.getElementById("phaseInfo");
-  const phaseCount = document.getElementById("phaseCount");
-  const startBtn = document.getElementById("startBtn");
-  const resetBtn = document.getElementById("resetBtn");
-  const editBtn = document.getElementById("editBtn");
-  const phaseTable = document.getElementById("phaseTable").querySelector("tbody");
-  const backBtn = document.getElementById("backBtn");
-
-  function updateDisplay() {
-    phaseLabel.textContent = phases[currentPhase].label;
-    phaseDesc.textContent = phases[currentPhase].desc;
-    timer.textContent = formatTime(timeLeft);
-    phaseInfo.textContent = phases[currentPhase].info;
-    phaseCount.textContent = `Phase ${currentPhase + 1} von ${phases.length}`;
+  function updateUI() {
+    document.getElementById("phaseLabel").textContent = phases[currentPhase].label;
+    document.getElementById("phaseDesc").textContent = phases[currentPhase].desc;
+    document.getElementById("timer").textContent = ("0" + Math.floor(t / 60)).slice(-2) + ":" + ("0" + (t % 60)).slice(-2);
+    document.getElementById("phaseInfo").textContent = phases[currentPhase].desc;
+    document.getElementById("phaseCount").textContent = `Phase ${currentPhase + 1} von ${phases.length}`;
   }
 
-  function formatTime(seconds) {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m < 10 ? "0" + m : m}:${s < 10 ? "0" + s : s}`;
+  function nextPhase() {
+    if (currentPhase < phases.length - 1) {
+      currentPhase++;
+      t = phases[currentPhase].duration;
+      updateUI();
+    } else {
+      running = false;
+      clearInterval(timer);
+      document.getElementById("startBtn").disabled = false;
+    }
   }
 
-  function startTimer() {
-    if (isRunning) return;
-    isRunning = true;
-    startBtn.textContent = "Pause";
-    timerInterval = setInterval(() => {
-      timeLeft--;
-      if (timeLeft < 0) {
-        currentPhase++;
-        if (currentPhase >= phases.length) {
-          clearInterval(timerInterval);
-          isRunning = false;
-          startBtn.textContent = "Start";
-          currentPhase = phases.length - 1;
-          timeLeft = 0;
-          updateDisplay();
-          return;
-        }
-        timeLeft = phases[currentPhase].duration;
-        playAudioStart();
+  function startProgram() {
+    if (running) return;
+    running = true;
+    document.getElementById("startBtn").disabled = true;
+    timer = setInterval(() => {
+      t--;
+      if (t < 0) {
+        nextPhase();
+      } else {
+        updateUI();
       }
-      updateDisplay();
     }, 1000);
   }
 
-  function pauseTimer() {
-    if (!isRunning) return;
-    clearInterval(timerInterval);
-    isRunning = false;
-    startBtn.textContent = "Start";
-  }
-
-  function resetTimer() {
-    clearInterval(timerInterval);
-    isRunning = false;
+  function resetProgram() {
+    clearInterval(timer);
+    running = false;
     currentPhase = 0;
-    timeLeft = phases[0].duration;
-    startBtn.textContent = "Start";
-    updateDisplay();
+    t = phases[0].duration;
+    updateUI();
+    document.getElementById("startBtn").disabled = false;
   }
 
-  function toggleStartPause() {
-    if (isRunning) {
-      pauseTimer();
+  function editPhases() {
+    let tbl = document.getElementById("phaseTable").tBodies[0];
+    for (let i = 0; i < tbl.rows.length; i++) {
+      for (let j = 0; j < 3; j++) {
+        tbl.rows[i].cells[j].contentEditable = true;
+      }
+    }
+  }
+
+  function savePhases() {
+    let tbl = document.getElementById("phaseTable").tBodies[0];
+    let newPhases = [];
+    for (let i = 0; i < tbl.rows.length; i++) {
+      let name = tbl.rows[i].cells[0].textContent.trim();
+      let dur = parseInt(tbl.rows[i].cells[1].textContent.trim(), 10);
+      let desc = tbl.rows[i].cells[2].textContent.trim();
+      if (name && !isNaN(dur) && dur > 0) {
+        newPhases.push({label: name, desc: desc, duration: dur});
+      }
+    }
+    if (newPhases.length > 0) {
+      phases = newPhases;
+      resetProgram();
+    }
+    for (let i = 0; i < tbl.rows.length; i++) {
+      for (let j = 0; j < 3; j++) {
+        tbl.rows[i].cells[j].contentEditable = false;
+      }
+    }
+  }
+
+  document.getElementById("startBtn").onclick = startProgram;
+  document.getElementById("resetBtn").onclick = resetProgram;
+  let editMode = false;
+  document.getElementById("editBtn").onclick = function () {
+    if (!editMode) {
+      editPhases();
+      this.textContent = "Speichern";
+      editMode = true;
     } else {
-      startTimer();
+      savePhases();
+      this.textContent = "Bearbeiten";
+      editMode = false;
     }
-  }
+  };
 
-  function playAudioStart() {
-    // Play start sound on phase start except for Get Ready phase (start sound after Get Ready)
-    if (phases[currentPhase].label === "Get Ready") return;
-    const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
-    beep.play();
-  }
-
-  function loadPhasesFromTable() {
-    phases.length = 0;
-    for (const row of phaseTable.rows) {
-      const phaseName = row.cells[0].textContent.trim();
-      const phaseDur = parseInt(row.cells[1].textContent.trim());
-      if (!phaseName || isNaN(phaseDur) || phaseDur <= 0) continue;
-      let desc = "";
-      let info = "";
-      switch (phaseName.toLowerCase()) {
-        case "get ready":
-          desc = "Bereite dich vor!";
-          info = `Startschuss in ${phaseDur} Sekunden`;
-          break;
-        case "cool down":
-          desc = "Abkühlen";
-          info = "Locker auslaufen";
-          break;
-        default:
-          if (phaseName.toLowerCase().includes("sprint")) {
-            desc = "Explosiver Sprint";
-            info = "Gib alles!";
-          } else if (phaseName.toLowerCase().includes("pause")) {
-            desc = "Kurze Erholung";
-            info = "Atme tief durch";
-          } else {
-            desc = "";
-            info = "";
-          }
-          break;
-      }
-      phases.push({label: phaseName, desc: desc, duration: phaseDur, info: info});
-    }
-    resetTimer();
-  }
-
-  editBtn.addEventListener("click", () => {
-    if (editBtn.textContent === "Bearbeiten") {
-      for (const row of phaseTable.rows) {
-        for (const cell of row.cells) {
-          cell.setAttribute("contenteditable", "true");
-        }
-      }
-      editBtn.textContent = "Speichern";
-      pauseTimer();
-    } else {
-      for (const row of phaseTable.rows) {
-        for (const cell of row.cells) {
-          cell.removeAttribute("contenteditable");
-        }
-      }
-      editBtn.textContent = "Bearbeiten";
-      loadPhasesFromTable();
-    }
-  });
-
-  startBtn.addEventListener("click", toggleStartPause);
-  resetBtn.addEventListener("click", resetTimer);
-  backBtn.addEventListener("click", () => {
-    window.history.back();
-  });
-
-  // Initialize display
-  updateDisplay();
+  updateUI();
 </script>
 </body>
 </html>
