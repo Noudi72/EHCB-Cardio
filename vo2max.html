@@ -151,6 +151,18 @@
       text-align: center;
       user-select: none;
     }
+    .info-warmup {
+      max-width: 520px;
+      margin: 34px auto 0 auto;
+      background: #ffe028;
+      color: #d00;
+      font-size: 1.3em;
+      text-align: center;
+      font-weight: bold;
+      border-radius: 16px;
+      box-shadow: 0 2px 10px #0003;
+      padding: 18px 7vw 18px 7vw;
+    }
     table {
       max-width: 450px;
       margin: 0 auto 36px auto;
@@ -220,6 +232,11 @@
         font-size: 0.85em;
       }
     }
+    @media (min-width: 800px) {
+      #timer {
+        font-size: 2em;
+      }
+    }
   </style>
 </head>
 <body>
@@ -234,6 +251,7 @@
     <div id="phaseInfo"></div>
     <div id="phaseCount"></div>
   </div>
+  <div class="info-warmup">Bitte vorher 10 Min. aufwärmen!</div>
   <div class="controls">
     <button id="startBtn">START</button>
     <button id="editBtn">PHASEN BEARBEITEN</button>
@@ -261,7 +279,7 @@
   <script>
     // --- VO2max-Phasen (bearbeitbar) ---
     let phases = [
-      { name: "Aufwärmen", duration: 600, rpm: "70-80", hf: "50-60", desc: "10 Min. Leichter Widerstand steigernd" },
+      { name: "Get Ready", duration: 30, rpm: "", hf: "", desc: "30 Sek. Vorbereitung" },
       { name: "Phase 1", duration: 240, rpm: "70-80", hf: "90-95", desc: "4 Min. sehr hart" },
       { name: "Pause", duration: 120, rpm: "60-70", hf: "50-60", desc: "Sehr locker fahren" },
       { name: "Phase 2", duration: 240, rpm: "70-80", hf: "90-95", desc: "4 Min. sehr hart" },
