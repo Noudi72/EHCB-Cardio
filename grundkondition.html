@@ -12,19 +12,28 @@
   body {
     font-family: Arial, sans-serif;
     margin: 0;
-    background: #f9f9f9;
-    color: #222;
+    background: #000000;
+    color: #ffd600;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
   }
   header {
-    background: #e63946;
-    color: white;
-    padding: 1rem;
+    background: #000;
+    color: #ffd600;
+    padding: 1rem 0;
     text-align: center;
-    font-weight: bold;
-    font-size: 1.5rem;
+    font-weight: 900;
+    font-size: 2rem;
+    letter-spacing: 0.1em;
+    user-select: none;
+  }
+  .logo {
+    display: block;
+    margin: 1.5rem auto 2rem auto;
+    width: 160px;
+    height: 160px;
+    background: url('logo.svg') no-repeat center center / contain;
   }
   main {
     flex: 1;
@@ -35,159 +44,181 @@
   }
   /* Phase Box */
   .phaseBox {
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    background: #ffd600;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgb(255 214 0 / 0.6);
+    padding: 2rem 1.5rem 2.5rem 1.5rem;
+    margin-bottom: 2rem;
     text-align: center;
+    color: #000;
   }
   .phaseLabel {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #e63946;
-    margin-bottom: 0.25rem;
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 0.3rem;
   }
   #phaseDesc {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-    color: #555;
+    font-size: 1.3rem;
+    margin-bottom: 0.7rem;
+    font-weight: 700;
   }
   #timer {
-    font-size: 4rem;
+    font-size: 6rem;
     font-weight: 900;
-    color: #1d3557;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.05em;
   }
   #phaseInfo {
-    font-size: 0.9rem;
-    color: #777;
-    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
   }
   #phaseCount {
-    font-size: 0.9rem;
-    color: #999;
+    font-size: 1rem;
+    font-weight: 600;
+    opacity: 0.8;
   }
   /* Buttons */
   .buttonRow {
     display: flex;
     justify-content: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
     flex-wrap: wrap;
   }
   button {
     background: #e63946;
     border: none;
     color: white;
-    font-weight: 700;
-    padding: 0.75rem 1.25rem;
-    border-radius: 6px;
+    font-weight: 900;
+    padding: 0.85rem 1.75rem;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.2rem;
     transition: background 0.3s ease;
-    min-width: 90px;
+    min-width: 110px;
+    user-select: none;
   }
   button:hover:not(:disabled) {
-    background: #d62828;
+    background: #b71c26;
   }
   button:disabled {
-    background: #ccc;
+    background: #555;
     cursor: not-allowed;
   }
   /* Editable Table */
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 1rem;
-    background: #fff;
-    border-radius: 8px;
+    margin-bottom: 2rem;
+    background: #111;
+    border-radius: 10px;
     overflow: hidden;
+    color: #ffd600;
+    user-select: none;
   }
   thead {
     background: #e63946;
     color: white;
   }
   th, td {
-    padding: 0.5rem 0.75rem;
+    padding: 0.7rem 1rem;
     text-align: center;
-    border: 1px solid #ddd;
+    border: 1px solid #444;
+    user-select: text;
   }
   td[contenteditable="true"] {
-    background: #fff7f7;
+    background: #331111;
     cursor: text;
+    user-select: text;
   }
   /* Back Button */
   .backBtn {
-    margin-top: auto;
-    background: #777;
+    background: #e63946;
+    color: white;
+    font-weight: 900;
+    border: none;
+    padding: 1rem;
     width: 100%;
     max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 0 0 8px 8px;
+    margin: 0 auto 1.5rem auto;
+    border-radius: 0 0 12px 12px;
+    cursor: pointer;
+    font-size: 1.3rem;
+    display: block;
+    user-select: none;
+    transition: background 0.3s ease;
   }
   .backBtn:hover {
-    background: #555;
-  }
-  /* Logo */
-  .logo {
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    width: 40px;
-    height: 40px;
-    background: url('logo.svg') no-repeat center center / contain;
+    background: #b71c26;
   }
   /* Responsive */
   @media (max-width: 480px) {
     #timer {
-      font-size: 3rem;
+      font-size: 4rem;
+    }
+    .phaseLabel {
+      font-size: 1.8rem;
+    }
+    #phaseDesc {
+      font-size: 1.1rem;
+    }
+    #phaseInfo {
+      font-size: 1rem;
+    }
+    #phaseCount {
+      font-size: 0.9rem;
     }
     button {
-      font-size: 0.9rem;
-      padding: 0.6rem 1rem;
-      min-width: 70px;
+      font-size: 1rem;
+      padding: 0.6rem 1.2rem;
+      min-width: 90px;
+    }
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 1.5rem;
     }
   }
 </style>
 </head>
 <body>
 <header>Cardio Intervall - Grundkondition</header>
+<div class="logo" aria-label="EHCB Logo" role="img"></div>
 <main>
-  <div class="phaseBox">
+  <div class="phaseBox" aria-live="polite" aria-atomic="true">
     <div class="phaseLabel" id="phaseLabel">Get Ready</div>
     <div id="phaseDesc">Bereite dich vor</div>
     <div id="timer">00:30</div>
     <div id="phaseInfo">Startschuss in...</div>
     <div id="phaseCount">Phase 1 von 9</div>
   </div>
-  <div class="buttonRow">
-    <button id="startBtn">Start</button>
-    <button id="editBtn">Bearbeiten</button>
+  <div class="buttonRow" role="group" aria-label="Steuerung">
+    <button id="startBtn" aria-pressed="false">Start</button>
+    <button id="editBtn" aria-pressed="false">Bearbeiten</button>
     <button id="resetBtn" disabled>Reset</button>
   </div>
-  <table id="phaseTable">
+  <table id="phaseTable" aria-label="Phasen Tabelle">
     <thead>
       <tr>
-        <th>Phase</th>
-        <th>Dauer (Sek.)</th>
-        <th>Beschreibung</th>
+        <th scope="col">Phase</th>
+        <th scope="col">Dauer (Sek.)</th>
+        <th scope="col">Beschreibung</th>
       </tr>
     </thead>
     <tbody contenteditable="false">
       <tr><td>Main</td><td>60</td><td>Hohe Intensität</td></tr>
-      <tr><td>Pausen</td><td>30</td><td>Erholung</td></tr>
+      <tr><td>Pause</td><td>30</td><td>Erholung</td></tr>
       <tr><td>Main</td><td>60</td><td>Hohe Intensität</td></tr>
-      <tr><td>Pausen</td><td>30</td><td>Erholung</td></tr>
+      <tr><td>Pause</td><td>30</td><td>Erholung</td></tr>
       <tr><td>Main</td><td>60</td><td>Hohe Intensität</td></tr>
-      <tr><td>Pausen</td><td>30</td><td>Erholung</td></tr>
+      <tr><td>Pause</td><td>30</td><td>Erholung</td></tr>
       <tr><td>Main</td><td>60</td><td>Hohe Intensität</td></tr>
       <tr><td>Cool-Down</td><td>120</td><td>Abkühlung</td></tr>
     </tbody>
   </table>
 </main>
-<button class="backBtn" onclick="history.back()">Zurück</button>
+<button class="backBtn" onclick="history.back()" aria-label="Zurück">Zurück</button>
 
 <script>
   // Program phases including Get Ready + Grundkondition phases (no Warm-Up)
@@ -249,6 +280,9 @@
       running = false;
       startBtn.disabled = false;
       resetBtn.disabled = true;
+      editBtn.disabled = false;
+      startBtn.setAttribute("aria-pressed", "false");
+      editBtn.setAttribute("aria-pressed", "false");
       phaseInfo.textContent = "Fertig!";
       return;
     }
@@ -270,13 +304,17 @@
   }
 
   function playStartSound() {
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioCtx.createOscillator();
-    oscillator.type = "square";
-    oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // 880 Hz beep
-    oscillator.connect(audioCtx.destination);
-    oscillator.start();
-    oscillator.stop(audioCtx.currentTime + 0.15);
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      oscillator.type = "square";
+      oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // 880 Hz beep
+      oscillator.connect(audioCtx.destination);
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.15);
+    } catch(e) {
+      // Audio API not supported or blocked
+    }
   }
 
   startBtn.addEventListener("click", () => {
@@ -285,9 +323,9 @@
       startBtn.disabled = true;
       resetBtn.disabled = false;
       editBtn.disabled = true;
-      if(currentPhase === 0 && remaining === phases[0].duration){
-        // Play start sound after Get Ready ends
-      }
+      startBtn.setAttribute("aria-pressed", "true");
+      editBtn.setAttribute("aria-pressed", "false");
+      // Play start sound after Get Ready ends handled in tick()
       timerInterval = setInterval(tick, 1000);
     }
   });
@@ -301,6 +339,8 @@
     startBtn.disabled = false;
     resetBtn.disabled = true;
     editBtn.disabled = false;
+    startBtn.setAttribute("aria-pressed", "false");
+    editBtn.setAttribute("aria-pressed", "false");
   });
 
   editBtn.addEventListener("click", () => {
@@ -310,6 +350,7 @@
       editBtn.textContent = "Speichern";
       startBtn.disabled = true;
       resetBtn.disabled = true;
+      editBtn.setAttribute("aria-pressed", "true");
     } else {
       // Save changes
       editing = false;
@@ -317,6 +358,7 @@
       editBtn.textContent = "Bearbeiten";
       startBtn.disabled = false;
       resetBtn.disabled = true;
+      editBtn.setAttribute("aria-pressed", "false");
 
       // Read table rows and update phases except Get Ready
       let newPhases = [{label: "Get Ready", desc: "Bereite dich vor", duration: 30}];
@@ -328,7 +370,11 @@
           let dur = parseInt(cells[1].textContent.trim());
           let desc = cells[2].textContent.trim();
           if(label && !isNaN(dur) && dur > 0){
-            newPhases.push({label: label === "Pausen" ? "Pause" : label, desc, duration: dur});
+            // Normalize label for Pause
+            if(label.toLowerCase() === "pausen" || label.toLowerCase() === "pause"){
+              label = "Pause";
+            }
+            newPhases.push({label: label, desc, duration: dur});
           }
         }
       }
