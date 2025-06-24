@@ -11,11 +11,17 @@
     h1 { color: #ffe028; text-align: center; font-size: 2.1em; margin-bottom: 0; }
     .desc { text-align: center; margin-bottom: 18px; color: #ffe028; font-size: 1.07em; }
     .phaseBox {
-      margin: 32px auto 14px auto; max-width: 370px;
-      border-radius: 22px; box-shadow: 1px 2px 12px #0007;
-      text-align: center; font-size: 2.3em; font-weight: bold;
-      padding: 24px 0 10px 0;
-      background: #ffe028; color: #222; transition: background 0.2s, color 0.2s;
+      margin: 36px auto 18px auto;
+      max-width: 400px;
+      border-radius: 22px;
+      box-shadow: 1px 2px 12px #0007;
+      text-align: center;
+      font-size: 2.6em;
+      font-weight: bold;
+      padding: 28px 0 18px 0;
+      background: #ffe028;
+      color: #222;
+      transition: background 0.2s, color 0.2s;
     }
     .phaseBox.work { background: #179b2a; color: #fff; }
     .phaseBox.rest { background: #d11d1d; color: #fff; }
@@ -46,7 +52,11 @@
     @media (max-width: 600px) {
       .logo { margin: 20px auto 2px auto; width: 65px;}
       h1 { font-size: 1.25em; }
-      .phaseBox { font-size: 1.19em; padding: 11px 0 7px 0; }
+      .phaseBox {
+        font-size: 1.32em;
+        padding: 13px 0 7px 0;
+        max-width: 98vw;
+      }
       #timer { font-size: 2.1em; }
       .controls button { font-size: 0.96em; padding: 8px 13vw;}
       #skipWarmUpBtn { font-size: 0.96em; padding: 7px 5vw;}
@@ -274,6 +284,10 @@
     }
 
     let running = false, setIdx = 1, cycleIdx = 1, phasePointer = 0, t = 0, interval, skipToWork = false;
+    let descDiv = document.querySelector('.desc');
+    function showDesc(show) {
+      if (descDiv) descDiv.style.display = show ? '' : 'none';
+    }
 
     function toMMSS(secs) {
       const m = Math.floor(secs/60), s = secs%60;
@@ -341,6 +355,7 @@
       setIdx = 1;
       cycleIdx = 1;
       phasePointer = 0;
+      showDesc(false);
       // Kein Go-Sound direkt, sondern wie in nextPhase() behandelt
       nextPhase(true);
     }
@@ -502,6 +517,7 @@
       document.getElementById("phaseCount").textContent = "";
       document.getElementById("startBtn").style.display = "";
       document.getElementById("resetBtn").style.display = "none";
+      showDesc(true);
     };
   </script>
 </body>
