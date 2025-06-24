@@ -6,221 +6,280 @@
   <title>Cardio Intervall – Regeneration</title>
   <style>
     body {
-      background: #181818;
-      color: #fff;
-      font-family: Arial, sans-serif;
+      background: #000;
+      color: #ffe028;
+      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
       margin: 0;
       padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     .logo {
       display: block;
-      margin: 32px auto 7px auto;
-      width: 110px;
-      max-width: 34vw;
+      margin: 15px auto 10px auto;
+      width: 140px;
+      max-width: 25vw;
+      filter: drop-shadow(0 0 2px #ffe028cc);
     }
     #backBtn {
       position: fixed;
-      top: 24px;
-      left: 20px;
+      top: 18px;
+      left: 18px;
       z-index: 9;
       border: none;
-      background: #d32f2f;
-      color: #fff;
-      font-weight: bold;
-      font-size: 1.12em;
-      border-radius: 18px;
-      padding: 8px 19px;
+      background: #ffe028;
+      color: #000;
+      font-weight: 900;
+      font-size: 1.15em;
+      border-radius: 32px;
+      padding: 8px 22px;
       cursor: pointer;
-      box-shadow: 0 1px 9px #0002;
-      transition: background 0.15s;
+      box-shadow: 0 0 12px #ffe028cc;
+      transition: background 0.15s, color 0.15s;
     }
     #backBtn:hover {
-      background: #b71c1c;
+      background: #fff;
+      color: #222;
     }
     .phaseBox {
-      margin: 44px auto 30px auto;
+      margin: 50px auto 40px auto;
       max-width: 600px;
       width: 95vw;
       border-radius: 42px;
-      box-shadow: 0 4px 18px #0008;
+      box-shadow: 0 0 28px #ffe028cc;
       text-align: center;
-      font-size: 2.9em;
-      font-weight: bold;
-      padding: 44px 0 36px 0;
+      font-size: 3.2em;
+      font-weight: 900;
+      padding: 48px 0 44px 0;
       min-height: 260px;
-      background: #ffe028;
-      color: #222;
+      background: #222;
+      color: #ffe028;
       transition: background 0.22s, color 0.22s;
+      text-shadow: 0 0 12px #ffe028cc;
     }
     .phaseLabel {
-      font-size: 2.15em;
-      letter-spacing: 2.5px;
+      font-size: 2.4em;
+      letter-spacing: 3px;
       font-weight: 900;
-      margin-bottom: 18px;
-      text-shadow: 0 2px 8px #0003;
+      margin-bottom: 22px;
+      text-shadow: 0 0 18px #ffe028cc;
       font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
       text-transform: uppercase;
     }
     #phaseDesc {
-      font-size: 1.08em;
-      margin-bottom: 19px;
-      font-weight: 600;
+      font-size: 1.2em;
+      margin-bottom: 22px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 1.2px;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 10px #ffe028bb;
     }
     #timer {
-      font-size: 6em;
+      font-size: 7.5em;
       font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
-      font-weight: bold;
-      margin: 0 0 14px 0;
-      letter-spacing: 2.2px;
-      text-shadow: 0 2px 10px #0002;
-      line-height: 1.07;
+      font-weight: 900;
+      margin: 0 0 18px 0;
+      letter-spacing: 3.2px;
+      text-shadow: 0 0 20px #ffe028cc;
+      line-height: 1.05;
     }
     #phaseInfo {
-      font-size: 1.1em;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: inherit;
+      font-size: 1.3em;
+      margin-bottom: 14px;
+      font-weight: 700;
+      color: #ffe028cc;
+      text-shadow: 0 0 8px #ffe028bb;
     }
     #phaseCount {
-      font-size: 1.16em;
-      margin-top: 17px;
-      color: #222;
+      font-size: 1.3em;
+      margin-top: 20px;
+      color: #ffe028dd;
       font-weight: 800;
       opacity: 0.98;
-      text-shadow: 0 2px 10px #0001;
+      text-shadow: 0 0 14px #ffe028cc;
     }
     .cardio-buttons {
       text-align: center;
-      margin-bottom: 34px;
-      margin-top: 5px;
+      margin-bottom: 46px;
+      margin-top: 10px;
     }
     .cardio-buttons button {
-      background: #d32f2f;
-      color: #fff;
-      font-weight: bold;
-      font-size: 1.11em;
+      background: #ffe028;
+      color: #000;
+      font-weight: 900;
+      font-size: 1.18em;
       border: none;
-      border-radius: 16px;
-      margin: 0 10px 0 10px;
-      padding: 11px 23px;
+      border-radius: 24px;
+      margin: 0 14px 0 14px;
+      padding: 14px 28px;
       cursor: pointer;
-      box-shadow: 0 1px 6px #0002;
-      transition: background 0.13s;
+      box-shadow: 0 0 14px #ffe028cc;
+      transition: background 0.18s, color 0.18s;
     }
     .cardio-buttons button:hover {
-      background: #b71c1c;
+      background: #fff;
+      color: #222;
     }
     .edit-table {
       max-width: 520px;
-      margin: 0 auto 26px auto;
-      border-radius: 18px;
+      margin: 0 auto 30px auto;
+      border-radius: 24px;
       overflow: hidden;
-      box-shadow: 0 3px 12px #0003;
+      box-shadow: 0 0 24px #ffe028bb;
+      background: #111;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      background: #181818;
+      background: #111;
       border-radius: 8px;
-      font-size: 1.13em;
+      font-size: 1.17em;
+      color: #ffe028dd;
+      font-weight: 700;
     }
     th, td {
-      padding: 0.65em 0.4em;
+      padding: 0.75em 0.6em;
       text-align: center;
+      border-bottom: 1px solid #333;
+      user-select: none;
     }
     th {
-      background: #232323;
+      background: #222;
       color: #ffe028;
-      font-weight: bold;
-      letter-spacing: 1.2px;
+      font-weight: 900;
+      letter-spacing: 1.4px;
+      user-select: none;
     }
     td {
-      background: #232323;
-      color: #eee;
+      background: #222;
+      color: #ffe028cc;
+      font-weight: 700;
+      cursor: default;
+      user-select: text;
     }
     td[contenteditable="true"] {
-      background: #373737;
-      color: #ffe028;
-      font-weight: bold;
-      outline: 2px solid #ffe02833;
+      background: #333;
+      color: #fff;
+      font-weight: 900;
+      outline: 2px solid #ffe028cc;
+      cursor: text;
+      user-select: text;
     }
     @media (min-width: 800px) {
       .phaseBox {
-        max-width: 400px;
-        min-height: 150px;
-        padding: 20px 0 20px 0;
-        margin-top: 38px;
+        max-width: 450px;
+        min-height: 180px;
+        padding: 24px 0 24px 0;
+        margin-top: 48px;
+        font-size: 2.2em;
       }
       #timer {
-        font-size: 2.65em;
+        font-size: 3.8em;
       }
       .phaseLabel {
-        font-size: 1.15em;
+        font-size: 1.6em;
+      }
+      #phaseDesc {
+        font-size: 1em;
+        margin-bottom: 14px;
+      }
+      #phaseInfo {
+        font-size: 1em;
+        margin-bottom: 10px;
+      }
+      #phaseCount {
+        font-size: 1.1em;
+        margin-top: 15px;
       }
     }
     @media (max-width: 600px) {
       .logo {
-        margin-top: 13px;
-        width: 72px;
-        max-width: 25vw;
+        margin-top: 8px;
+        width: 110px;
+        max-width: 30vw;
       }
       .phaseBox {
-        font-size: 1.37em;
-        padding: 32px 0 28px 0;
-        min-height: 310px;
+        font-size: 1.5em;
+        padding: 36px 0 32px 0;
+        min-height: 280px;
         max-width: 98vw;
         width: 99vw;
-        border-radius: 16px;
-        margin: 21px auto 10px auto;
+        border-radius: 20px;
+        margin: 28px auto 14px auto;
       }
       #timer {
-        font-size: 3.4em;
-        margin-bottom: 7px;
+        font-size: 4.2em;
+        margin-bottom: 10px;
       }
       .phaseLabel {
-        font-size: 1.05em;
+        font-size: 1.2em;
+        margin-bottom: 12px;
+      }
+      #phaseDesc {
+        font-size: 0.95em;
+        margin-bottom: 10px;
+      }
+      #phaseInfo {
+        font-size: 0.95em;
         margin-bottom: 8px;
+      }
+      #phaseCount {
+        font-size: 1em;
+        margin-top: 18px;
+      }
+      .cardio-buttons button {
+        font-size: 1.05em;
+        padding: 12px 24px;
+        margin: 0 8px 0 8px;
+      }
+      .edit-table {
+        max-width: 95vw;
+        margin-bottom: 22px;
+      }
+      table {
+        font-size: 1em;
+      }
+      th, td {
+        padding: 0.5em 0.3em;
       }
     }
   </style>
 </head>
 <body>
-<button id="backBtn" onclick="window.location.href='index.html'">Zurück</button>
-<img src="EHCB_Logo.svg" alt="EHCB Logo" class="logo" />
-<div class="phaseBox" id="phaseBox">
-  <div class="phaseLabel" id="phaseLabel">Get Ready</div>
-  <div id="phaseDesc">Bereite dich vor!</div>
-  <div id="timer">00:30</div>
-  <div id="phaseInfo"></div>
-  <div id="phaseCount"></div>
-</div>
-<div class="cardio-buttons">
-  <button id="startBtn">Start</button>
-  <button id="editBtn">Bearbeiten</button>
-  <button id="resetBtn">Reset</button>
-</div>
-<div class="edit-table" id="editTableWrapper">
-  <table id="phaseTable">
-    <thead>
-      <tr>
-        <th>Phase</th>
-        <th>Dauer (Sek.)</th>
-        <th>Beschreibung</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td contenteditable="true">Get Ready</td><td contenteditable="true">30</td><td contenteditable="true">Bereite dich vor!</td></tr>
-      <tr><td contenteditable="true">Locker</td><td contenteditable="true">300</td><td contenteditable="true">Locker fahren</td></tr>
-      <tr><td contenteditable="true">Erholt</td><td contenteditable="true">300</td><td contenteditable="true">Erholt fahren</td></tr>
-      <tr><td contenteditable="true">Locker</td><td contenteditable="true">300</td><td contenteditable="true">Locker fahren</td></tr>
-      <tr><td contenteditable="true">Erholt</td><td contenteditable="true">300</td><td contenteditable="true">Erholt fahren</td></tr>
-      <tr><td contenteditable="true">Abwechselnd</td><td contenteditable="true">300</td><td contenteditable="true">Abwechselnd fahren</td></tr>
-      <tr><td contenteditable="true">Cooldown</td><td contenteditable="true">300</td><td contenteditable="true">Abkühlen</td></tr>
-    </tbody>
-  </table>
-</div>
+  <img src="EHCB_Logo.svg" alt="EHCB Logo" class="logo" />
+  <button id="backBtn" onclick="window.location.href='index.html'">Zurück</button>
+  <div class="phaseBox" id="phaseBox">
+    <div class="phaseLabel" id="phaseLabel">Get Ready</div>
+    <div id="phaseDesc">Bereite dich vor!</div>
+    <div id="timer">00:30</div>
+    <div id="phaseInfo"></div>
+    <div id="phaseCount"></div>
+  </div>
+  <div class="cardio-buttons">
+    <button id="startBtn">Start</button>
+    <button id="editBtn">Bearbeiten</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+  <div class="edit-table" id="editTableWrapper">
+    <table id="phaseTable">
+      <thead>
+        <tr>
+          <th>Phase</th>
+          <th>Dauer (Sek.)</th>
+          <th>Beschreibung</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td contenteditable="true">Get Ready</td><td contenteditable="true">30</td><td contenteditable="true">Bereite dich vor!</td></tr>
+        <tr><td contenteditable="true">Locker</td><td contenteditable="true">300</td><td contenteditable="true">Locker fahren</td></tr>
+        <tr><td contenteditable="true">Erholt</td><td contenteditable="true">300</td><td contenteditable="true">Erholt fahren</td></tr>
+        <tr><td contenteditable="true">Locker</td><td contenteditable="true">300</td><td contenteditable="true">Locker fahren</td></tr>
+        <tr><td contenteditable="true">Erholt</td><td contenteditable="true">300</td><td contenteditable="true">Erholt fahren</td></tr>
+        <tr><td contenteditable="true">Abwechselnd</td><td contenteditable="true">300</td><td contenteditable="true">Abwechselnd fahren</td></tr>
+        <tr><td contenteditable="true">Cooldown</td><td contenteditable="true">300</td><td contenteditable="true">Abkühlen</td></tr>
+      </tbody>
+    </table>
+  </div>
 <script>
   let phases = [
     {label: "Get Ready", desc: "Bereite dich vor!", duration: 30},
@@ -232,6 +291,7 @@
     {label: "Cooldown", desc: "Abkühlen", duration: 300}
   ];
   let currentPhase = 0, timer = null, running = false, t = phases[0].duration;
+
   function updateUI() {
     document.getElementById("phaseLabel").textContent = phases[currentPhase].label;
     document.getElementById("phaseDesc").textContent = phases[currentPhase].desc;
@@ -239,6 +299,7 @@
     document.getElementById("phaseInfo").textContent = phases[currentPhase].desc;
     document.getElementById("phaseCount").textContent = `Phase ${currentPhase + 1} von ${phases.length}`;
   }
+
   function nextPhase() {
     if (currentPhase < phases.length - 1) {
       currentPhase++;
@@ -250,6 +311,7 @@
       document.getElementById("startBtn").disabled = false;
     }
   }
+
   function startProgram() {
     if (running) return;
     running = true;
@@ -263,6 +325,7 @@
       }
     }, 1000);
   }
+
   function resetProgram() {
     clearInterval(timer);
     running = false;
@@ -271,6 +334,7 @@
     updateUI();
     document.getElementById("startBtn").disabled = false;
   }
+
   function editPhases() {
     let tbl = document.getElementById("phaseTable").tBodies[0];
     for (let i = 0; i < tbl.rows.length; i++) {
@@ -279,6 +343,7 @@
       }
     }
   }
+
   function savePhases() {
     let tbl = document.getElementById("phaseTable").tBodies[0];
     let newPhases = [];
@@ -300,8 +365,10 @@
       }
     }
   }
+
   document.getElementById("startBtn").onclick = startProgram;
   document.getElementById("resetBtn").onclick = resetProgram;
+
   let editMode = false;
   document.getElementById("editBtn").onclick = function () {
     if (!editMode) {
@@ -314,6 +381,7 @@
       editMode = false;
     }
   };
+
   updateUI();
 </script>
 </body>
