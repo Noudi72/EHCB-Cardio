@@ -46,7 +46,7 @@
     }
     .phaseBox {
       max-width: 450px;
-      margin: 0 auto 36px auto;
+      margin: 0 auto 50px auto;
       background: #ffe028;
       border-radius: 28px;
       box-shadow: 1px 3px 16px #0009;
@@ -153,7 +153,10 @@
     }
     .info-warmup {
       max-width: 520px;
-      margin: 34px auto 0 auto;
+      margin-top: 0;
+      margin-bottom: 32px;
+      margin-left: auto;
+      margin-right: auto;
       background: #ffe028;
       color: #d00;
       font-size: 1.3em;
@@ -411,6 +414,9 @@
       running = true;
       phaseIdx = 0;
       hideAllUI();
+      // Info-Warmup ausblenden
+      var warmupEl = document.querySelector('.info-warmup');
+      if (warmupEl) warmupEl.style.display = "none";
       updatePhaseUI(phaseIdx, phases[phaseIdx].duration);
       t = phases[phaseIdx].duration;
       interval = setInterval(() => {
@@ -472,6 +478,9 @@
       document.getElementById("phaseCount").textContent = "";
       document.getElementById("startBtn").style.display = "";
       document.getElementById("resetBtn").style.display = "none";
+      // Info-Warmup wieder einblenden
+      var warmupEl = document.querySelector('.info-warmup');
+      if (warmupEl) warmupEl.style.display = "";
     }
 
     function hideAllUI() {
