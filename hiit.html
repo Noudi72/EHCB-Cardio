@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -12,9 +10,9 @@
       height: 100%;
       margin: 0;
       padding: 0;
-      background: #f4f4f4;
+      background: #000000;
       font-family: 'Roboto', Arial, sans-serif;
-      color: #222;
+      color: #fff;
       min-height: 100vh;
     }
     .container {
@@ -25,176 +23,238 @@
       flex-direction: column;
       align-items: center;
     }
-    .phaseBox {
-      background: #fff;
-      border-radius: 22px;
-      box-shadow: 0 2px 18px rgba(0,0,0,0.09), 0 1.5px 7px rgba(0,0,0,0.08);
-      width: 100%;
-      margin: 22px 0 16px 0;
-      padding: 24px 22px 22px 22px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: box-shadow 0.2s;
-    }
-    .phaseLabel {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-      letter-spacing: 0.02em;
-    }
-    #phaseDesc {
-      font-size: 1.1rem;
-      color: #666;
-      margin-bottom: 7px;
-      text-align: center;
-      min-height: 22px;
-    }
-    #timer {
-      font-size: 3.3rem;
-      font-weight: 700;
-      margin: 8px 0 8px 0;
-      letter-spacing: 0.02em;
-      color: #0b7bfa;
-      text-shadow: 0 2px 8px rgba(11,123,250,0.10);
-    }
-    #phaseInfo {
-      font-size: 1.04rem;
-      margin-bottom: 4px;
-      color: #888;
-      text-align: center;
-    }
-    #phaseCount {
-      font-size: 1.05rem;
-      color: #888;
-      margin-bottom: 0;
-    }
-    .btn-row {
-      display: flex;
-      gap: 12px;
-      margin: 18px 0 12px 0;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .btn {
-      font-family: inherit;
-      font-size: 1.08rem;
-      padding: 9px 23px;
-      border-radius: 11px;
-      border: none;
-      background: #0b7bfa;
-      color: #fff;
-      font-weight: 600;
-      box-shadow: 0 1.5px 7px rgba(11,123,250,0.08);
-      cursor: pointer;
-      transition: background 0.18s;
-    }
-    .btn:active {
-      background: #095eb7;
-    }
-    .btn.secondary {
-      background: #f5f5f5;
-      color: #0b7bfa;
-      border: 1px solid #e0e0e0;
-      box-shadow: none;
-    }
-    .btn.secondary:active {
-      background: #e2e8f0;
-    }
-    .edit-table-container {
-      width: 100%;
-      margin-bottom: 18px;
-      overflow-x: auto;
-      border-radius: 12px;
-      background: #fff;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-      padding: 12px 8px 6px 8px;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      min-width: 330px;
-      font-size: 1rem;
-    }
-    th, td {
-      text-align: left;
-      padding: 7px 8px;
-    }
-    th {
-      background: #f4f6fa;
-      font-weight: 600;
-      color: #0b7bfa;
-      font-size: 1.01rem;
-      border-bottom: 1.5px solid #e0e7ef;
-    }
-    tr {
-      border-bottom: 1px solid #e4e4e4;
-    }
-    tr:last-child {
-      border-bottom: none;
-    }
-    td input, td select {
-      font-size: 1.01rem;
-      border-radius: 6px;
-      border: 1px solid #d5d7db;
-      padding: 4px 6px;
-      width: 97%;
-      font-family: inherit;
-      background: #f9fafe;
-    }
-    .table-btn {
-      background: none;
-      border: none;
-      color: #0b7bfa;
-      font-size: 1.16rem;
-      cursor: pointer;
-      margin: 0 2px;
-      padding: 0 5px;
-      transition: color 0.2s;
-    }
-    .table-btn:active {
-      color: #095eb7;
+    .logo {
+      width: 120px;
+      margin: 12px 0 16px 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
     }
     .back-link {
       display: inline-block;
-      margin-bottom: 8px;
-      color: #0b7bfa;
-      font-size: 1.08rem;
+      margin-bottom: 16px;
+      color: #ff0000;
+      font-size: 1.1rem;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 600;
       background: none;
       border: none;
       cursor: pointer;
       border-radius: 8px;
-      padding: 4px 10px;
+      padding: 6px 14px;
       transition: background 0.17s;
+      font-family: 'Roboto', Arial, sans-serif;
     }
     .back-link:active {
-      background: #e2e8f0;
+      background: rgba(255, 0, 0, 0.2);
+    }
+    .phaseBox {
+      background: #FFD600;
+      border-radius: 28px;
+      box-shadow: 0 3px 20px rgba(255, 214, 0, 0.6);
+      width: 100%;
+      margin: 24px 0 20px 0;
+      padding: 28px 26px 26px 26px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.25s;
+      color: #000;
+      text-shadow: none;
+    }
+    .phaseLabel {
+      font-size: 2.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: 0.03em;
+    }
+    #phaseDesc {
+      font-size: 1.25rem;
+      color: #222;
+      margin-bottom: 10px;
+      text-align: center;
+      min-height: 26px;
+    }
+    #timer {
+      font-size: 4.8rem;
+      font-weight: 700;
+      margin: 12px 0 12px 0;
+      letter-spacing: 0.03em;
+      color: #000;
+      text-shadow: 0 3px 12px rgba(0,0,0,0.15);
+    }
+    #phaseInfo {
+      font-size: 1.18rem;
+      margin-bottom: 6px;
+      color: #333;
+      text-align: center;
+    }
+    #phaseCount {
+      font-size: 1.15rem;
+      color: #333;
+      margin-bottom: 0;
+    }
+    .btn-row {
+      display: flex;
+      gap: 14px;
+      margin: 22px 0 14px 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn {
+      font-family: 'Roboto', Arial, sans-serif;
+      font-size: 1.15rem;
+      padding: 11px 26px;
+      border-radius: 14px;
+      border: none;
+      background: #ff0000;
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 2px 10px rgba(255,0,0,0.3);
+      cursor: pointer;
+      transition: background 0.22s;
+      user-select: none;
+    }
+    .btn:active {
+      background: #b30000;
+    }
+    .btn.secondary {
+      background: #222222;
+      color: #ff0000;
+      border: 1.5px solid #ff0000;
+      box-shadow: none;
+    }
+    .btn.secondary:active {
+      background: #440000;
+    }
+    .edit-table-container {
+      width: 100%;
+      margin-bottom: 22px;
+      overflow-x: auto;
+      border-radius: 16px;
+      background: #111111;
+      box-shadow: 0 3px 12px rgba(255,0,0,0.15);
+      padding: 16px 12px 10px 12px;
+      color: #fff;
+      font-family: 'Roboto', Arial, sans-serif;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 340px;
+      font-size: 1.05rem;
+      color: #fff;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid #330000;
+    }
+    th {
+      background: #330000;
+      font-weight: 700;
+      color: #ff0000;
+      font-size: 1.07rem;
+      border-bottom: 2px solid #660000;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    td input, td select {
+      font-size: 1.05rem;
+      border-radius: 8px;
+      border: 1.5px solid #660000;
+      padding: 6px 8px;
+      width: 95%;
+      font-family: 'Roboto', Arial, sans-serif;
+      background: #220000;
+      color: #fff;
+      transition: border-color 0.2s;
+    }
+    td input:focus, td select:focus {
+      border-color: #ff0000;
+      outline: none;
+      background: #330000;
+    }
+    .table-btn {
+      background: none;
+      border: none;
+      color: #ff0000;
+      font-size: 1.3rem;
+      cursor: pointer;
+      margin: 0 4px;
+      padding: 0 6px;
+      transition: color 0.3s;
+      user-select: none;
+    }
+    .table-btn:active {
+      color: #b30000;
     }
     @media (max-width: 570px) {
       .container {
-        padding: 6px;
+        padding: 8px;
+      }
+      .logo {
+        width: 100px;
+        margin: 10px 0 14px 0;
+      }
+      .back-link {
+        font-size: 1rem;
+        padding: 5px 12px;
+        margin-bottom: 12px;
       }
       .phaseBox {
-        padding: 18px 7px 16px 7px;
-      }
-      .edit-table-container {
-        padding: 7px 2px 4px 2px;
-      }
-      table {
-        font-size: 0.98rem;
-        min-width: 260px;
-      }
-      .btn {
-        font-size: 0.98rem;
-        padding: 8px 11px;
-      }
-      #timer {
-        font-size: 2.2rem;
+        padding: 22px 18px 20px 18px;
+        border-radius: 22px;
       }
       .phaseLabel {
-        font-size: 1.2rem;
+        font-size: 1.7rem;
+      }
+      #phaseDesc {
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+        min-height: 20px;
+      }
+      #timer {
+        font-size: 3.6rem;
+        margin: 10px 0 10px 0;
+      }
+      #phaseInfo {
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+      #phaseCount {
+        font-size: 1rem;
+      }
+      .btn {
+        font-size: 1rem;
+        padding: 9px 20px;
+        border-radius: 12px;
+      }
+      .btn-row {
+        gap: 10px;
+        margin: 18px 0 12px 0;
+      }
+      .edit-table-container {
+        padding: 12px 8px 8px 8px;
+        font-size: 0.95rem;
+      }
+      table {
+        font-size: 0.95rem;
+        min-width: 260px;
+      }
+      th, td {
+        padding: 8px 10px;
+      }
+      td input, td select {
+        font-size: 0.95rem;
+        padding: 5px 7px;
+      }
+      .table-btn {
+        font-size: 1.15rem;
+        margin: 0 2px;
+        padding: 0 4px;
       }
     }
   </style>
@@ -202,6 +262,7 @@
 <body>
   <div class="container">
     <button class="back-link" onclick="window.location.href='index.html'">&larr; Zurück</button>
+    <img src="EHCB_logo.png" alt="EHCB Logo" class="logo" draggable="false" />
     <div class="phaseBox">
       <div class="phaseLabel" id="phaseLabel">Get Ready</div>
       <div id="phaseDesc"></div>
@@ -228,15 +289,14 @@
           <!-- Zeilen werden dynamisch hinzugefügt -->
         </tbody>
       </table>
-      <button class="btn" style="margin-top:10px;" onclick="addPhase()">+ Phase</button>
+      <button class="btn" style="margin-top:12px;" onclick="addPhase()">+ Phase</button>
     </div>
   </div>
   <audio id="audioBeep" src="beep.mp3" preload="auto"></audio>
   <audio id="audioStart" src="start.mp3" preload="auto"></audio>
   <audio id="audioEnd" src="end.mp3" preload="auto"></audio>
   <script>
-    // HIIT-Phasen (Beispiel, wie aus Excel)
-    // 1. Get Ready (30 Sek.), dann HIIT-Spezifisch (hier beispielhaft: 8x [Work 30s, Rest 15s])
+    // HIIT-Phasen (Get Ready 30 Sek. + 10x [Work 30s, Rest 15s] + Cool Down 60s)
     const defaultPhases = [
       { label: "Get Ready", duration: 30, desc: "" },
       { label: "Work", duration: 30, desc: "Volle Power!" },
@@ -255,6 +315,10 @@
       { label: "Rest", duration: 15, desc: "Erholung" },
       { label: "Work", duration: 30, desc: "Volle Power!" },
       { label: "Rest", duration: 15, desc: "Erholung" },
+      { label: "Work", duration: 30, desc: "Volle Power!" },
+      { label: "Rest", duration: 15, desc: "Erholung" },
+      { label: "Work", duration: 30, desc: "Volle Power!" },
+      { label: "Cool Down", duration: 60, desc: "Abkühlen" }
     ];
     let phases = JSON.parse(JSON.stringify(defaultPhases));
     let currentPhase = 0;
@@ -283,10 +347,20 @@
         phaseCountEl.textContent = "";
       } else {
         let cycle = Math.floor((currentPhase-1)/2)+1;
-        let totalCycles = Math.floor((phases.length-1)/2);
-        phaseInfoEl.textContent = p.label === "Work" ? "Intensive Belastung" : "Kurze Pause";
-        phaseCountEl.textContent = (p.label === "Work" || p.label === "Rest") ?
-          `Intervall ${cycle} / ${totalCycles}` : "";
+        let totalCycles = Math.floor((phases.length-2)/2);
+        if(p.label === "Work") {
+          phaseInfoEl.textContent = "Intensive Belastung";
+          phaseCountEl.textContent = `Intervall ${cycle} / ${totalCycles}`;
+        } else if(p.label === "Rest") {
+          phaseInfoEl.textContent = "Kurze Pause";
+          phaseCountEl.textContent = `Intervall ${cycle} / ${totalCycles}`;
+        } else if(p.label === "Cool Down") {
+          phaseInfoEl.textContent = "Abkühlen";
+          phaseCountEl.textContent = "";
+        } else {
+          phaseInfoEl.textContent = "";
+          phaseCountEl.textContent = "";
+        }
       }
     }
     function playBeep() {
@@ -389,6 +463,7 @@
           let btnDel = document.createElement('button');
           btnDel.className = 'table-btn';
           btnDel.innerHTML = '🗑️';
+          btnDel.title = "Phase löschen";
           btnDel.onclick = () => { phases.splice(i,1); renderEditTable(); resetAll(); };
           td4.appendChild(btnDel);
         }
