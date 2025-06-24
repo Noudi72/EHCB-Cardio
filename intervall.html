@@ -210,6 +210,20 @@
       background: #fff9c4;
     }
     @media (max-width: 600px) {
+    /* --- Desktop/large screen adjustments --- */
+    @media (min-width: 800px) {
+      .phaseBox {
+        max-width: 530px;
+        min-height: 220px;
+        padding: 34px 0 26px 0;
+      }
+      #timer {
+        font-size: 4.1em;
+      }
+      .phaseLabel {
+        font-size: 1.4em;
+      }
+    }
       .logo {
         margin: 14px auto 2px auto;
         width: 100px;
@@ -628,9 +642,22 @@
           }
           if (t <= 0) {
             clearInterval(interval);
-            phasePointer = 2;
-            // Kein zusätzlicher playSingleBeep mehr!
-            nextPhase();
+            // Nach jedem Work prüfen, ob letzter Cycle im Set erreicht ist
+            if (cycleIdx >= cycles) {
+              // Direkt in Set Pause (ohne Rest), falls nicht letztes Set
+              if (setIdx < sets) {
+                phasePointer = 3;
+                nextPhase();
+              } else {
+                // Letztes Set, gehe zu Cooldown
+                phasePointer = 4;
+                nextPhase();
+              }
+            } else {
+              // Wie gehabt: auf Rest-Phase gehen
+              phasePointer = 2;
+              nextPhase();
+            }
           }
         }, 1000);
         return;
