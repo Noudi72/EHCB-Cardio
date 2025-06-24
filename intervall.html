@@ -45,7 +45,8 @@
       text-align: center;
       font-size: 2.9em;
       font-weight: bold;
-      padding: 54px 0 38px 0;
+      padding: 64px 0 48px 0;
+      min-height: 320px;
       background: #ffe028;
       color: #222;
       transition: background 0.22s, color 0.22s;
@@ -97,7 +98,7 @@
       opacity: 0.97;
     }
     #timer {
-      font-size: 4.3em;
+      font-size: 6em;
       font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
       font-weight: bold;
       margin: 0 0 16px 0;
@@ -210,9 +211,9 @@
     }
     @media (max-width: 600px) {
       .logo {
-        margin: 17px auto 2px auto;
-        width: 68px;
-        max-width: 25vw;
+        margin: 14px auto 2px auto;
+        width: 100px;
+        max-width: 38vw;
       }
       h1 {
         font-size: 1.29em;
@@ -220,14 +221,15 @@
       }
       .phaseBox {
         font-size: 1.37em;
-        padding: 18px 0 10px 0;
+        padding: 27px 0 18px 0;
+        min-height: 170px;
         max-width: 98vw;
         width: 99vw;
         border-radius: 16px;
         margin: 21px auto 10px auto;
       }
       #timer {
-        font-size: 2.15em;
+        font-size: 3.4em;
         margin-bottom: 7px;
       }
       #phaseCount {
@@ -597,23 +599,8 @@
         updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
         interval = setInterval(() => {
           t--;
-          // 3-2-1-Go-Logik
-          if (t === 4) {
-            document.getElementById("timer").textContent = "3";
-            playSound("audioBeep");
-          } else if (t === 3) {
-            document.getElementById("timer").textContent = "2";
-            playSound("audioBeep");
-          } else if (t === 2) {
-            document.getElementById("timer").textContent = "1";
-            playSound("audioBeep");
-          } else if (t === 1) {
-            document.getElementById("timer").textContent = "Go!";
-            playSound("audioGo");
-          } else if (t > 4) {
-            updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
-          }
-          if (t === 0) {
+          updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
+          if (t <= 0) {
             clearInterval(interval);
             phasePointer = 1;
             cycleIdx = 1;
