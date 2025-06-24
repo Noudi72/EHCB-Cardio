@@ -87,7 +87,7 @@
   <img src="icon-cardio.png" class="logo" alt="Cardio Logo" />
   <h1>Intervall</h1>
   <div class="desc">
-    Ziel: Effizientes Intervalltraining mit Work- und Rest-Phasen – einfach anpassen und durchstarten!
+    Work- und Rest-Phasen – einfach anpassen und durchstarten!
   </div>
   <div class="phaseBox prepare" id="phaseBox">
     <div class="phaseLabel" id="phaseLabel">BEREIT</div>
@@ -123,11 +123,12 @@
 
   <audio id="audioGo" src="3-2-1-Go.mp3"></audio>
   <audio id="audioBeep" src="beep.wav"></audio>
+  <audio id="audioRest" src="rest_2.mp3"></audio>
 
   <script>
     // --- Intervall Grundphasen (bearbeitbar) ---
     let basePhases = [
-      { name: "Aufwärmen", duration: 300, rpm: "70-80", hf: "50-60" },
+      { name: "Get Ready", duration: 15, rpm: "", hf: "" },
       { name: "Work", duration: 30, rpm: "100", hf: "90-95" },
       { name: "Rest", duration: 15, rpm: "60", hf: "60-70" },
       { name: "Set Pause", duration: 120, rpm: "50", hf: "50-60" },
@@ -245,6 +246,7 @@
       }
     }
 
+    // 3-2-1-Go sequence for Set Pause and initial Get Ready
     function playBeepSequence(cb) {
       let count = 3;
       const timer = document.getElementById("timer");
@@ -303,7 +305,7 @@
     function nextPhase(isFirst=false) {
       clearInterval(interval);
       let currPhase;
-      // --- WarmUp Phase ---
+      // --- Get Ready Phase (Phase 0) ---
       if (phasePointer === 0 && !skipToWork) {
         currPhase = basePhases[0];
         t = currPhase.duration;
@@ -311,18 +313,26 @@
         interval = setInterval(() => {
           t--;
           updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
-          if (t <= 0) {
+          // Beep at 4,3,2,1 seconds left
+          if (t <= 4 && t > 0) {
+            playSound("audioBeep");
+          }
+          // At 0, play Go and direct to Work
+          if (t === 0) {
+            document.getElementById("timer").textContent = "Go!";
+            playSound("audioGo");
+          }
+          if (t < 0) {
             clearInterval(interval);
             phasePointer = 1;
             cycleIdx = 1;
-            // Vor dem allerersten Work: 3-2-1-Go
-            playBeepSequence(() => nextPhase());
+            setTimeout(() => nextPhase(), 400);
           }
         }, 1000);
         return;
       }
 
-      // --- Work Phase ---
+      // --- Work Phase (Phase 1) ---
       if (phasePointer === 1) {
         let work = basePhases[1];
         t = work.duration;
@@ -330,17 +340,20 @@
         interval = setInterval(() => {
           t--;
           updatePhaseUI("work", work.name, work.rpm, work.hf, t, setIdx, sets, cycleIdx, cycles);
+          // 1 Sekunde vor Ablauf: rest_2.mp3
+          if (t === 1) {
+            playSound("audioRest");
+          }
           if (t <= 0) {
             clearInterval(interval);
             phasePointer = 2;
-            // Nach Work → Rest: nur EIN Beep, außer letzter Cycle (dann kommt Set Pause)
             playSingleBeep(() => nextPhase());
           }
         }, 1000);
         return;
       }
 
-      // --- Rest Phase ---
+      // --- Rest Phase (Phase 2) ---
       if (phasePointer === 2) {
         let rest = basePhases[2];
         t = rest.duration;
@@ -348,17 +361,19 @@
         interval = setInterval(() => {
           t--;
           updatePhaseUI("rest", rest.name, rest.rpm, rest.hf, t, setIdx, sets, cycleIdx, cycles);
+          // 1 Sekunde vor Ablauf: beep.wav
+          if (t === 1) {
+            playSound("audioBeep");
+          }
           if (t <= 0) {
             clearInterval(interval);
             cycleIdx++;
             if (cycleIdx <= cycles) {
               phasePointer = 1;
-              // Rest → Work (innerhalb Set): nur EIN Beep
               playSingleBeep(() => nextPhase());
             } else {
               if (setIdx < sets) {
                 phasePointer = 3;
-                // Nach letztem Rest im Set → Set Pause: nur EIN Beep
                 playSingleBeep(() => nextPhase());
               } else {
                 phasePointer = 4;
@@ -370,27 +385,41 @@
         return;
       }
 
-      // --- Set Pause Phase ---
+      // --- Set Pause Phase (Phase 3) ---
       if (phasePointer === 3) {
         let setpause = basePhases[3];
         t = setpause.duration;
         updatePhaseUI("setpause", setpause.name, setpause.rpm, setpause.hf, t, setIdx, sets, cycleIdx-1, cycles);
+        let beepTimeouts = [];
+        let beeped = false;
         interval = setInterval(() => {
           t--;
           updatePhaseUI("setpause", setpause.name, setpause.rpm, setpause.hf, t, setIdx, sets, cycleIdx-1, cycles);
-          if (t <= 0) {
+          // 4 Sek vor Ablauf: 4x beep.wav mit 1 Sekunde Abstand, dann 3-2-1-Go.mp3 und dann Work
+          if (t === 4 && !beeped) {
+            beeped = true;
+            for (let i = 0; i < 4; i++) {
+              beepTimeouts.push(setTimeout(() => playSound("audioBeep"), i*1000));
+            }
+            // Nach 4 Beeps (also nach 4 Sek), 3-2-1-Go.mp3 und dann Work
+            beepTimeouts.push(setTimeout(() => {
+              document.getElementById("timer").textContent = "Go!";
+              playSound("audioGo");
+            }, 4000));
+          }
+          if (t < 0) {
+            beepTimeouts.forEach(x => clearTimeout(x));
             clearInterval(interval);
             setIdx++;
             cycleIdx = 1;
             phasePointer = 1;
-            // Nach Set Pause, vor neuem Set-Work: 3-2-1-Go
-            playBeepSequence(() => nextPhase());
+            setTimeout(() => nextPhase(), 700); // Go-Sound zu Ende
           }
         }, 1000);
         return;
       }
 
-      // --- Cooldown Phase ---
+      // --- Cooldown Phase (Phase 4) ---
       if (phasePointer === 4) {
         let cooldown = basePhases[4];
         t = cooldown.duration;
