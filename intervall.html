@@ -38,13 +38,14 @@
     }
     .phaseBox {
       margin: 44px auto 20px auto;
-      max-width: 410px;
-      border-radius: 30px;
+      max-width: 600px;
+      width: 95vw;
+      border-radius: 42px;
       box-shadow: 0 4px 18px #0008;
       text-align: center;
       font-size: 2.9em;
       font-weight: bold;
-      padding: 38px 0 26px 0;
+      padding: 54px 0 38px 0;
       background: #ffe028;
       color: #222;
       transition: background 0.22s, color 0.22s;
@@ -70,23 +71,42 @@
       box-shadow: 0 4px 18px #0008;
     }
     .phaseLabel {
-      font-size: 0.48em;
+      font-size: 2.15em;
       letter-spacing: 2.5px;
       font-weight: 900;
-      margin-bottom: 10px;
+      margin-bottom: 18px;
       text-shadow: 0 2px 8px #0003;
       font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+      text-transform: uppercase;
+    }
+
+    #phaseDesc {
+      font-size: 1.02em;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+      letter-spacing: 1.3px;
+      color: #444;
+      font-weight: 600;
+      opacity: 0.92;
+    }
+    .phaseBox.work #phaseDesc,
+    .phaseBox.rest #phaseDesc,
+    .phaseBox.setpause #phaseDesc {
+      color: #fff;
+      text-shadow: 0 2px 7px #0004;
+      opacity: 0.97;
     }
     #timer {
-      font-size: 2.82em;
+      font-size: 4.3em;
       font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
       font-weight: bold;
-      margin: 0 0 11px 0;
-      letter-spacing: 1.5px;
+      margin: 0 0 16px 0;
+      letter-spacing: 2.2px;
       text-shadow: 0 2px 10px #0002;
+      line-height: 1.07;
     }
     #phaseInfo {
-      font-size: 0.44em;
+      font-size: 1.18em;
       margin-bottom: 2px;
       font-weight: 500;
       color: #111;
@@ -101,7 +121,7 @@
       text-shadow: 0 2px 7px #0005;
     }
     #phaseCount {
-      font-size: 0.43em;
+      font-size: 1.13em;
       margin-top: 13px;
       color: #ffe028;
       font-weight: 700;
@@ -200,8 +220,9 @@
       }
       .phaseBox {
         font-size: 1.37em;
-        padding: 14px 0 8px 0;
+        padding: 18px 0 10px 0;
         max-width: 98vw;
+        width: 99vw;
         border-radius: 16px;
         margin: 21px auto 10px auto;
       }
@@ -210,12 +231,16 @@
         margin-bottom: 7px;
       }
       #phaseCount {
-        font-size: 0.54em;
+        font-size: 0.99em;
         margin-top: 7px;
       }
       .phaseLabel {
-        font-size: 0.61em;
-        margin-bottom: 6px;
+        font-size: 1.05em;
+        margin-bottom: 8px;
+      }
+      #phaseDesc {
+        font-size: 0.97em;
+        margin-bottom: 11px;
       }
       .controls button {
         font-size: 1em;
@@ -310,6 +335,7 @@
   </div>
   <div class="phaseBox prepare" id="phaseBox">
     <div class="phaseLabel" id="phaseLabel">BEREIT</div>
+    <div id="phaseDesc"></div>
     <div id="timer">00:00</div>
     <div id="phaseInfo"></div>
     <div id="phaseCount"></div>
@@ -475,10 +501,34 @@
       const lbl = document.getElementById("phaseLabel");
       const timer = document.getElementById("timer");
       const info = document.getElementById("phaseInfo");
+      const desc = document.getElementById("phaseDesc");
       box.className = "phaseBox " + type;
       lbl.textContent = name.toUpperCase();
       timer.textContent = toMMSS(remaining);
       info.innerHTML = `RPM: <b>${rpm}</b> – HF: <b>${hf}%</b>`;
+      // Set phase description
+      let descText = "";
+      switch (type) {
+        case "prepare":
+          if (name.toLowerCase().includes("cool")) {
+            descText = "Locker fahren";
+          } else {
+            descText = "Mach dich bereit!";
+          }
+          break;
+        case "work":
+          descText = "Volle Intensität";
+          break;
+        case "rest":
+          descText = "Erholung";
+          break;
+        case "setpause":
+          descText = "Locker";
+          break;
+        default:
+          descText = "";
+      }
+      desc.textContent = descText;
       let pc = document.getElementById("phaseCount");
       if (type === "work" || type === "rest") {
         pc.innerHTML = `Set ${setNum} von ${setTotal} &nbsp;|&nbsp; Cycle ${cycleNum} von ${cycleTotal}`;
@@ -547,11 +597,20 @@
         updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
         interval = setInterval(() => {
           t--;
-          // Zeige "Go!" bei t==1, spiele dann Sound, dann direkt zu Work bei t==0
-          if (t === 1) {
+          // 3-2-1-Go-Logik
+          if (t === 4) {
+            document.getElementById("timer").textContent = "3";
+            playSound("audioBeep");
+          } else if (t === 3) {
+            document.getElementById("timer").textContent = "2";
+            playSound("audioBeep");
+          } else if (t === 2) {
+            document.getElementById("timer").textContent = "1";
+            playSound("audioBeep");
+          } else if (t === 1) {
             document.getElementById("timer").textContent = "Go!";
             playSound("audioGo");
-          } else if (t > 1) {
+          } else if (t > 4) {
             updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
           }
           if (t === 0) {
