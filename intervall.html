@@ -74,10 +74,10 @@
       color: #222;
       border: none;
       border-radius: 18px;
-      min-width: 80px;
-      font-size: 2em;
+      min-width: 65px;
+      font-size: 1.18em;
       font-weight: bold;
-      padding: 16px 0 11px 0;
+      padding: 7px 0;
       text-align: center;
       margin: 0;
       margin-bottom: 2px;
@@ -107,9 +107,9 @@
         margin-bottom: 13px;
       }
       .cyclesets-row input[type="number"] {
-        font-size: 1.6em;
-        min-width: 98vw;
-        padding: 12px 0 10px 0;
+        font-size: 1.05em;
+        min-width: 45vw;
+        padding: 4px 0;
         margin-bottom: 2px;
       }
     }
@@ -330,6 +330,10 @@
 
     function startProgram() {
       if (running) return;
+      ["audioGo","audioBeep","audioRest"].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el){try{el.volume=0;el.play().then(()=>{el.pause();el.currentTime=0;el.volume=1;});}catch(e){}}
+      });
       running = true;
       skipToWork = false;
       document.getElementById("startBtn").style.display = "none";
