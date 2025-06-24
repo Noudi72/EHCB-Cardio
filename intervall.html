@@ -33,23 +33,6 @@
       outline: none;
     }
     .controls button:active { background: #fff; color: #c00; }
-    #skipWarmUpBtn {
-      background: #ffe028;
-      color: #c00;
-      font-weight: bold;
-      border: none;
-      border-radius: 12px;
-      font-size: 1.03em;
-      padding: 10px 25px;
-      margin-bottom: 8px;
-      margin-top: 2px;
-      cursor: pointer;
-      box-shadow: 0 2px 8px #0002;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    #skipWarmUpBtn:active { background: #d11d1d; color: #fff; }
     .info { text-align: center; margin: 10px 0 13px 0; color: #ffe028; font-size: 1em; }
     table { width: 96%; margin: 0 auto 10px auto; border-collapse: collapse; font-size: 0.98em;}
     th, td { border: 1px solid #ffe02844; padding: 5px 7px; text-align: center; font-size: 0.98em; }
@@ -71,13 +54,65 @@
       table { min-width: 320px; width: 99vw; max-width: none;}
     }
     td { word-break: break-word; white-space: normal; }
-    .cyclesets-row { text-align: center; margin-bottom: 8px; }
-    .cyclesets-row input[type="number"] {
-      width: 2.7em; font-size: 1em;
-      padding: 3px; border-radius: 5px;
-      border: 1px solid #ffe02888; margin: 0 7px; text-align: center;
+    .cyclesets-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 32px;
+      margin-bottom: 14px;
+      margin-top: 0;
     }
-    .cyclesets-row label { margin: 0 4px; font-size: 1em; color: #ffe028; }
+    .cyclesets-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 0;
+    }
+    .cyclesets-row input[type="number"] {
+      background: #ffe028;
+      color: #222;
+      border: none;
+      border-radius: 18px;
+      min-width: 80px;
+      font-size: 2em;
+      font-weight: bold;
+      padding: 16px 0 11px 0;
+      text-align: center;
+      margin: 0;
+      margin-bottom: 2px;
+      box-shadow: 0 2px 8px #0001;
+      outline: none;
+    }
+    .cyclesets-row input[type="number"]:focus {
+      box-shadow: 0 2px 14px #ffe02855;
+    }
+    .cyclesets-row label {
+      margin: 0;
+      font-size: 0.93em;
+      color: #ffe028;
+      margin-top: 2px;
+      opacity: 0.93;
+      letter-spacing: 0.5px;
+    }
+    @media (max-width: 600px) {
+      .cyclesets-row {
+        flex-direction: column;
+        gap: 0;
+        align-items: stretch;
+        margin-top: 7px;
+        margin-bottom: 14px;
+      }
+      .cyclesets-col {
+        margin-bottom: 13px;
+      }
+      .cyclesets-row input[type="number"] {
+        font-size: 1.6em;
+        min-width: 98vw;
+        padding: 12px 0 10px 0;
+        margin-bottom: 2px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -95,19 +130,22 @@
     <div id="phaseInfo"></div>
     <div id="phaseCount"></div>
   </div>
-  <button id="skipWarmUpBtn">Warm-Up überspringen</button>
+  <div class="cyclesets-row">
+    <div class="cyclesets-col">
+      <input type="number" id="cyclesInput" value="8" min="1" max="30">
+      <label for="cyclesInput">Cycles (Work/Rest pro Set)</label>
+    </div>
+    <div class="cyclesets-col">
+      <input type="number" id="setsInput" value="4" min="1" max="10">
+      <label for="setsInput">Sets</label>
+    </div>
+  </div>
   <div class="controls">
     <button id="startBtn">START</button>
     <button id="editBtn">PHASEN BEARBEITEN</button>
     <button id="resetBtn" style="display:none;">RESET</button>
   </div>
-  <div class="cyclesets-row">
-    <label>Cycles (Work/Rest pro Set):</label>
-    <input type="number" id="cyclesInput" value="8" min="1" max="30">
-    <label>Sets:</label>
-    <input type="number" id="setsInput" value="4" min="1" max="10">
-  </div>
-  <div class="info">Nächste Phase wird automatisch gestartet</div>
+  <div class="info">Nächste Phase wird automatisch gestartet – Cycles/Intervalls &amp; Sets sind hier direkt einstellbar.</div>
   <table>
     <thead>
       <tr>
@@ -144,20 +182,34 @@
       table.innerHTML = "";
       basePhases.forEach((p, i) => {
         let row = document.createElement("tr");
-        row.innerHTML =
-          `<td>${i+1}</td>
-           <td>${editMode
-             ? `<input type="text" style="width:8em" value="${p.name}" />`
-             : p.name}</td>
-           <td>${editMode
-             ? `<input type="number" min="1" style="width:5em" value="${p.duration}" />`
-             : p.duration}</td>
-           <td>${editMode
-             ? `<input type="text" style="width:6em" value="${p.rpm}" />`
-             : p.rpm}</td>
-           <td>${editMode
-             ? `<input type="text" style="width:6em" value="${p.hf}" />`
-             : p.hf}</td>`;
+        // For "Get Ready", leave RPM/HF% cells empty
+        if (i === 0) {
+          row.innerHTML =
+            `<td>${i+1}</td>
+             <td>${editMode
+               ? `<input type="text" style="width:8em" value="${p.name}" />`
+               : p.name}</td>
+             <td>${editMode
+               ? `<input type="number" min="1" style="width:5em" value="${p.duration}" />`
+               : p.duration}</td>
+             <td></td>
+             <td></td>`;
+        } else {
+          row.innerHTML =
+            `<td>${i+1}</td>
+             <td>${editMode
+               ? `<input type="text" style="width:8em" value="${p.name}" />`
+               : p.name}</td>
+             <td>${editMode
+               ? `<input type="number" min="1" style="width:5em" value="${p.duration}" />`
+               : p.duration}</td>
+             <td>${editMode
+               ? `<input type="text" style="width:6em" value="${p.rpm}" />`
+               : p.rpm}</td>
+             <td>${editMode
+               ? `<input type="text" style="width:6em" value="${p.hf}" />`
+               : p.hf}</td>`;
+        }
         table.appendChild(row);
       });
       // Speichern-Button
@@ -215,6 +267,7 @@
         try {
           el.pause();
           el.currentTime = 0;
+          el.load(); // reload for Safari/Chrome compatibility
           el.play();
         } catch(e) {}
       }
@@ -288,19 +341,6 @@
       nextPhase(true);
     }
 
-    document.getElementById("skipWarmUpBtn").onclick = function() {
-      if (!running) {
-        skipToWork = true;
-        running = true;
-        document.getElementById("startBtn").style.display = "none";
-        document.getElementById("resetBtn").style.display = "";
-        setIdx = 1;
-        cycleIdx = 1;
-        phasePointer = 1;
-        // Kein Go-Sound direkt, sondern wie in nextPhase() behandelt
-        nextPhase(true);
-      }
-    };
 
     function nextPhase(isFirst=false) {
       clearInterval(interval);
