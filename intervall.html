@@ -547,15 +547,14 @@
         updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
         interval = setInterval(() => {
           t--;
-          updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
-          // Keine Beep-Töne mehr bei t=4,3,2,1!
-          // Nur bei t===0 Go-Sound:
-          if (t === 0) {
+          // Zeige "Go!" bei t==1, spiele dann Sound, dann direkt zu Work bei t==0
+          if (t === 1) {
             document.getElementById("timer").textContent = "Go!";
             playSound("audioGo");
+          } else if (t > 1) {
+            updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
           }
-          // Sofort nach Go! → Work, ohne zusätzliche Verzögerung/Tick
-          if (t < 0) {
+          if (t === 0) {
             clearInterval(interval);
             phasePointer = 1;
             cycleIdx = 1;
@@ -573,14 +572,15 @@
         interval = setInterval(() => {
           t--;
           updatePhaseUI("work", work.name, work.rpm, work.hf, t, setIdx, sets, cycleIdx, cycles);
-          // 1 Sekunde vor Ablauf: rest_2.mp3
+          // 1 Sekunde vor Ablauf: rest_2.mp3 (und KEIN weiterer Beep)
           if (t === 1) {
             playSound("audioRest");
           }
           if (t <= 0) {
             clearInterval(interval);
             phasePointer = 2;
-            playSingleBeep(() => nextPhase());
+            // Kein zusätzlicher playSingleBeep mehr!
+            nextPhase();
           }
         }, 1000);
         return;
@@ -603,11 +603,11 @@
             cycleIdx++;
             if (cycleIdx <= cycles) {
               phasePointer = 1;
-              playSingleBeep(() => nextPhase());
+              nextPhase();
             } else {
               if (setIdx < sets) {
                 phasePointer = 3;
-                playSingleBeep(() => nextPhase());
+                nextPhase();
               } else {
                 phasePointer = 4;
                 nextPhase();
@@ -676,9 +676,26 @@
       }
     }
 
+    // Hide table, info, and desc after start; show on edit/reset
+    function setMainUiVisibility(show) {
+      // table
+      const tbl = document.querySelector('table');
+      if (tbl) tbl.style.display = show ? '' : 'none';
+      // info box
+      const info = document.querySelector('.info');
+      if (info) info.style.display = show ? '' : 'none';
+      // desc
+      showDesc(show);
+      // cycles/sets input row
+      const cyclesRow = document.querySelector('.cyclesets-row');
+      if (cyclesRow) cyclesRow.style.display = show ? '' : 'none';
+    }
+
     document.getElementById("startBtn").onclick = function() {
-      showDesc(false);
+      setMainUiVisibility(false);
       startProgram();
+      // Fokussiere die Kachel zentriert (optional: könnte hier gescrollt werden, falls nötig)
+      // window.scrollTo({ top: document.getElementById("phaseBox").offsetTop - 30, behavior: "smooth" });
     };
     document.getElementById("resetBtn").onclick = function() {
       clearInterval(interval);
@@ -694,7 +711,13 @@
       document.getElementById("phaseCount").textContent = "";
       document.getElementById("startBtn").style.display = "";
       document.getElementById("resetBtn").style.display = "none";
-      showDesc(true); // Beschreibung nach Reset wieder anzeigen
+      setMainUiVisibility(true); // Alles wieder anzeigen
+    };
+
+    // Beim Bearbeiten wieder alles anzeigen
+    document.getElementById("editBtn").onclick = function() {
+      renderPhaseTable(true);
+      setMainUiVisibility(true);
     };
   </script>
 </body>
