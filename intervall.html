@@ -7,73 +7,77 @@
   <link rel="manifest" href="manifest.json">
   <style>
     body { background: #191919; color: #fff; font-family: Arial, sans-serif; margin: 0; }
-    .logo { display: block; margin: 36px auto 6px auto; width: 120px; }
-    h1 { color: #ffe028; text-align: center; font-size: 2.3em; margin-bottom: 0; }
-    .desc { text-align: center; margin-bottom: 18px; color: #ffe028; font-size: 1.15em; }
+    .logo { display: block; margin: 30px auto 6px auto; width: 100px; }
+    h1 { color: #ffe028; text-align: center; font-size: 2.1em; margin-bottom: 0; }
+    .desc { text-align: center; margin-bottom: 18px; color: #ffe028; font-size: 1.07em; }
     .phaseBox {
-      margin: 36px auto 18px auto; max-width: 400px;
+      margin: 32px auto 14px auto; max-width: 370px;
       border-radius: 22px; box-shadow: 1px 2px 12px #0007;
-      text-align: center; font-size: 2.6em; font-weight: bold;
-      padding: 28px 0 18px 0;
+      text-align: center; font-size: 2.3em; font-weight: bold;
+      padding: 24px 0 10px 0;
       background: #ffe028; color: #222; transition: background 0.2s, color 0.2s;
     }
     .phaseBox.work { background: #179b2a; color: #fff; }
     .phaseBox.rest { background: #d11d1d; color: #fff; }
     .phaseBox.setpause { background: #b59526; color: #fff; }
     .phaseBox.prepare { background: #ffe028; color: #222; }
-    .phaseLabel { font-size: 0.5em; letter-spacing: 2px; font-weight: 800; margin-bottom: 8px; }
-    #timer { font-size: 3.3em; font-family: monospace; font-weight: bold; margin: 0 0 8px 0; }
-    .controls { display: flex; justify-content: center; gap: 18px; margin: 20px 0 22px 0; }
+    .phaseLabel { font-size: 0.48em; letter-spacing: 2px; font-weight: 800; margin-bottom: 7px; }
+    #timer { font-size: 2.7em; font-family: monospace; font-weight: bold; margin: 0 0 7px 0; }
+    #phaseInfo { font-size: 0.47em; }
+    #phaseCount { font-size: 0.45em; margin-top: 8px; }
+    .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin: 16px 0 8px 0; }
     .controls button {
       background: #c00; color: #fff; font-weight: bold; border: none;
-      padding: 18px 44px; border-radius: 12px; font-size: 1.35em; cursor: pointer;
+      padding: 14px 38px; border-radius: 12px; font-size: 1.2em; cursor: pointer;
       box-shadow: 1px 2px 9px #0003; transition: background 0.15s;
       outline: none;
     }
     .controls button:active { background: #fff; color: #c00; }
-    .info { text-align: center; margin: 14px 0 18px 0; color: #ffe028; font-size: 1.13em; }
-    table { width: 95%; margin: 0 auto 18px auto; border-collapse: collapse; }
-    th, td { border: 1px solid #ffe02844; padding: 8px 10px; text-align: center; font-size: 1em; }
-    th { background: #ffe028; color: #222; }
-    tr:nth-child(even) { background: #222; }
-    tr:nth-child(odd) { background: #2a2a2a; }
-    a#backBtn { position: absolute; left: 28px; top: 26px; text-decoration: none; z-index:10;}
+    #skipWarmUpBtn {
+      background: #ffe028;
+      color: #c00;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.03em;
+      padding: 10px 25px;
+      margin-bottom: 8px;
+      margin-top: 2px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #0002;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #skipWarmUpBtn:active { background: #d11d1d; color: #fff; }
+    .info { text-align: center; margin: 10px 0 13px 0; color: #ffe028; font-size: 1em; }
+    table { width: 96%; margin: 0 auto 10px auto; border-collapse: collapse; font-size: 0.98em;}
+    th, td { border: 1px solid #ffe02844; padding: 5px 7px; text-align: center; font-size: 0.98em; }
+    th { background: #191919; color: #ffe028; }
+    tr:nth-child(even) { background: #232323; }
+    tr:nth-child(odd) { background: #282828; }
+    a#backBtn { position: absolute; left: 18px; top: 20px; text-decoration: none; z-index:10;}
     a#backBtn > button {
-      background:#ffe028;color:#222;font-weight:bold;border:none;border-radius:8px;padding:10px 28px;font-size:1.1em;box-shadow:1px 2px 8px #0004;cursor:pointer;display:flex;align-items:center;gap:7px;
+      background:#ffe028;color:#222;font-weight:bold;border:none;border-radius:8px;padding:8px 20px;font-size:1em;box-shadow:1px 2px 8px #0004;cursor:pointer;display:flex;align-items:center;gap:7px;
     }
     @media (max-width: 600px) {
-      table, thead, tbody, th, td, tr {
-        font-size: 0.98em !important;
-        padding: 6px 4px !important;
-      }
-      th, td {
-        word-break: break-word !important;
-        white-space: normal !important;
-        font-size: 0.98em !important;
-      }
-      table {
-        display: block;
-        overflow-x: auto;
-        width: 100vw;
-        min-width: 420px;
-        max-width: none;
-      }
+      .logo { margin: 20px auto 2px auto; width: 65px;}
+      h1 { font-size: 1.25em; }
+      .phaseBox { font-size: 1.19em; padding: 11px 0 7px 0; }
+      #timer { font-size: 2.1em; }
+      .controls button { font-size: 0.96em; padding: 8px 13vw;}
+      #skipWarmUpBtn { font-size: 0.96em; padding: 7px 5vw;}
+      table, thead, tbody, th, td, tr { font-size: 0.92em !important; padding: 4px 2px !important;}
+      table { min-width: 320px; width: 99vw; max-width: none;}
     }
-    td {
-      word-break: break-word;
-      white-space: normal;
-    }
-    .cyclesets-row { text-align: center; margin-bottom: 10px; }
+    td { word-break: break-word; white-space: normal; }
+    .cyclesets-row { text-align: center; margin-bottom: 8px; }
     .cyclesets-row input[type="number"] {
-      width: 3.1em;
-      font-size: 1.1em;
-      padding: 3px;
-      border-radius: 5px;
-      border: 1px solid #ffe02888;
-      margin: 0 10px;
-      text-align: center;
+      width: 2.7em; font-size: 1em;
+      padding: 3px; border-radius: 5px;
+      border: 1px solid #ffe02888; margin: 0 7px; text-align: center;
     }
-    .cyclesets-row label { margin: 0 6px; font-size: 1.05em; color: #ffe028; }
+    .cyclesets-row label { margin: 0 4px; font-size: 1em; color: #ffe028; }
   </style>
 </head>
 <body>
@@ -88,9 +92,10 @@
   <div class="phaseBox prepare" id="phaseBox">
     <div class="phaseLabel" id="phaseLabel">BEREIT</div>
     <div id="timer">00:00</div>
-    <div id="phaseInfo" style="font-size:0.6em;margin-top:5px;"></div>
-    <div id="phaseCount" style="font-size:1.0em; margin-top:4px;"></div>
+    <div id="phaseInfo"></div>
+    <div id="phaseCount"></div>
   </div>
+  <button id="skipWarmUpBtn">Warm-Up überspringen</button>
   <div class="controls">
     <button id="startBtn">START</button>
     <button id="editBtn">PHASEN BEARBEITEN</button>
@@ -214,7 +219,7 @@
       }
     }
 
-    let running = false, setIdx = 1, cycleIdx = 1, phasePointer = 0, t = 0, interval;
+    let running = false, setIdx = 1, cycleIdx = 1, phasePointer = 0, t = 0, interval, skipToWork = false;
 
     function toMMSS(secs) {
       const m = Math.floor(secs/60), s = secs%60;
@@ -240,7 +245,6 @@
       }
     }
 
-    // Sound-optimierte Countdown-Logik für bessere Wahrnehmung
     function playBeepSequence(cb) {
       let count = 3;
       const timer = document.getElementById("timer");
@@ -266,19 +270,34 @@
     function startProgram() {
       if (running) return;
       running = true;
+      skipToWork = false;
       document.getElementById("startBtn").style.display = "none";
       document.getElementById("resetBtn").style.display = "";
       setIdx = 1;
       cycleIdx = 1;
       phasePointer = 0;
       playSound("audioGo");
-      setTimeout(() => nextPhase(true), 1500);
+      setTimeout(() => nextPhase(true), 1200);
     }
+
+    document.getElementById("skipWarmUpBtn").onclick = function() {
+      if (!running) {
+        skipToWork = true;
+        running = true;
+        document.getElementById("startBtn").style.display = "none";
+        document.getElementById("resetBtn").style.display = "";
+        setIdx = 1;
+        cycleIdx = 1;
+        phasePointer = 1;
+        playSound("audioGo");
+        setTimeout(() => nextPhase(true), 800);
+      }
+    };
 
     function nextPhase(isFirst=false) {
       clearInterval(interval);
       let currPhase;
-      if (phasePointer === 0) {
+      if (phasePointer === 0 && !skipToWork) {
         currPhase = basePhases[0];
         t = currPhase.duration;
         updatePhaseUI("prepare", currPhase.name, currPhase.rpm, currPhase.hf, t, setIdx, sets, cycleIdx, cycles);
@@ -379,6 +398,7 @@
     document.getElementById("resetBtn").onclick = function() {
       clearInterval(interval);
       running = false;
+      skipToWork = false;
       setIdx = 1;
       cycleIdx = 1;
       phasePointer = 0;
