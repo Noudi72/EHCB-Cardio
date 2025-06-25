@@ -4,81 +4,56 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VO₂max – EHCB Cardio</title>
-  <link rel="manifest" href="manifest.json">
   <style>
     body {
-      margin: 0;
-      background: #191919;
+      background: #111;
       color: #fff;
       font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    a#backBtn {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: 10;
-      text-decoration: none;
-    }
-    a#backBtn > button {
-      background: #ffe028;
-      color: #222;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 28px;
-      font-size: 1.1em;
-      box-shadow: 1px 2px 8px #0004;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 7px;
+      margin: 0;
+      padding: 0;
     }
     .logo {
       display: block;
-      margin: 32px auto 7px auto;
+      margin: 30px auto 8px auto;
       width: 110px;
       max-width: 34vw;
     }
+    #backBtn {
+      position: fixed;
+      top: 20px;
+      left: 16px;
+      z-index: 9;
+      border: none;
+      background: #d32f2f;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.12em;
+      border-radius: 18px;
+      padding: 8px 19px;
+      cursor: pointer;
+      box-shadow: 0 1px 9px #0002;
+      transition: background 0.15s;
+    }
+    #backBtn:hover {
+      background: #b71c1c;
+    }
     .phaseBox {
-      margin: 44px auto 20px auto;
+      margin: 42px auto 45px auto;
       max-width: 600px;
       width: 95vw;
-      border-radius: 42px;
-      box-shadow: 0 4px 18px #0008;
+      border-radius: 44px;
+      box-shadow: 0 4px 22px #000b;
       text-align: center;
-      font-size: 2.9em;
+      font-size: 3.0em;
       font-weight: bold;
-      padding: 44px 0 36px 0;
-      min-height: 260px;
+      padding: 48px 0 38px 0;
+      min-height: 265px;
       background: #ffe028;
       color: #222;
       transition: background 0.22s, color 0.22s;
     }
-    .phaseBox.work {
-      background: #179b2a;
-      color: #fff;
-      box-shadow: 0 4px 18px #0a2e0e55;
-    }
-    .phaseBox.rest {
-      background: #d11d1d;
-      color: #fff;
-      box-shadow: 0 4px 18px #2e0a0a55;
-    }
-    .phaseBox.setpause {
-      background: #b59526;
-      color: #fff;
-      box-shadow: 0 4px 18px #2e230a55;
-    }
-    .phaseBox.prepare {
-      background: #ffe028;
-      color: #222;
-      box-shadow: 0 4px 18px #0008;
-    }
     .phaseLabel {
-      font-size: 2.15em;
+      font-size: 2.18em;
       letter-spacing: 2.5px;
       font-weight: 900;
       margin-bottom: 18px;
@@ -87,126 +62,89 @@
       text-transform: uppercase;
     }
     #phaseDesc {
-      font-size: 0.45em;
+      font-size: 1.15em;
+      margin-bottom: 19px;
       font-weight: 600;
-      letter-spacing: 1.5px;
-      user-select: none;
-      min-height: 28px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
     }
     #timer {
-      font-size: 6em;
+      font-size: 6.2em;
       font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
       font-weight: bold;
-      margin: 0 0 16px 0;
+      margin: 0 0 14px 0;
       letter-spacing: 2.2px;
       text-shadow: 0 2px 10px #0002;
       line-height: 1.07;
     }
     #phaseInfo {
-      font-size: 0.6em;
+      font-size: 1.13em;
+      margin-bottom: 8px;
       font-weight: 600;
-      letter-spacing: 1.5px;
-      user-select: none;
-      min-height: 24px;
+      color: inherit;
     }
     #phaseCount {
-      font-size: 0.55em;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      user-select: none;
-      min-height: 24px;
+      font-size: 1.16em;
+      margin-top: 17px;
+      color: #222;
+      font-weight: 800;
+      opacity: 0.98;
+      text-shadow: 0 2px 10px #0001;
     }
-    .controls {
-      max-width: 450px;
-      margin: 0 auto 30px auto;
-      display: flex;
-      justify-content: center;
-      gap: 18px;
-      flex-wrap: wrap;
-      user-select: none;
+    .cardio-buttons {
+      text-align: center;
+      margin-bottom: 34px;
+      margin-top: 5px;
     }
-    .controls button {
-      background: #c00;
+    .cardio-buttons button {
+      background: #d32f2f;
       color: #fff;
-      font-weight: 700;
-      border: none;
-      padding: 18px 44px;
-      border-radius: 12px;
-      font-size: 1.35em;
-      cursor: pointer;
-      box-shadow: 1px 2px 9px #0003;
-      transition: background-color 0.2s, color 0.2s;
-      outline: none;
-      flex-grow: 1;
-      min-width: 120px;
-      max-width: 180px;
-    }
-    .controls button:active {
-      background: #fff;
-      color: #c00;
-    }
-    .info {
-      max-width: 450px;
-      margin: 0 auto 20px auto;
-      color: #ffe028;
-      font-size: 1.15em;
-      text-align: center;
-      user-select: none;
-    }
-    .info-warmup {
-      max-width: 520px;
-      margin-top: 0;
-      margin-bottom: 32px;
-      margin-left: auto;
-      margin-right: auto;
-      background: #ffe028;
-      color: #d00;
-      font-size: 1.3em;
-      text-align: center;
       font-weight: bold;
+      font-size: 1.11em;
+      border: none;
       border-radius: 16px;
-      box-shadow: 0 2px 10px #0003;
-      padding: 18px 7vw 18px 7vw;
+      margin: 0 10px 0 10px;
+      padding: 11px 23px;
+      cursor: pointer;
+      box-shadow: 0 1px 6px #0002;
+      transition: background 0.13s;
+    }
+    .cardio-buttons button:hover {
+      background: #b71c1c;
+    }
+    .edit-table {
+      max-width: 520px;
+      margin: 0 auto 26px auto;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 3px 12px #0003;
     }
     table {
-      max-width: 450px;
-      margin: 0 auto 36px auto;
-      border-collapse: collapse;
       width: 100%;
-      user-select: none;
+      border-collapse: collapse;
+      background: #191919;
+      border-radius: 8px;
+      font-size: 1.13em;
     }
     th, td {
-      border: 1px solid #ffe028aa;
-      padding: 8px 10px;
+      padding: 0.65em 0.4em;
       text-align: center;
-      font-size: 1em;
-      vertical-align: middle;
     }
     th {
-      background: #ffe028;
-      color: #222;
-      font-weight: 700;
-      user-select: none;
+      background: #232323;
+      color: #ffe028;
+      font-weight: bold;
+      letter-spacing: 1.2px;
     }
-    tr:nth-child(even) {
-      background: #222;
+    td {
+      background: #232323;
+      color: #eee;
     }
-    tr:nth-child(odd) {
-      background: #2a2a2a;
-    }
-    input[type="text"] {
-      font-size: 1em;
-      padding: 4px 6px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      width: 100%;
-      box-sizing: border-box;
-      font-weight: 600;
-      text-align: center;
-      color: #222;
-    }
-    input[type="text"]:focus {
-      outline: 2px solid #c00;
+    td[contenteditable="true"] {
+      background: #373737;
+      color: #ffe028;
+      font-weight: bold;
+      outline: 2px solid #ffe02833;
     }
     @media (min-width: 800px) {
       .phaseBox {
@@ -225,9 +163,6 @@
     @media (max-width: 600px) {
       .logo {
         margin-top: 13px;
-        margin-right: auto;
-        margin-bottom: 2px;
-        margin-left: auto;
         width: 72px;
         max-width: 25vw;
       }
@@ -252,264 +187,194 @@
   </style>
 </head>
 <body>
-  <a href="index.html" id="backBtn">
-    <button>&#8592; Zur&uuml;ck</button>
-  </a>
-  <img src="icon-cardio.png" class="logo" alt="Cardio Logo" />
-  <div class="phaseBox prepare" id="phaseBox">
-    <div class="phaseLabel" id="phaseLabel"></div>
-    <div id="phaseDesc"></div>
-    <div id="timer">00:00</div>
-    <div id="phaseInfo"></div>
-    <div id="phaseCount"></div>
-  </div>
-  <div class="info-warmup">Bitte vorher 10 Min. aufwärmen!</div>
-  <div class="controls">
-    <button id="startBtn">START</button>
-    <button id="editBtn">PHASEN BEARBEITEN</button>
-    <button id="resetBtn" style="display:none;">RESET</button>
-  </div>
-  <div class="info" id="descText">
-    Ziel: Maximale Sauerstoffaufnahme verbessern<br>
-    Fokus: Lange Belastungen nahe HFmax, kurze Erholungen
-  </div>
-  <table id="phaseTableContainer">
+<button id="backBtn" onclick="window.location.href='index.html'">Zurück</button>
+<img src="icon-cardio.png" class="logo" alt="Cardio Logo" />
+<h1 style="color:#ffe028;text-align:center;margin-bottom:0;">VO₂max</h1>
+<div class="desc" style="text-align:center;margin-bottom:20px;color:#ffe028;font-size:1.2em;">
+  Intervall-Programm zur Steigerung der maximalen Sauerstoffaufnahme.<br>
+  5 Intervalle (4 Min. sehr hart, 2 Min. Pause), Cooldown.
+</div>
+<div class="phaseBox" id="phaseBox">
+  <div class="phaseLabel" id="phaseLabel">Get Ready</div>
+  <div id="phaseDesc">Vorbereitung</div>
+  <div id="timer">00:30</div>
+  <div id="phaseInfo"></div>
+  <div id="phaseCount"></div>
+</div>
+<div class="cardio-buttons">
+  <button id="startBtn">Start</button>
+  <button id="editBtn">Bearbeiten</button>
+  <button id="resetBtn">Reset</button>
+</div>
+<div class="edit-table" id="editTableWrapper">
+  <table id="phaseTable">
     <thead>
       <tr>
-        <th>#</th>
-        <th>Dauer</th>
+        <th>Phase</th>
+        <th>Dauer (Sek.)</th>
         <th>Beschreibung</th>
         <th>RPM</th>
         <th>HF%</th>
       </tr>
     </thead>
-    <tbody id="phaseTable"></tbody>
+    <tbody>
+      <tr><td contenteditable="true">Get Ready</td><td contenteditable="true">30</td><td contenteditable="true">Vorbereitung</td><td contenteditable="true">-</td><td contenteditable="true">-</td></tr>
+      <tr><td contenteditable="true">Intervall 1</td><td contenteditable="true">240</td><td contenteditable="true">Sehr hart</td><td contenteditable="true">70-80</td><td contenteditable="true">90-95</td></tr>
+      <tr><td contenteditable="true">Pause 1</td><td contenteditable="true">120</td><td contenteditable="true">Locker fahren</td><td contenteditable="true">60-70</td><td contenteditable="true">50-60</td></tr>
+      <tr><td contenteditable="true">Intervall 2</td><td contenteditable="true">240</td><td contenteditable="true">Sehr hart</td><td contenteditable="true">70-80</td><td contenteditable="true">90-95</td></tr>
+      <tr><td contenteditable="true">Pause 2</td><td contenteditable="true">120</td><td contenteditable="true">Locker fahren</td><td contenteditable="true">60-70</td><td contenteditable="true">50-60</td></tr>
+      <tr><td contenteditable="true">Intervall 3</td><td contenteditable="true">240</td><td contenteditable="true">Sehr hart</td><td contenteditable="true">70-80</td><td contenteditable="true">90-95</td></tr>
+      <tr><td contenteditable="true">Pause 3</td><td contenteditable="true">120</td><td contenteditable="true">Locker fahren</td><td contenteditable="true">60-70</td><td contenteditable="true">50-60</td></tr>
+      <tr><td contenteditable="true">Intervall 4</td><td contenteditable="true">240</td><td contenteditable="true">Sehr hart</td><td contenteditable="true">70-80</td><td contenteditable="true">90-95</td></tr>
+      <tr><td contenteditable="true">Pause 4</td><td contenteditable="true">120</td><td contenteditable="true">Locker fahren</td><td contenteditable="true">60-70</td><td contenteditable="true">50-60</td></tr>
+      <tr><td contenteditable="true">Intervall 5</td><td contenteditable="true">240</td><td contenteditable="true">Sehr hart</td><td contenteditable="true">70-80</td><td contenteditable="true">90-95</td></tr>
+      <tr><td contenteditable="true">Cooldown</td><td contenteditable="true">600</td><td contenteditable="true">Locker ausfahren</td><td contenteditable="true">60</td><td contenteditable="true">40-50</td></tr>
+    </tbody>
   </table>
+</div>
+<script>
+  let phases = [
+    {label: "Get Ready", duration: 30, desc: "Vorbereitung", rpm: "-", hf: "-"},
+    {label: "Intervall 1", duration: 240, desc: "Sehr hart", rpm: "70-80", hf: "90-95"},
+    {label: "Pause 1", duration: 120, desc: "Locker fahren", rpm: "60-70", hf: "50-60"},
+    {label: "Intervall 2", duration: 240, desc: "Sehr hart", rpm: "70-80", hf: "90-95"},
+    {label: "Pause 2", duration: 120, desc: "Locker fahren", rpm: "60-70", hf: "50-60"},
+    {label: "Intervall 3", duration: 240, desc: "Sehr hart", rpm: "70-80", hf: "90-95"},
+    {label: "Pause 3", duration: 120, desc: "Locker fahren", rpm: "60-70", hf: "50-60"},
+    {label: "Intervall 4", duration: 240, desc: "Sehr hart", rpm: "70-80", hf: "90-95"},
+    {label: "Pause 4", duration: 120, desc: "Locker fahren", rpm: "60-70", hf: "50-60"},
+    {label: "Intervall 5", duration: 240, desc: "Sehr hart", rpm: "70-80", hf: "90-95"},
+    {label: "Cooldown", duration: 600, desc: "Locker ausfahren", rpm: "60", hf: "40-50"}
+  ];
+  let currentPhase = 0, timer = null, running = false, t = phases[0].duration;
 
-  <audio id="audioBeep" src="beep.wav"></audio>
+  // Audio cues (copied from intervall.html)
+  let beep1 = new Audio("beep1.mp3");
+  let beep2 = new Audio("beep2.mp3");
+  let beep3 = new Audio("beep3.mp3");
 
-  <script>
-    // --- VO2max-Phasen (bearbeitbar) ---
-    let phases = [
-      { name: "Get Ready", duration: 30, rpm: "", hf: "", desc: "30 Sek. Vorbereitung" },
-      { name: "Phase 1", duration: 240, rpm: "70-80", hf: "90-95", desc: "4 Min. sehr hart" },
-      { name: "Pause", duration: 120, rpm: "60-70", hf: "50-60", desc: "Sehr locker fahren" },
-      { name: "Phase 2", duration: 240, rpm: "70-80", hf: "90-95", desc: "4 Min. sehr hart" },
-      { name: "Pause", duration: 120, rpm: "60-70", hf: "50-60", desc: "Sehr locker fahren" },
-      { name: "Phase 3", duration: 240, rpm: "70-80", hf: "90-95", desc: "4 Min. sehr hart" },
-      { name: "Pause", duration: 120, rpm: "60-70", hf: "50-60", desc: "Sehr locker fahren" },
-      { name: "Phase 4", duration: 240, rpm: "70-80", hf: "90-95", desc: "4 Min. sehr hart" },
-      { name: "Pause", duration: 120, rpm: "60-70", hf: "50-60", desc: "Sehr locker fahren" },
-      { name: "Phase 5", duration: 240, rpm: "70-80", hf: "90-95", desc: "4 Min. sehr hart" },
-      { name: "Cool-Down", duration: 600, rpm: "60", hf: "40-50", desc: "10 Min. Locker fahren, niedriger Widerstand" }
-    ];
+  function updateUI() {
+    document.getElementById("phaseLabel").textContent = phases[currentPhase].label;
+    document.getElementById("phaseDesc").textContent = phases[currentPhase].desc;
+    document.getElementById("timer").textContent = formatTime(t);
+    let info = "";
+    if (phases[currentPhase].rpm && phases[currentPhase].rpm !== "-") info += "RPM: " + phases[currentPhase].rpm + " ";
+    if (phases[currentPhase].hf && phases[currentPhase].hf !== "-") info += "HF%: " + phases[currentPhase].hf;
+    document.getElementById("phaseInfo").textContent = info.trim();
+    document.getElementById("phaseCount").textContent = (currentPhase+1) + " / " + phases.length;
+  }
 
-    // === Tabelle: Bearbeitbar/Anzeige-Logik ===
-    function renderPhaseTable(editMode=false) {
-      const table = document.getElementById('phaseTable');
-      table.innerHTML = "";
-      phases.forEach((p, i) => {
-        let row = document.createElement("tr");
-        row.innerHTML =
-          `<td>${i+1}</td>
-           <td>${editMode
-             ? `<input type="text" style="width:4em" value="${p.duration >= 60 ? (p.duration/60)+" Min." : p.duration+" Sek."}" />`
-             : (p.duration >= 60 ? Math.floor(p.duration/60)+" Min." : p.duration+" Sek.")}</td>
-           <td>${editMode
-             ? `<input type="text" style="width:15em" value="${p.desc || p.name}" />`
-             : (p.desc || p.name)}</td>
-           <td>${editMode
-             ? `<input type="text" style="width:6em" value="${p.rpm}" />`
-             : p.rpm}</td>
-           <td>${editMode
-             ? `<input type="text" style="width:6em" value="${p.hf}" />`
-             : p.hf}</td>`;
-        table.appendChild(row);
-      });
-      // Speichern-Button einfügen
-      if (editMode) {
-        const saveRow = document.createElement("tr");
-        saveRow.innerHTML = `<td colspan="5"><button id="savePhases">SPEICHERN</button></td>`;
-        table.appendChild(saveRow);
-        document.getElementById("savePhases").onclick = savePhaseTable;
+  function formatTime(sec) {
+    let m = Math.floor(sec/60), s = sec%60;
+    return (m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+  }
+
+  function nextPhase() {
+    if (currentPhase < phases.length-1) {
+      currentPhase++;
+      t = phases[currentPhase].duration;
+      updateUI();
+    } else {
+      stopTimer();
+    }
+  }
+
+  function prevPhase() {
+    if (currentPhase > 0) {
+      currentPhase--;
+      t = phases[currentPhase].duration;
+      updateUI();
+    }
+  }
+
+  function tick() {
+    if (!running) return;
+    if (t > 0) {
+      t--;
+      // Play beeps for last 3 seconds
+      if (t === 2) beep1.play();
+      if (t === 1) beep2.play();
+      if (t === 0) beep3.play();
+      updateUI();
+      timer = setTimeout(tick, 1000);
+    } else {
+      nextPhase();
+      if (running && currentPhase < phases.length) {
+        timer = setTimeout(tick, 1000);
       }
     }
-    renderPhaseTable();
+  }
 
-    function savePhaseTable() {
-      const rows = document.querySelectorAll("#phaseTable tr");
-      let newPhases = [];
-      rows.forEach((row, idx) => {
-        if (idx < phases.length) {
-          const inputs = row.querySelectorAll("input");
-          if (inputs.length === 4) {
-            // Dauer analysieren
-            let dur = inputs[0].value.trim();
-            let duration = 0;
-            if (dur.toLowerCase().includes("min")) {
-              duration = parseInt(dur) * 60;
-            } else if (dur.toLowerCase().includes("sek")) {
-              duration = parseInt(dur);
-            } else {
-              duration = parseInt(dur);
-            }
-            newPhases.push({
-              name: phases[idx].name,
-              duration: duration,
-              rpm: inputs[2].value.trim(),
-              hf: inputs[3].value.trim(),
-              desc: inputs[1].value.trim()
-            });
-          }
-        }
-      });
-      phases = newPhases;
-      renderPhaseTable(false);
-      showAllUI();
-      resetUI();
-    }
-
-    document.getElementById("editBtn").onclick = function() {
-      renderPhaseTable(true);
-      showAllUI();
-      resetUI();
-    };
-
-    // === Intervall- und Sound-Logik ===
-    function playSound(id) {
-      const el = document.getElementById(id);
-      if (el) { el.currentTime = 0; el.play(); }
-    }
-
-    let running = false, phaseIdx = 0, t = 0, interval;
-
-    function toMMSS(secs) {
-      const m = Math.floor(secs/60), s = secs%60;
-      return (m > 0 ? m + ":" : "") + (s < 10 ? "0" : "") + s;
-    }
-
-    function updatePhaseUI(idx, remaining) {
-      const box = document.getElementById("phaseBox");
-      const lbl = document.getElementById("phaseLabel");
-      const timer = document.getElementById("timer");
-      const info = document.getElementById("phaseInfo");
-      const desc = document.getElementById("phaseDesc");
-      const count = document.getElementById("phaseCount");
-      const phase = phases[idx];
-      let colorClass = "prepare";
-      if (!phase) {
-        box.className = "phaseBox prepare";
-        lbl.textContent = "BEREIT";
-        desc.textContent = "";
-        timer.textContent = "00:00";
-        info.textContent = "";
-        count.textContent = "";
-        return;
-      }
-      if (phase.name.toLowerCase().includes("pause") || phase.desc.toLowerCase().includes("locker")) colorClass = "rest";
-      if (phase.name.toLowerCase().includes("phase") && phase.desc.toLowerCase().includes("hart")) colorClass = "work";
-      if (phase.name.toLowerCase().includes("cool") || phase.desc.toLowerCase().includes("cool")) colorClass = "setpause";
-      if (phase.name.toLowerCase().includes("warm")) colorClass = "prepare";
-      box.className = "phaseBox " + colorClass;
-      lbl.textContent = (phase.name ? phase.name : "").toUpperCase();
-      desc.textContent = (phase.desc ? phase.desc : "");
-      timer.textContent = toMMSS(remaining);
-      info.innerHTML = `RPM: <b>${phase.rpm}</b> – HF: <b>${phase.hf}%</b>`;
-      count.textContent = "Phase " + (idx+1) + " von " + phases.length;
-    }
-
-    function startProgram() {
-      if (running) return;
+  function startTimer() {
+    if (!running) {
       running = true;
-      phaseIdx = 0;
-      hideAllUI();
-      // Info-Warmup ausblenden
-      var warmupEl = document.querySelector('.info-warmup');
-      if (warmupEl) warmupEl.style.display = "none";
-      updatePhaseUI(phaseIdx, phases[phaseIdx].duration);
-      t = phases[phaseIdx].duration;
-      interval = setInterval(() => {
-        t--;
-        updatePhaseUI(phaseIdx, t);
-        if (t <= 0) {
-          playSound("audioBeep");
-          clearInterval(interval);
-          phaseIdx++;
-          if (phaseIdx >= phases.length) {
-            finishProgram();
-          } else {
-            t = phases[phaseIdx].duration;
-            updatePhaseUI(phaseIdx, t);
-            interval = setInterval(() => {
-              t--;
-              updatePhaseUI(phaseIdx, t);
-              if (t <= 0) {
-                playSound("audioBeep");
-                clearInterval(interval);
-                phaseIdx++;
-                if (phaseIdx >= phases.length) {
-                  finishProgram();
-                }
-              }
-            }, 1000);
-          }
-        }
-      }, 1000);
-      document.getElementById("startBtn").style.display = "none";
-      document.getElementById("resetBtn").style.display = "";
-    }
-
-    function finishProgram() {
+      document.getElementById("startBtn").textContent = "Pause";
+      timer = setTimeout(tick, 1000);
+    } else {
       running = false;
-      const box = document.getElementById("phaseBox");
-      box.className = "phaseBox prepare";
-      document.getElementById("phaseLabel").textContent = "FERTIG!";
-      document.getElementById("phaseDesc").textContent = "";
-      document.getElementById("timer").textContent = "00:00";
-      document.getElementById("phaseInfo").textContent = "";
-      document.getElementById("phaseCount").textContent = "";
-      showAllUI();
-      document.getElementById("startBtn").style.display = "";
-      document.getElementById("resetBtn").style.display = "none";
-      playSound("audioBeep");
+      document.getElementById("startBtn").textContent = "Start";
+      clearTimeout(timer);
     }
+  }
 
-    function resetUI() {
-      running = false;
-      phaseIdx = 0;
-      clearInterval(interval);
-      const box = document.getElementById("phaseBox");
-      box.className = "phaseBox prepare";
-      document.getElementById("phaseLabel").textContent = "BEREIT";
-      document.getElementById("phaseDesc").textContent = "";
-      document.getElementById("timer").textContent = "00:00";
-      document.getElementById("phaseInfo").textContent = "";
-      document.getElementById("phaseCount").textContent = "";
-      document.getElementById("startBtn").style.display = "";
-      document.getElementById("resetBtn").style.display = "none";
-      // Info-Warmup wieder einblenden
-      var warmupEl = document.querySelector('.info-warmup');
-      if (warmupEl) warmupEl.style.display = "";
+  function stopTimer() {
+    running = false;
+    document.getElementById("startBtn").textContent = "Start";
+    clearTimeout(timer);
+  }
+
+  function resetAll() {
+    stopTimer();
+    currentPhase = 0;
+    t = phases[0].duration;
+    updateUI();
+  }
+
+  document.getElementById("startBtn").onclick = startTimer;
+  document.getElementById("resetBtn").onclick = resetAll;
+  document.getElementById("editBtn").onclick = () => {
+    let wrapper = document.getElementById("editTableWrapper");
+    wrapper.style.display = wrapper.style.display === "none" ? "block" : "none";
+  };
+
+  // Editable table logic (copied from intervall.html)
+  function tableToPhases() {
+    let rows = document.querySelectorAll("#phaseTable tbody tr");
+    let newPhases = [];
+    for (let r of rows) {
+      let cells = r.querySelectorAll("td");
+      let label = cells[0].textContent.trim();
+      let duration = parseInt(cells[1].textContent.trim()) || 1;
+      let desc = cells[2].textContent.trim();
+      let rpm = cells[3].textContent.trim();
+      let hf = cells[4].textContent.trim();
+      newPhases.push({ label, duration, desc, rpm, hf });
     }
+    phases = newPhases;
+    resetAll();
+  }
+  // Update phases array whenever table is edited
+  document.getElementById("phaseTable").addEventListener("input", () => {
+    tableToPhases();
+  });
 
-    function hideAllUI() {
-      document.getElementById("phaseTableContainer").style.display = "none";
-      document.getElementById("descText").style.display = "none";
-      document.getElementById("editBtn").style.display = "none";
+  // Responsive: hide edit table by default on mobile
+  if (window.innerWidth < 700) {
+    document.getElementById("editTableWrapper").style.display = "none";
+  }
+
+  // Keyboard shortcuts for editing (optional)
+  document.addEventListener("keydown", e => {
+    if (e.key === " " && document.activeElement.tagName !== "TD") {
+      e.preventDefault();
+      startTimer();
     }
-
-    function showAllUI() {
-      document.getElementById("phaseTableContainer").style.display = "";
-      document.getElementById("descText").style.display = "";
-      document.getElementById("editBtn").style.display = "";
+    if (e.key === "r" && document.activeElement.tagName !== "TD") {
+      resetAll();
     }
+  });
 
-    document.getElementById("startBtn").onclick = startProgram;
-    document.getElementById("resetBtn").onclick = function() {
-      resetUI();
-      showAllUI();
-      renderPhaseTable(false);
-    };
+  updateUI();
   </script>
 </body>
 </html>
